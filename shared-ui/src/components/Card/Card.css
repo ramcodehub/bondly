@@ -1,0 +1,23 @@
+.card {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+  background-color: #f8f9fa;
+}
+
+.card-body {
+  padding: 1.5rem;
+}

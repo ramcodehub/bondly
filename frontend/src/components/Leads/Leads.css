@@ -1,0 +1,82 @@
+.leads{
+    margin-top: 100px;
+    padding: 20px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-leads {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter {
+  background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 18px;
+  color: #333;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.leads1 {
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.create {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.split-button {
+  display: inline-flex;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.main-button,
+.dropdown-button {
+  padding: 8px 16px;
+  border: none;
+  color: white;
+  background: linear-gradient(to bottom, #5b7fff, #3c5ed0);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-button a {
+  color: white;
+  text-decoration: none;
+}
+
+.main-button {
+  border-right: 1px solid rgba(255,255,255,0.4);
+}
+
+.dropdown-button {
+  padding: 0 12px;
+}

@@ -1,0 +1,90 @@
+
+.login{
+    background: url('../../assets/loginbackground.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    box-sizing: border-box;
+    min-height: 100vh;          
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.login img{
+    height: 80px;
+    margin-bottom: 40px;
+}
+.login .login-form{
+    border: 1px solid;
+    background-color: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.199);
+}
+.login-form h1{
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.login-form .input-box{
+    position: relative;
+    width: 100%;
+    height: 45px;
+    margin-bottom: 30px;
+    border: 1px solid black;
+    border-radius: 20px;
+}
+.input-box input{
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    border-radius: 40px;
+    padding: 20px 45px 20px 20px;
+}
+.input-box i{
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    
+}
+.remember-forgot{
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    margin: -15px 0 15px;
+}
+.remember-forgot label input{
+    accent-color: blue;
+}
+.remember-forgot a{
+    text-decoration: none;
+}
+.remember-forgot a:hover{
+    text-decoration: underline;
+}
+.login-form button{
+    width: 100%;
+    height: 45px;
+    border: none;
+    outline: none;
+    background-color: blue;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 85px;
+}
+.register-link{
+    font-size: 14px;
+    text-align: center;
+    margin-top: 20px;
+}
+.register-link span a{
+    font-weight: 700;
+    text-decoration: none;
+}
+.register-link span a:hover{
+    text-decoration: underline;
+}

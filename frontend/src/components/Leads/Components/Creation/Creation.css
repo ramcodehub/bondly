@@ -1,0 +1,129 @@
+
+.creation {
+  display: flex;
+  min-height: 60px;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  border-bottom: 1px solid #ddd;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.head h3 {
+  font-size: 22px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.head a {
+  color: #3c65f5;
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+.savebtn {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 30px auto;
+  max-width: 900px;
+}
+
+.savebtn button {
+  padding: 10px 20px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.savebtn .save {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+}
+.lead-info{
+    margin-top: 30px;
+}
+.lead-info p{
+    padding-left: 8%;
+    font-size: 20px;
+    font-weight: 800;
+}
+.lead-info i{
+    padding-left: 14%;
+    font-size: 92px;
+}
+.grid-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 40px; 
+  max-width: 900px;
+  margin: 20px auto;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #333;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.firstname-inputs {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+}
+
+.firstname-inputs select {
+  width: 80px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.firstname-inputs input {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.title-select {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #000000;
+  min-width: 70px;
+}

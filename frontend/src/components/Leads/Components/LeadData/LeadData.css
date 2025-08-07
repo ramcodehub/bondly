@@ -1,0 +1,100 @@
+.lead-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid #ddd;
+  background-color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.lead-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-button {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.profile-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+.lead-text h2 {
+  font-size: 20px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.lead-text h2 span {
+  font-weight: 400;
+  color: #444;
+}
+
+.lead-text p {
+  margin: 2px 0 6px;
+  color: #555;
+}
+
+.add-tag {
+  font-size: 14px;
+  color: #4a90e2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.lead-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-button {
+  border: 1px solid #4a90e2;
+  color: #4a90e2;
+  background: #fff;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.blue-button {
+  background: linear-gradient(to right, #4a6cf7, #4a90e2);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.light-button {
+  background: #f7f7fb;
+  border: 1px solid #ccc;
+  padding: 9px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.arrow-button {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: #444;
+  padding: 6px;
+  cursor: pointer;
+}
