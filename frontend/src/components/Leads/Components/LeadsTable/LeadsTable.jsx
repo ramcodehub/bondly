@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
-import LeadData from '../leadData/leadData';
+import LeadData from '../LeadData/LeadData';
 import { request } from '../../../../services/apiService';
 
 const LeadsTable = () => {
