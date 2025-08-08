@@ -74,45 +74,40 @@ if (process.env.NODE_ENV === 'production') {
   const __dirname = path.resolve();
   const publicPath = path.join(__dirname, '..', 'frontend', 'dist');
   
-  // Ensure the build directory exists
-  if (!fs.existsSync(publicPath)) {
-    console.error('Frontend build not found. Please build the frontend first.');
-    process.exit(1);
-  }
-  
-  // Serve static files with proper caching and content types
-  app.use(express.static(publicPath, {
-    etag: true,
-    lastModified: true,
-    maxAge: '1d',
-    setHeaders: (res, filePath) => {
-      // Set proper content type for HTML files
-      if (filePath.endsWith('.html')) {
-        res.set('Content-Type', 'text/html; charset=UTF-8');
-        // Prevent caching of HTML files
-        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-        res.set('Pragma', 'no-cache');
-        res.set('Expires', '0');
+  // Check if frontend build exists, but don't exit if it doesn't
+  if (fs.existsSync(publicPath)) {
+    console.log('Serving frontend from:', publicPath);
+    
+    // Serve static files with proper caching and content types
+    app.use(express.static(publicPath, {
+      etag: true,
+      lastModified: true,
+      maxAge: '1d',
+      setHeaders: (res, filePath) => {
+        // Set proper content type for HTML files
+        if (filePath.endsWith('.html')) {
+          res.set('Content-Type', 'text/html; charset=UTF-8');
+          // Prevent caching of HTML files
+          res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+          res.set('Pragma', 'no-cache');
+          res.set('Expires', '0');
+        }
       }
-    }
-  }));
+    }));
 
-  // Handle React routing, return all requests to React app
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(publicPath, 'index.html'), {
-      headers: {
-        'Content-Type': 'text/html; charset=UTF-8',
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
-    }, (err) => {
-      if (err) {
-        console.error('Error sending file:', err);
-        res.status(500).send('Error loading the application');
-      }
+    // Handle React routing, return all requests to React app
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(publicPath, 'index.html'), (err) => {
+        if (err) {
+          console.error('Error sending file:', err);
+          res.status(500).send('Error loading the application');
+        }
+      });
     });
-  });
+  } else {
+    console.warn('Frontend build not found at:', publicPath);
+    console.warn('Skipping frontend static file serving. The backend API will still work.');
+  }
 }
 
 // API Routes
