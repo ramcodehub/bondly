@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: crm-prototype-backend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # Add your Supabase URL and Key here (you'll set these in Render's dashboard)
+      - key: SUPABASE_URL
+        fromDatabase:
+          name: supabase
+          property: connectionString
+      - key: SUPABASE_KEY
+        fromDatabase:
+          name: supabase
+          property: connectionString
+
+# If you need a database in the future, uncomment this section:
+# databases:
+#   - name: postgres_db
+#     databaseName: my_crm_db
+#     user: my_crm_user
