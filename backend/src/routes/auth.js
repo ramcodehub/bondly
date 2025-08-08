@@ -25,18 +25,21 @@ router.post('/register', async (req, res) => {
     
     if (authError) throw authError;
     
-    // If registration successful, add user profile to profiles table
+    // If registration successful, add user profile to profiles table (optional)
     if (authData.user) {
       const { error: profileError } = await supabase
         .from('profiles')
         .insert([{ 
           id: authData.user.id, 
-          name, 
+          name: name || null, 
           email,
           created_at: new Date()
         }]);
-      
-      if (profileError) throw profileError;
+
+      // If profiles table doesn't exist yet, or no row found codes, don't fail registration
+      if (profileError && !['PGRST116', 'PGRST205'].includes(profileError.code)) {
+        throw profileError;
+      }
     }
     
     res.status(201).json({ message: 'Registration successful' });

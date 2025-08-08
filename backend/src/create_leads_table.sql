@@ -1,19 +1,16 @@
--- Create the leads table
-CREATE TABLE IF NOT EXISTS public.leads (
+-- Create leads table
+CREATE TABLE leads (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
-  company TEXT,
-  email TEXT,
+  email TEXT NOT NULL,
   phone TEXT,
-  lead_owner TEXT,
-  lead_source TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+  status TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Insert sample data
-INSERT INTO public.leads (name, company, email, phone, lead_owner, lead_source)
-VALUES
-  ('Christopher Maclead', 'Rangoni Of Florence', 'christopher@example.com', '9876543210', 'Hari Shankar', 'Website'),
-  ('Carissa Kidman', 'Oh My Goodknits Inc', 'carissa@example.com', '9123456780', 'Hari Shankar', 'Referral'),
-  ('James Merced', 'Kwik Kopy Printing', 'james@example.com', '9988776655', 'Hari Shankar', 'Google Ads'),
-  ('Felix Hirpara', 'Chapman', 'felix@example.com', '9112233445', 'Hari Shankar', 'LinkedIn');
+-- Seed leads table
+INSERT INTO leads (name, email, phone, status)
+VALUES 
+  ('John Doe', 'john@example.com', '123-456-7890', 'New'),
+  ('Jane Smith', 'jane@example.com', '987-654-3210', 'Contacted'),
+  ('Bob Johnson', 'bob@example.com', '555-123-4567', 'Qualified');

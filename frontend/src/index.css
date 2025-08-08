@@ -1,8 +1,6 @@
-*{
-  margin: 0;
-  padding: 0; 
-  font-family: 'Poppins', sans-serif; 
-}
-.main-content{
-  margin-top: 90px;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { @apply m-0 p-0 font-sans; }
+.main-content { @apply mt-24; }

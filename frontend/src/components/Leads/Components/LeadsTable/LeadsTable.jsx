@@ -1,55 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
-import './LeadsTable.css';
 import LeadData from '../LeadData/LeadData';
 import { request } from '../../../../services/apiService';
 
-// Fallback mock data in case API fails
-const mockLeads = [
-  {
-    id: 1,
-    name: 'Christopher Maclead (Sample)',
-    company: 'Rangoni Of Florence',
-    email: 'christopher-email.invalid',
-    phone: '9876543210',
-    leadOwner: 'Hari Shankar Bhaskar',
-    leadSource: 'Website',
-    isToday: false,
-  },
-  {
-    id: 2,
-    name: 'Carissa Kidman (Sample)',
-    company: 'Oh My Goodknits Inc',
-    email: 'carissa-kidman.invalid',
-    phone: '9123456780',
-    leadOwner: 'Hari Shankar Bhaskar',
-    leadSource: 'Referral',
-    isToday: true,
-  },
-  {
-    id: 3,
-    name: 'James Merced (Sample)',
-    company: 'Kwik Kopy Printing',
-    email: 'james-merced.invalid',
-    phone: '9988776655',
-    leadOwner: 'Hari Shankar Bhaskar',
-    leadSource: 'Google Ads',
-    isToday: false,
-  },
-  {
-    id: 4,
-    name: 'Felix Hirpara (Sample)',
-    company: 'Chapman',
-    email: 'felix-hirpara.invalid',
-    phone: '9112233445',
-    leadOwner: 'Hari Shankar Bhaskar',
-    leadSource: 'LinkedIn',
-    isToday: true,
-  },
-];
-
 const LeadsTable = () => {
-  const [leads, setLeads] = useState(mockLeads);
+  const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -63,8 +18,7 @@ const LeadsTable = () => {
         }
       } catch (err) {
         console.error('Error fetching leads:', err);
-        setError('Failed to fetch leads. Using mock data instead.');
-        // Keep using mock data if API fails
+        setError('Failed to fetch leads.');
       } finally {
         setLoading(false);
       }
@@ -72,50 +26,87 @@ const LeadsTable = () => {
 
     fetchLeads();
   }, []);
+
   return (
     <>
-      {loading && <div className="loading-message">Loading leads...</div>}
-      {error && <div className="error-message">{error}</div>}
+      {loading && (
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-blue-600"></div>
+        </div>
+      )}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
       {!loading && !error && (
-    <div className="table-wrapper">
-      <table className="leads-table">
-        
-          <thead>
-            <tr>
-            <th><input type="checkbox" /></th>
-            <th>Lead Name</th>
-            <th>Company</th>
-            <th>Email</th>
-            <th>Phone Number</th>
-            <th>Lead Source</th>
-            <th>LeadOwner</th>
-          </tr>
-          </thead>
-          <tbody>
-          {leads.map((lead) => (
-
-            <tr key={lead.id}>
-              <td><input type="checkbox" /></td>
-              <td>
-                {lead.isToday && (
-                  <span className="today-badge">
-                    <i className="bi bi-calendar-event-fill"></i>
-                    Today
-                  </span>
-                )}
-                <Link to='/leads/profile' onClick={()=><LeadData name={lead.name}/>}>{lead.name}</Link>
-              </td>
-              <td>{lead.company}</td>
-              <td>{lead.email}</td>
-              <td>{lead.phone}</td>
-              <td>{lead.leadSource}</td>
-              <td>{lead.leadOwner}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-    )}
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Lead Name
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Company
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Phone Number
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Lead Source
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Lead Owner
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {leads.map((lead) => (
+                  <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <Link 
+                          to='/leads/profile' 
+                          className="text-blue-600 hover:text-blue-900 font-medium"
+                          onClick={() => <LeadData name={lead.name}/>}
+                        >
+                          {lead.name}
+                        </Link>
+                      </div>
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {lead.company || '-'}
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="break-all">{lead.email || '-'}</span>
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {lead.phone || '-'}
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {lead.lead_source || '-'}
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {lead.lead_owner || '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </>
   );
 };

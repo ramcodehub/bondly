@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { Input } from '@shared-ui/components/Input'
-import { Button } from '@shared-ui/components/Button'
-import { Card } from '@shared-ui/components/Card'
+import { Card } from '../../shared-ui/src'
+import { apiService } from '../services/apiService'
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true)
@@ -23,25 +22,13 @@ const LoginPage = () => {
     e.preventDefault()
     
     try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register'
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      
-      const data = await response.json()
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Authentication failed')
+      if (isLogin) {
+        await apiService.auth.login({ email: formData.email, password: formData.password })
+        alert('Login successful!')
+      } else {
+        await apiService.auth.register({ email: formData.email, password: formData.password, name: formData.name })
+        alert('Registration successful!')
       }
-      
-      // Handle successful login/registration
-      console.log('Success:', data)
-      alert(isLogin ? 'Login successful!' : 'Registration successful!')
-      
     } catch (error) {
       console.error('Error:', error)
       alert(error.message)
@@ -49,63 +36,35 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="row justify-content-center">
-      <div className="col-md-6">
+    <div className="w-full px-4 sm:px-6 lg:px-8 flex justify-center pt-16 md:pt-20">
+      <div className="w-full max-w-md">
         <Card>
-          <h2 className="text-center mb-4">{isLogin ? 'Login' : 'Register'}</h2>
-          
-          <form onSubmit={handleSubmit}>
+          <h2 className="text-center text-xl sm:text-2xl font-semibold mb-4">{isLogin ? 'Login' : 'Register'}</h2>
+          <form onSubmit={handleSubmit} className="space-y-3">
             {!isLogin && (
-              <div className="mb-3">
-                <Input
-                  label="Name"
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required={!isLogin}
-                />
+              <div>
+                <label className="block text-sm font-medium mb-1">Name</label>
+                <input className="w-full border rounded px-3 py-2 text-sm" type="text" name="name" value={formData.name} onChange={handleChange} required={!isLogin} />
               </div>
             )}
-            
-            <div className="mb-3">
-              <Input
-                label="Email"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
+            <div>
+              <label className="block text-sm font-medium mb-1">Email</label>
+              <input className="w-full border rounded px-3 py-2 text-sm" type="email" name="email" value={formData.email} onChange={handleChange} required />
             </div>
-            
-            <div className="mb-3">
-              <Input
-                label="Password"
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+            <div>
+              <label className="block text-sm font-medium mb-1">Password</label>
+              <input className="w-full border rounded px-3 py-2 text-sm" type="password" name="password" value={formData.password} onChange={handleChange} required />
             </div>
-            
-            <div className="d-grid gap-2">
-              <Button type="submit" variant="primary">
-                {isLogin ? 'Login' : 'Register'}
-              </Button>
-            </div>
+            <button className="w-full bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700" type="submit">
+              {isLogin ? 'Login' : 'Register'}
+            </button>
           </form>
-          
           <div className="text-center mt-3">
-            <p>
+            <p className="text-sm">
               {isLogin ? "Don't have an account?" : "Already have an account?"}
-              <Button 
-                variant="link" 
-                onClick={() => setIsLogin(!isLogin)}
-              >
+              <button className="text-blue-600 hover:underline ml-2" onClick={() => setIsLogin(!isLogin)}>
                 {isLogin ? 'Register' : 'Login'}
-              </Button>
+              </button>
             </p>
           </div>
         </Card>

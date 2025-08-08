@@ -1,27 +1,35 @@
 import React from 'react'
 import {BrowserRouter as Router,Routes,Route,useLocation} from 'react-router-dom'
-import Header from './Components/Header/Header'
-import Page1 from './Components/Page1/Page1'
+import Navbar from './components/Navbar/Navbar'
 import UserAuthentication from './Components/UserAuthentication/UserAuthentication'
 import Leads from './Components/Leads/Leads'
 import Creation from './Components/Leads/Components/Creation/Creation'
 import LeadData from './Components/Leads/Components/LeadData/LeadData'
 import User from './Components/User/User'
+import HomePage from './pages/HomePage'
+import LeadsPage from './pages/LeadsPage'
+import LoginPage from './pages/LoginPage'
+import OpportunitiesPage from './pages/OpportunitiesPage'
+import AccountPage from './pages/AccountPage'
+import ContactPage from './pages/ContactPage'
 
 const Travel = () => {
     const location=useLocation();
-    const hideHeader=['/login'];
-    const showHeader=!hideHeader.includes(location.pathname);
+    const hideNavbar=['/login', '/signup'];
+    const showNavbar=!hideNavbar.includes(location.pathname);
   return (
     <>
-        {showHeader&&<Header/>}
+        {showNavbar&&<Navbar/>}
         <Routes>
-            <Route path='/' element={<Page1/>}/>
-            <Route path='/leads' element={<Leads/>}/>
+            <Route path='/' element={<HomePage/>}/>
+            <Route path='/leads' element={<LeadsPage/>}/>
             <Route path='/leads/create' element={<Creation/>}/>
             <Route path='/leads/profile' element={<LeadData/>}/>
-            <Route path='/user' element={<User/>}/>
-            <Route path='/login' element={<UserAuthentication/>}/>
+            <Route path='/opportunities' element={<OpportunitiesPage/>}/>
+            <Route path='/account' element={<AccountPage/>}/>
+            <Route path='/contact' element={<ContactPage/>}/>
+            <Route path='/login' element={<LoginPage/>}/>
+            <Route path='/signup' element={<LoginPage/>}/>
         </Routes>
     </>
   )

@@ -94,6 +94,37 @@ const getHello = async () => {
   return request('/hello');
 };
 
+const getHome = async () => request('/home');
+
+const getOpportunities = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return request(`/opportunities${query ? `?${query}` : ''}`);
+};
+
+const getAccounts = async () => request('/account');
+const getAccountById = async (id) => request(`/account/${id}`);
+
+const getContacts = async () => request('/contact');
+const submitContact = async (payload) => request('/contact/submit', {
+  method: 'POST',
+  body: JSON.stringify(payload),
+});
+
+/**
+ * Homepage services
+ */
+const getHomeCarousel = async () => {
+  return request('/homepage/carousel');
+};
+
+const getHomeStats = async () => {
+  return request('/homepage/stats');
+};
+
+const getRecentActivities = async () => {
+  return request('/homepage/activities');
+};
+
 export const apiService = {
   auth: authService,
   getLeads,
@@ -102,4 +133,13 @@ export const apiService = {
   updateLead,
   deleteLead,
   getHello,
+  getHome,
+  getOpportunities,
+  getAccounts,
+  getAccountById,
+  getContacts,
+  submitContact,
+  getHomeCarousel,
+  getHomeStats,
+  getRecentActivities
 };
