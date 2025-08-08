@@ -1,4 +1,7 @@
-const API_URL = 'http://localhost:5000/api';
+// Use environment variable if available, otherwise default to development
+const API_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5000/api';
+
+console.log('Using API URL:', API_URL);
 
 /**
  * Generic API request handler
@@ -6,13 +9,29 @@ const API_URL = 'http://localhost:5000/api';
 export const request = async (endpoint, options = {}) => {
   try {
     const url = `${API_URL}${endpoint}`;
-    const response = await fetch(url, {
-      ...options,
+    const defaultOptions = {
+      credentials: 'include', // Include cookies for authentication
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
       },
+    };
+
+    console.log(`Making request to: ${url}`);
+    
+    const response = await fetch(url, {
+      ...defaultOptions,
+      ...options,
+      headers: {
+        ...defaultOptions.headers,
+        ...(options.headers || {})
+      }
     });
+
+    // Handle 204 No Content responses
+    if (response.status === 204) {
+      return null;
+    }
 
     const data = await response.json();
 
