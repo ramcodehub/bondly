@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 
 // Import routes
 import leadsRoutes from './routes/leads.js';
@@ -70,13 +71,34 @@ app.options('*', cors(corsOptions));
 
 // Serve static files from the React app in production
 if (process.env.NODE_ENV === 'production') {
-  // Set static folder
   const __dirname = path.resolve();
-  app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
+  const publicPath = path.join(__dirname, 'public');
+  
+  // Ensure the public directory exists
+  if (!fs.existsSync(publicPath)) {
+    fs.mkdirSync(publicPath, { recursive: true });
+  }
+  
+  // Serve static files with proper caching
+  app.use(express.static(publicPath, {
+    etag: true,
+    lastModified: true,
+    setHeaders: (res, filePath) => {
+      // Set proper content type for HTML files
+      if (filePath.endsWith('.html')) {
+        res.set('Content-Type', 'text/html; charset=UTF-8');
+      }
+    }
+  }));
 
   // Handle React routing, return all requests to React app
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'dist', 'index.html'));
+    res.sendFile(path.join(publicPath, 'index.html'), (err) => {
+      if (err) {
+        console.error('Error sending file:', err);
+        res.status(500).send('Error loading the application');
+      }
+    });
   });
 }
 
