@@ -1,45 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import { 
   Users, 
   Briefcase, 
   UserCheck, 
   FileText,
-  Clock,
-  Plus,
-  ArrowRight
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { apiService } from '../services/apiService';
 
 const HomePage = () => {
   const [carouselItems, setCarouselItems] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [loading, setLoading] = useState({ carousel: true, stats: true });
+  const [error, setError] = useState(null);
   const [stats, setStats] = useState({
     totalLeads: 0,
     totalOpportunities: 0,
     totalAccounts: 0,
     totalContacts: 0
   });
-  const [loading, setLoading] = useState({
-    carousel: true,
-    stats: true,
-    activities: true
-  });
-  const [error, setError] = useState(null);
 
   // Fetch carousel data
   useEffect(() => {
     const fetchCarousel = async () => {
       try {
-        console.log('Fetching carousel data...');
         const data = await apiService.getHomeCarousel();
-        console.log('Carousel data received:', data);
-        console.table(data); // Log data as a table
         setCarouselItems(data);
       } catch (err) {
-        console.error('Error fetching carousel:', err);
         setError('Failed to load carousel');
+        console.error('Error fetching carousel:', err);
       } finally {
         setLoading(prev => ({ ...prev, carousel: false }));
       }
@@ -55,7 +47,7 @@ const HomePage = () => {
         const data = await apiService.getHomeStats();
         setStats(data);
       } catch (err) {
-        console.error('Error fetching stats:', err);
+        setError('Failed to load statistics');
       } finally {
         setLoading(prev => ({ ...prev, stats: false }));
       }
@@ -64,78 +56,151 @@ const HomePage = () => {
     fetchStats();
   }, []);
 
-  console.log('Current carouselItems state:', carouselItems);
+  // Auto-rotate carousel
+  useEffect(() => {
+    if (carouselItems.length <= 1) return;
+    
+    const timer = setInterval(() => {
+      nextSlide();
+    }, 5000);
+    
+    return () => clearInterval(timer);
+  }, [carouselItems.length]);
 
-  // Stats cards data
-  const statsCards = [
-    { 
-      icon: <Users className="h-8 w-8 text-blue-600" />, 
-      label: 'Total Leads', 
-      value: stats.totalLeads,
-      color: 'bg-blue-100'
-    },
-    { 
-      icon: <Briefcase className="h-8 w-8 text-green-600" />, 
-      label: 'Opportunities', 
-      value: stats.totalOpportunities,
-      color: 'bg-green-100'
-    },
-    { 
-      icon: <UserCheck className="h-8 w-8 text-purple-600" />, 
-      label: 'Accounts', 
-      value: stats.totalAccounts,
-      color: 'bg-purple-100'
-    },
-    { 
-      icon: <FileText className="h-8 w-8 text-orange-600" />, 
-      label: 'Contacts', 
-      value: stats.totalContacts,
-      color: 'bg-orange-100'
-    }
-  ];
+  const nextSlide = () => {
+    setCurrentSlide(prev => (prev + 1) % carouselItems.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide(prev => (prev - 1 + carouselItems.length) % carouselItems.length);
+  };
+
+  if (loading.carousel && loading.stats) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center text-red-500">
+          <p className="text-xl font-semibold">Error loading content</p>
+          <p className="mt-2">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Carousel Section */}
-      <section className="relative h-[400px] md:h-[500px] w-full overflow-hidden">
-        {loading.carousel ? (
-          <div className="h-full w-full bg-gray-200 animate-pulse"></div>
-        ) : error ? (
-          <div className="h-full flex items-center justify-center bg-gray-100">
-            <p className="text-red-500">{error}</p>
-          </div>
-        ) : (
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            spaceBetween={0}
-            slidesPerView={1}
-            navigation
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 5000, disableOnInteraction: false }}
-            loop={true}
-            className="h-full"
-          >
-            {carouselItems.map((item) => (
-              <SwiperSlide key={item.id} className="relative h-[400px] md:h-[500px] w-full">
-                <img 
-                  src={item.image_url}
-                  alt={item.title}
-                  className="absolute inset-0 w-full h-full object-cover z-0"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
-                <div className="relative h-full flex flex-col justify-center text-white px-8 md:px-16 lg:px-24 z-20">
-                  <h1 className="text-3xl md:text-5xl font-bold mb-4">{item.title}</h1>
-                  <p className="text-lg md:text-xl mb-8 max-w-2xl">{item.description}</p>
-                  <Link 
-                    to={item.cta_link || '#'}
-                    className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors w-fit"
-                  >
-                    Learn More <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
+      {/* Hero Carousel Section */}
+      <section className="relative w-full h-[500px] overflow-hidden">
+        {carouselItems.length > 0 ? (
+          <>
+            {/* Carousel Items */}
+            <div 
+              className="h-full flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+            >
+              {carouselItems.map((item) => (
+                <div 
+                  key={item.id} 
+                  className="w-full flex-shrink-0 relative"
+                  style={{
+                    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${item.image_url})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    padding: '0 20px'
+                  }}
+                >
+                  <div className="max-w-4xl mx-auto text-white">
+                    <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                      {item.title || 'Discover Your Next Adventure'}
+                    </h1>
+                    {item.description && (
+                      <p className="text-xl md:text-2xl mb-8">
+                        {item.description}
+                      </p>
+                    )}
+                    {item.cta_link && (
+                      <Link 
+                        to={item.cta_link}
+                        className="inline-flex items-center px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-lg"
+                      >
+                        {item.cta_text || 'Learn More'} <ArrowRight className="ml-2 h-5 w-5" />
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+              ))}
+            </div>
+
+            {/* Navigation Arrows */}
+            {carouselItems.length > 1 && (
+              <>
+                <button 
+                  onClick={prevSlide}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-colors z-10"
+                  aria-label="Previous slide"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+                <button 
+                  onClick={nextSlide}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-colors z-10"
+                  aria-label="Next slide"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+              </>
+            )}
+
+            {/* Pagination Dots */}
+            {carouselItems.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                {carouselItems.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      index === currentSlide ? 'bg-white' : 'bg-white bg-opacity-50'
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          // Fallback when no carousel items are available
+          <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+            <div className="text-center text-white">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                Welcome to Our Platform
+              </h1>
+              <p className="text-xl md:text-2xl mb-8">
+                Get started by adding carousel items from the admin panel
+              </p>
+            </div>
+          </div>
         )}
       </section>
 
@@ -143,18 +208,34 @@ const HomePage = () => {
       <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {statsCards.map((stat, index) => (
-              <div 
-                key={index} 
-                className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className={`${stat.color} w-16 h-16 rounded-full flex items-center justify-center mb-4`}>
-                  {stat.icon}
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</h3>
-                <p className="text-gray-600">{stat.label}</p>
-              </div>
-            ))}
+            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+              <Users className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+              <h3 className="text-3xl font-bold text-gray-900">
+                {loading.stats ? '...' : stats.totalLeads.toLocaleString()}+ 
+              </h3>
+              <p className="text-gray-600">Total Leads</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+              <Briefcase className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+              <h3 className="text-3xl font-bold text-gray-900">
+                {loading.stats ? '...' : stats.totalOpportunities}+ 
+              </h3>
+              <p className="text-gray-600">Opportunities</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+              <UserCheck className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+              <h3 className="text-3xl font-bold text-gray-900">
+                {loading.stats ? '...' : stats.totalAccounts}+ 
+              </h3>
+              <p className="text-gray-600">Accounts</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+              <FileText className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+              <h3 className="text-3xl font-bold text-gray-900">
+                {loading.stats ? '...' : stats.totalContacts}+ 
+              </h3>
+              <p className="text-gray-600">Contacts</p>
+            </div>
           </div>
         </div>
       </section>

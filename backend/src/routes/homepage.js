@@ -7,8 +7,9 @@ const router = express.Router();
 router.get('/carousel', async (req, res) => {
   try {
     const { data, error } = await supabase
-      .from('carousel')
+      .from('homepage_carousel')
       .select('*')
+      .eq('is_active', true)
       .order('order', { ascending: true });
 
     if (error) throw error;
@@ -16,7 +17,7 @@ router.get('/carousel', async (req, res) => {
     res.json(data || []);
   } catch (error) {
     console.error('Error fetching carousel data:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Failed to fetch carousel data' });
   }
 });
 
