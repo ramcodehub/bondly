@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-// https://vitejs.dev/config/
+// Minimal configuration for Netlify
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -13,25 +13,12 @@ export default defineConfig({
   server: {
     port: 5174
   },
+  // Disable sourcemaps for production
   build: {
-    rollupOptions: {
-      external: ['@rollup/rollup-linux-x64-gnu'],
-      output: {
-        format: 'es',
-        manualChunks: {
-          react: ['react', 'react-dom', 'react-router-dom'],
-          vendor: ['axios', 'clsx', 'tailwind-merge']
-        }
-      }
-    },
-    target: 'es2020',
-    minify: 'terser',
-    sourcemap: false
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
-    esbuildOptions: {
-      target: 'es2020'
-    }
+    sourcemap: false,
+    // Use esbuild for minification instead of terser
+    minify: 'esbuild',
+    // Target modern browsers
+    target: 'es2020'
   }
 });
