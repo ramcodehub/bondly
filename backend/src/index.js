@@ -32,11 +32,15 @@ app.use(cors({
     'http://127.0.0.1:5173',
     'http://127.0.0.1:5174',
     'http://127.0.0.1:5175',
+    process.env.NETLIFY_FRONTEND_URL // <-- Add your Netlify URL here
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
+
+// Handle favicon requests
+app.get('/favicon.ico', (req, res) => res.status(204).send());
 
 // Routes
 app.use('/api/leads', leadsRoutes);
