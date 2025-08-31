@@ -1,5 +1,5 @@
 import express from 'express';
-import { supabase } from '../index.js';
+import supabase from '../config/supabase.js';
 
 const router = express.Router();
 
@@ -55,4 +55,11 @@ router.get('/', async (req, res) => {
 });
 
 export default router;
+
+
+
+
+
+
+
 

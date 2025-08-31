@@ -3,6 +3,13 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import helmet from 'helmet';
+import morgan from 'morgan';
+
+// Import middleware
+import { errorHandler, notFoundHandler, healthCheck } from './middleware/errorHandler.js';
+import { generalRateLimit, rateLimitHeaders } from './middleware/rateLimiting.js';
+import { addRequestId, developmentLogger, productionLogger, errorLogger, performanceMonitor } from './middleware/logging.js';
 
 // Import routes
 import leadsRoutes from './routes/leads.js';
@@ -14,6 +21,8 @@ import accountRoutes from './routes/account.js';
 import contactRoutes from './routes/contact.js';
 import settingsRoutes from './routes/settings.js';
 import homepageRoutes from '../routes/homepage.js';
+import dealsRoutes from './routes/deals.js';
+import tasksRoutes from './routes/tasks.js';
 
 // Import Supabase client
 import supabase from './config/supabase.js';
@@ -26,42 +35,122 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-const allowedOrigins = [
-  // Local development
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://localhost:5175',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:5174',
-  'http://127.0.0.1:5175',
-  
-  // Production frontend
-  'https://prototypecrm.netlify.app',
-  
-  // Production backend (for reference, if needed)
-  'https://crm-prototype.onrender.com'
-];
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false,
+}));
+
+// Request ID and logging middleware
+app.use(addRequestId);
+app.use(performanceMonitor);
+
+// Environment-specific logging
+if (process.env.NODE_ENV === 'development') {
+  app.use(developmentLogger);
+} else {
+  app.use(productionLogger);
+}
+
+// Always log errors regardless of environment
+app.use(errorLogger);
+
+// Environment-specific CORS configuration
+const allowedOrigins = {
+  development: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174',
+    'http://127.0.0.1:5175'
+  ],
+  production: [
+    'https://prototypecrm.netlify.app',
+    process.env.FRONTEND_URL
+  ].filter(Boolean), // Remove undefined values
+  staging: [
+    'https://staging-prototypecrm.netlify.app',
+    process.env.STAGING_FRONTEND_URL
+  ].filter(Boolean)
+};
+
+const currentOrigins = allowedOrigins[process.env.NODE_ENV] || allowedOrigins.development;
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+    // Allow requests with no origin (like mobile apps, curl, Postman) only in development
+    if (!origin && process.env.NODE_ENV === 'development') {
+      return callback(null, true);
     }
-    return callback(null, true);
+    
+    // Reject requests with no origin in production
+    if (!origin && process.env.NODE_ENV === 'production') {
+      return callback(new Error('Request blocked: No origin header'), false);
+    }
+    
+    // Check if origin is in allowed list
+    if (currentOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+    
+    // Enhanced origin validation for subdomains in production
+    if (process.env.NODE_ENV === 'production') {
+      const allowedDomains = ['netlify.app', 'vercel.app'];
+      const originDomain = new URL(origin).hostname;
+      
+      // Check if it's a subdomain of allowed domains
+      const isAllowedSubdomain = allowedDomains.some(domain => 
+        originDomain.endsWith(`.${domain}`) || originDomain === domain
+      );
+      
+      if (isAllowedSubdomain) {
+        return callback(null, true);
+      }
+    }
+    
+    // Log rejected origins for security monitoring
+    console.warn(`CORS: Blocked request from origin: ${origin}`);
+    
+    const msg = process.env.NODE_ENV === 'development' 
+      ? `CORS policy: Origin '${origin}' is not allowed. Add it to allowedOrigins in ${process.env.NODE_ENV} mode.`
+      : 'CORS policy: Origin not allowed';
+    
+    return callback(new Error(msg), false);
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With', 
+    'Accept', 
+    'Origin',
+    'X-Request-ID',
+    'X-Client-Version'
+  ],
+  exposedHeaders: [
+    'Content-Range', 
+    'X-Content-Range',
+    'X-Request-ID',
+    'RateLimit-Limit',
+    'RateLimit-Remaining',
+    'RateLimit-Reset'
+  ],
   credentials: true,
-  maxAge: 3600
+  maxAge: process.env.NODE_ENV === 'production' ? 86400 : 3600, // 24h in prod, 1h in dev
+  optionsSuccessStatus: 200, // For legacy browser support
+  preflightContinue: false // Pass control to next handler
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
+
+// Rate limiting
+app.use(rateLimitHeaders);
+app.use('/api/', generalRateLimit);
 
 // Handle favicon requests
 app.get('/favicon.ico', (req, res) => res.status(204).end());
@@ -111,6 +200,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // API Routes
+app.get('/health', healthCheck);
 app.use('/api/leads', leadsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/hello', helloRoutes);
@@ -120,16 +210,16 @@ app.use('/api/account', accountRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/homepage', homepageRoutes);
+app.use('/api/deals', dealsRoutes);
+app.use('/api/tasks', tasksRoutes);
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
+// 404 handler for unmatched API routes
+app.use('/api/*', notFoundHandler);
+
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-export { supabase };

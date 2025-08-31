@@ -1,45 +1,46 @@
 import express from 'express';
-import { supabase } from '../index.js';
+import supabase from '../config/supabase.js';
+import { asyncHandler, createValidationError, createNotFoundError } from '../middleware/errorHandler.js';
+import { leadValidation, sanitizeInput } from '../middleware/validation.js';
+import { optimizedQueries } from '../middleware/databaseOptimizer.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  try {
-    // Fetch all leads
-    const { data: leads, error } = await supabase
-      .from('leads')
-      .select('*')
-      .order('created_at', { ascending: false });
+router.get('/', asyncHandler(async (req, res) => {
+  // Use optimized query with caching
+  const result = await optimizedQueries.getAll('leads', {
+    orderBy: 'created_at',
+    ascending: false
+  });
 
-    if (error) throw error;
-
-    res.json(leads);
-  } catch (error) {
-    console.error('Error fetching leads:', error);
-    res.status(500).json({ message: 'Failed to fetch leads', error: error.message });
+  if (result.error) {
+    throw new Error(`Failed to fetch leads: ${result.error.message}`);
   }
-});
 
-router.post('/', async (req, res) => {
-  try {
-    const { name, company, email, phone, lead_owner, lead_source } = req.body;
+  res.json({
+    success: true,
+    data: result.data || [],
+    count: result.data?.length || 0
+  });
+}));
 
-    if (!name) {
-      return res.status(400).json({ message: 'Name is required' });
-    }
+router.post('/', sanitizeInput, leadValidation.create, asyncHandler(async (req, res) => {
+  const { name, company, email, phone, lead_owner, lead_source } = req.body;
 
-    const { data, error } = await supabase
-      .from('leads')
-      .insert([{ name, company, email, phone, lead_owner, lead_source }])
-      .select();
+  const result = await optimizedQueries.create('leads', {
+    name, company, email, phone, lead_owner, lead_source
+  });
 
-    if (error) throw error;
-    res.status(201).json(data[0]);
-  } catch (error) {
-    console.error('Error creating lead:', error);
-    res.status(500).json({ message: 'Failed to create lead', error: error.message });
+  if (result.error) {
+    throw new Error(`Failed to create lead: ${result.error.message}`);
   }
-});
+
+  res.status(201).json({
+    success: true,
+    data: result.data[0],
+    message: 'Lead created successfully'
+  });
+}));
 
 // PUT /api/leads/:id - update lead
 router.put('/:id', async (req, res) => {

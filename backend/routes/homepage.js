@@ -35,21 +35,24 @@ router.get('/stats', async (req, res) => {
     // Get counts from different tables in parallel
     const [
       { count: leadsCount },
-      { count: opportunitiesCount },
-      { count: accountsCount },
-      { count: contactsCount }
+      { count: dealsCount },
+      { count: companiesCount },
+      { count: contactsCount },
+      { count: tasksCount }
     ] = await Promise.all([
       supabase.from('leads').select('*', { count: 'exact', head: true }),
-      supabase.from('opportunities').select('*', { count: 'exact', head: true }),
-      supabase.from('accounts').select('*', { count: 'exact', head: true }),
-      supabase.from('contacts').select('*', { count: 'exact', head: true })
+      supabase.from('deals').select('*', { count: 'exact', head: true }),
+      supabase.from('companies').select('*', { count: 'exact', head: true }),
+      supabase.from('contacts').select('*', { count: 'exact', head: true }),
+      supabase.from('tasks').select('*', { count: 'exact', head: true })
     ]);
 
     res.json({
       totalLeads: leadsCount || 0,
-      totalOpportunities: opportunitiesCount || 0,
-      totalAccounts: accountsCount || 0,
-      totalContacts: contactsCount || 0
+      totalOpportunities: dealsCount || 0,
+      totalAccounts: companiesCount || 0,
+      totalContacts: contactsCount || 0,
+      totalTasks: tasksCount || 0
     });
   } catch (error) {
     console.error('Error fetching stats:', error);

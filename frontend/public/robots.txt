@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Disallow all crawlers for development
+# User-agent: *
+# Disallow: /

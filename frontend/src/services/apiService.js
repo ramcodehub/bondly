@@ -1,5 +1,5 @@
-// Use environment variable if available, otherwise default to development
-const API_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5000/api';
+// Use Next.js env (fallback for dev)
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:5000/api';
 
 console.log('Using API URL:', API_URL);
 
@@ -120,8 +120,101 @@ const getOpportunities = async (params = {}) => {
   return request(`/opportunities${query ? `?${query}` : ''}`);
 };
 
-const getAccounts = async () => request('/account');
-const getAccountById = async (id) => request(`/account/${id}`);
+const getAccounts = async (params = {}) => {
+  try {
+    const { page = 1, limit = 10, search = '' } = params;
+    const queryParams = new URLSearchParams({
+      page,
+      limit,
+      ...(search && { search })
+    });
+
+    const response = await fetch(`${API_URL}/account?${queryParams}`);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch accounts');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching accounts:', error);
+    throw error;
+  }
+};
+
+const getAccountById = async (id) => {
+  try {
+    const response = await fetch(`${API_URL}/account/${id}`);
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Account not found');
+      }
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch account');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching account ${id}:`, error);
+    throw error;
+  }
+};
+
+const createAccount = async (accountData) => {
+  try {
+    const response = await fetch(`${API_URL}/account`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(accountData),
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to create account');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating account:', error);
+    throw error;
+  }
+};
+
+const updateAccount = async (id, accountData) => {
+  try {
+    const response = await fetch(`${API_URL}/account/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(accountData),
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to update account');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Error updating account ${id}:`, error);
+    throw error;
+  }
+};
+
+const deleteAccount = async (id) => {
+  try {
+    const response = await fetch(`${API_URL}/account/${id}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+
+    if (!response.ok && response.status !== 204) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to delete account');
+    }
+    return true;
+  } catch (error) {
+    console.error(`Error deleting account ${id}:`, error);
+    throw error;
+  }
+};
 
 const getContacts = async () => request('/contact');
 const submitContact = async (payload) => request('/contact/submit', {
@@ -156,9 +249,12 @@ export const apiService = {
   getOpportunities,
   getAccounts,
   getAccountById,
+  createAccount,
+  updateAccount,
+  deleteAccount,
   getContacts,
   submitContact,
   getHomeCarousel,
   getHomeStats,
-  getRecentActivities
+  getRecentActivities,
 };

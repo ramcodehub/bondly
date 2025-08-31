@@ -1,30 +1,40 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { apiService } from '../services/apiService'
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { leadService } from '../lib/supabase';
 
 const LeadsPage = () => {
-  const [leads, setLeads] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [leads, setLeads] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        setLoading(true)
-        const data = await apiService.getLeads()
-        setLeads(data)
+        setLoading(true);
+        const data = await leadService.getLeads();
+        setLeads(data);
       } catch (err) {
-        console.error('Error fetching leads:', err)
-        setError('Failed to fetch leads. Please try again later.')
+        console.error('Error in LeadsPage:', err);
+        setError('Failed to fetch leads. Please try again later.');
       } finally {
-        setLoading(false)
+        setLoading(false);
+      }
+    };
+
+    fetchLeads();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this lead?')) {
+      try {
+        await leadService.deleteLead(id);
+        setLeads(leads.filter(lead => lead.lead_id !== id));
+      } catch (err) {
+        console.error('Error deleting lead:', err);
+        alert('Failed to delete lead. Please try again.');
       }
     }
-
-    fetchLeads()
-  }, [])
-
-  const displayLeads = leads
+  };
 
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 pt-14 md:pt-16">
@@ -47,56 +57,101 @@ const LeadsPage = () => {
         <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">{error}</div>
       ) : (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-lg border border-gray-200">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Company
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Industry
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Phone
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Lead Source
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Source
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Lead Owner
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Created
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {displayLeads.map((lead) => (
-                  <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {lead.name}
+                {leads.map((lead) => (
+                  <tr key={lead.lead_id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                          <span className="text-blue-600 font-medium">
+                            {lead.first_name?.[0]}{lead.last_name?.[0]}
+                          </span>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {lead.first_name} {lead.last_name}
+                          </div>
+                        </div>
+                      </div>
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {lead.company || '-'}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${lead.industry ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                        {lead.industry || 'N/A'}
+                      </span>
                     </td>
-                    <td className="px-3 py-4 text-sm text-gray-900">
-                      <span className="break-all">{lead.email || '-'}</span>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <a href={`mailto:${lead.email}`} className="text-blue-600 hover:text-blue-900">
+                        {lead.email || '-'}
+                      </a>
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {lead.phone || '-'}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {lead.phone ? (
+                        <a href={`tel:${lead.phone}`} className="text-gray-600 hover:text-gray-900">
+                          {lead.phone}
+                        </a>
+                      ) : '-'}
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {lead.lead_source || '-'}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        {lead.source || 'Unknown'}
+                      </span>
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {lead.lead_owner || '-'}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        lead.status === 'New' ? 'bg-blue-100 text-blue-800' :
+                        lead.status === 'Contacted' ? 'bg-yellow-100 text-yellow-800' :
+                        lead.status === 'Qualified' ? 'bg-green-100 text-green-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {lead.status || 'Unknown'}
+                      </span>
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(lead.created_at).toLocaleDateString()}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {lead.creation_date ? new Date(lead.creation_date).toLocaleDateString() : '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <Link 
+                        to={`/leads/edit/${lead.lead_id}`}
+                        className="text-blue-600 hover:text-blue-900 mr-4"
+                      >
+                        <i className="bi bi-pencil-square"></i>
+                      </Link>
+                      <button 
+                        onClick={() => handleDelete(lead.lead_id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        <i className="bi bi-trash"></i>
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -115,7 +170,7 @@ const LeadsPage = () => {
         <i className="bi bi-plus-lg text-xl"></i>
       </Link>
     </div>
-  )
-}
+  );
+};
 
-export default LeadsPage
+export default LeadsPage;
