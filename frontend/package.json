@@ -1,6 +1,6 @@
 {
-  "name": "travels",
-  "version": "0.0.0",
+  "name": "bondly-frontend",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -65,6 +65,7 @@
     "zustand": "4.5.1"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.1.0",
     "@testing-library/dom": "^9.3.4",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^14.1.2",

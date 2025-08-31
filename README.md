@@ -1,4 +1,4 @@
-# NextGen CRM - Full-Stack Customer Relationship Management System
+# Bondly CRM - Full-Stack Customer Relationship Management System
 
 <div align="center">
   <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
@@ -10,9 +10,9 @@
 </div>
 
 <div align="center">
-  <img src="https://img.shields.io/github/license/your-username/nextgen-crm" alt="License" />
-  <img src="https://img.shields.io/github/last-commit/your-username/nextgen-crm" alt="Last Commit" />
-  <img src="https://img.shields.io/github/languages/code-size/your-username/nextgen-crm" alt="Code Size" />
+  <img src="https://img.shields.io/github/license/your-username/bondly-crm" alt="License" />
+  <img src="https://img.shields.io/github/last-commit/your-username/bondly-crm" alt="Last Commit" />
+  <img src="https://img.shields.io/github/languages/code-size/your-username/bondly-crm" alt="Code Size" />
 </div>
 
 <br />
@@ -41,12 +41,11 @@ A modern, full-stack CRM (Customer Relationship Management) system designed to s
 | **Authentication** | [Supabase Auth](https://supabase.com/docs/guides/auth) |
 | **API** | RESTful APIs with comprehensive error handling |
 | **Testing** | [Jest](https://jestjs.io/), [React Testing Library](https://testing-library.com/) |
-| **Deployment** | [Render](https://render.com/), [Netlify](https://netlify.com/) |
 
 ## 📁 Project Structure
 
 ```
-nextgen-crm/
+bondly-crm/
 ├── backend/
 │   ├── src/
 │   │   ├── config/          # Configuration files (Supabase client)
@@ -65,8 +64,7 @@ nextgen-crm/
 │   │   └── types/           # TypeScript type definitions
 │   ├── __tests__/           # Frontend unit tests
 │   └── package.json         # Frontend dependencies
-├── scripts/                 # Deployment and utility scripts
-└── render.yaml              # Render deployment configuration
+└── DEPLOYMENT_GUIDE.md      # Detailed deployment instructions
 ```
 
 ## 🚀 Getting Started
@@ -81,8 +79,8 @@ nextgen-crm/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/nextgen-crm.git
-   cd nextgen-crm
+   git clone https://github.com/your-username/bondly-crm.git
+   cd bondly-crm
    ```
 
 2. **Install backend dependencies:**
@@ -103,9 +101,10 @@ nextgen-crm/
    ```env
    # backend/.env
    SUPABASE_URL=your_supabase_project_url
-   SUPABASE_KEY=your_supabase_anon_key
+   SUPABASE_KEY=your_supabase_service_role_key
    PORT=5000
    NODE_ENV=development
+   FRONTEND_URL=http://localhost:3000
    ```
 
    Create a `.env.local` file in the `frontend` directory:
@@ -178,33 +177,27 @@ cd frontend
 npm test
 ```
 
-## 📦 Deployment
+## ☁️ Deployment
 
-### Deploy to Render
+This project is configured for deployment with:
+- **Frontend**: [Netlify](https://netlify.com/)
+- **Backend**: [Render](https://render.com/)
 
-1. Fork this repository to your GitHub account
-2. Create a new Web Service on Render
-3. Connect your GitHub repository
-4. Set the following environment variables in Render:
-   - `SUPABASE_URL`: Your Supabase project URL
-   - `SUPABASE_KEY`: Your Supabase anon key
-5. Set the build command to:
-   ```bash
-   npm install && npm run build
-   ```
-6. Set the start command to:
-   ```bash
-   npm start
-   ```
+For detailed deployment instructions, please refer to the [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) file.
 
-### Deploy Frontend to Netlify
+### Quick Deployment Overview
 
-1. Build the frontend:
-   ```bash
-   cd frontend
-   npm run build
-   ```
-2. Deploy the `frontend/out` directory to Netlify
+1. **Frontend (Netlify)**:
+   - Connect your GitHub repository
+   - Set build command to `npm run build`
+   - Set publish directory to `.next`
+   - Add required environment variables
+
+2. **Backend (Render)**:
+   - Connect your GitHub repository
+   - Set build command to `npm install`
+   - Set start command to `npm start`
+   - Add required environment variables
 
 ## 🤝 Contributing
 
@@ -230,4 +223,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-If you have any questions or need help with setup, please [open an issue](https://github.com/your-username/nextgen-crm/issues) on GitHub.
+If you have any questions or need help with setup, please [open an issue](https://github.com/your-username/bondly-crm/issues) on GitHub.

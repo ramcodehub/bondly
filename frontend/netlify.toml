@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = "dist"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20.18.2"
@@ -8,7 +8,20 @@
 
 [dev]
   command = "npm run dev"
-  port = 5174
+  port = 3000
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://your-backend-url.onrender.com/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/health"
+  to = "https://your-backend-url.onrender.com/health"
+  status = 200
 
 [[redirects]]
   from = "/*"

@@ -1,26 +1,25 @@
 services:
   - type: web
-    name: crm-prototype-backend
-    env: node
-    buildCommand: npm install && npm run build
+    name: bondly-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
-      # Add your Supabase URL and Key here (you'll set these in Render's dashboard)
+      # You'll need to set these in Render's dashboard
       - key: SUPABASE_URL
-        fromDatabase:
-          name: supabase
-          property: connectionString
+        sync: false
       - key: SUPABASE_KEY
-        fromDatabase:
-          name: supabase
-          property: connectionString
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
 
 # If you need a database in the future, uncomment this section:
 # databases:
 #   - name: postgres_db
-#     databaseName: my_crm_db
-#     user: my_crm_user
+#     databaseName: my_bondly_db
+#     user: my_bondly_user
