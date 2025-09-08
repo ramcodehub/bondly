@@ -1,35 +1,27 @@
-import { Link, NavLink } from 'react-router-dom'
 import Link from 'next/link';
-import NavLink from 'next/link';
 
 const Header = () => {
   return (
     <header className="bg-dark text-white py-3">
       <div className="container d-flex justify-content-between align-items-center">
-        <Link to="/" className="text-white text-decoration-none fs-4 fw-bold">Travels App</Link>
+        <Link href="/" className="text-white text-decoration-none fs-4 fw-bold">Travels App</Link>
         
         <nav>
           <ul className="d-flex list-unstyled m-0">
             <li className="mx-2">
-              <NavLink to="/" className={({isActive}) => 
-                `text-decoration-none ${isActive ? 'text-white' : 'text-light opacity-75'}`
-              }>
+              <Link href="/" className="text-decoration-none text-white opacity-75">
                 Home
-              </NavLink>
+              </Link>
             </li>
             <li className="mx-2">
-              <NavLink to="/leads" className={({isActive}) => 
-                `text-decoration-none ${isActive ? 'text-white' : 'text-light opacity-75'}`
-              }>
+              <Link href="/leads" className="text-decoration-none text-white opacity-75">
                 Leads
-              </NavLink>
+              </Link>
             </li>
             <li className="mx-2">
-              <NavLink to="/login" className={({isActive}) => 
-                `text-decoration-none ${isActive ? 'text-white' : 'text-light opacity-75'}`
-              }>
+              <Link href="/login" className="text-decoration-none text-white opacity-75">
                 Login
-              </NavLink>
+              </Link>
             </li>
           </ul>
         </nav>

@@ -17,7 +17,7 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
       <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex items-center">
-          <Link to="/" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <img src={Logo} alt="TRAVEL" className="h-12 sm:h-16 w-auto" />
           </Link>
         </div>
@@ -34,26 +34,26 @@ const Header = () => {
         <nav className={`lg:flex ${menuOpen ? 'block' : 'hidden'} absolute lg:relative top-full left-0 right-0 lg:top-auto bg-white lg:bg-transparent shadow-lg lg:shadow-none border-t lg:border-t-0`}>
           <ul className="flex flex-col lg:flex-row lg:items-center lg:space-x-8">
             <li className="border-b lg:border-b-0">
-              <Link className="block px-4 py-3 lg:py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 lg:hover:bg-transparent transition-colors" to="/">Home</Link>
+              <Link className="block px-4 py-3 lg:py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 lg:hover:bg-transparent transition-colors" href="/">Home</Link>
             </li>
             <li className="border-b lg:border-b-0">
-              <Link className="block px-4 py-3 lg:py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 lg:hover:bg-transparent transition-colors" to="/leads">Leads</Link>
+              <Link className="block px-4 py-3 lg:py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 lg:hover:bg-transparent transition-colors" href="/leads">Leads</Link>
             </li>
             <li className="border-b lg:border-b-0">
-              <Link className="block px-4 py-3 lg:py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 lg:hover:bg-transparent transition-colors" to="/opportunities">Opportunities</Link>
+              <Link className="block px-4 py-3 lg:py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 lg:hover:bg-transparent transition-colors" href="/opportunities">Opportunities</Link>
             </li>
             <li className="border-b lg:border-b-0">
-              <Link className="block px-4 py-3 lg:py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 lg:hover:bg-transparent transition-colors" to="/account">Account</Link>
+              <Link className="block px-4 py-3 lg:py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 lg:hover:bg-transparent transition-colors" href="/account">Account</Link>
             </li>
             <li className="border-b lg:border-b-0">
-              <Link className="block px-4 py-3 lg:py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 lg:hover:bg-transparent transition-colors" to="/contact">Contact</Link>
+              <Link className="block px-4 py-3 lg:py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 lg:hover:bg-transparent transition-colors" href="/contact">Contact</Link>
             </li>
           </ul>
         </nav>
 
         <div className="hidden lg:block">
           {!isLoggedIn ? (
-            <Link className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm font-medium transition-colors" to='/login'>Login</Link>
+            <Link className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm font-medium transition-colors" href='/login'>Login</Link>
           ) : (
             <div className="relative">
               <div className="flex items-center gap-2 cursor-pointer" onClick={() => setShowDropdown(!showDropdown)}>
@@ -64,7 +64,7 @@ const Header = () => {
               {showDropdown && (
                 <ul className="absolute right-0 top-full mt-2 bg-white shadow-lg rounded-md py-2 min-w-[150px]">
                   <li>
-                    <Link className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" to="/profile">My Profile</Link>
+                    <Link className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" href="/profile">My Profile</Link>
                   </li>
                   <li>
                     <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={handleLogout}>Logout</button>
@@ -78,7 +78,7 @@ const Header = () => {
           <div className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t">
             <div className="px-4 py-3">
               {!isLoggedIn ? (
-                <Link className="block w-full bg-blue-600 text-white px-4 py-2 rounded-md text-center text-sm font-medium" to='/login'>Login</Link>
+                <Link className="block w-full bg-blue-600 text-white px-4 py-2 rounded-md text-center text-sm font-medium" href='/login'>Login</Link>
               ) : (
                 <div className="flex items-center gap-2">
                   <i className="bi bi-person-circle text-xl"></i>
