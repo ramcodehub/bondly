@@ -15,12 +15,12 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://your-backend-url.onrender.com/api/:splat"
+  to = "https://bondly-0r0c.onrender.com/api/:splat"
   status = 200
 
 [[redirects]]
   from = "/health"
-  to = "https://your-backend-url.onrender.com/health"
+  to = "https://bondly-0r0c.onrender.com/health"
   status = 200
 
 [[redirects]]

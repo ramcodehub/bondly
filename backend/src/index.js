@@ -75,6 +75,7 @@ const allowedOrigins = {
   ],
   production: [
     'https://prototypecrm.netlify.app',
+    'https://bondly-0r0c.onrender.com',
     process.env.FRONTEND_URL
   ].filter(Boolean), // Remove undefined values
   staging: [
@@ -87,14 +88,10 @@ const currentOrigins = allowedOrigins[process.env.NODE_ENV] || allowedOrigins.de
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, Postman) only in development
-    if (!origin && process.env.NODE_ENV === 'development') {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    // This is common when directly accessing the API or using tools
+    if (!origin) {
       return callback(null, true);
-    }
-    
-    // Reject requests with no origin in production
-    if (!origin && process.env.NODE_ENV === 'production') {
-      return callback(new Error('Request blocked: No origin header'), false);
     }
     
     // Check if origin is in allowed list
