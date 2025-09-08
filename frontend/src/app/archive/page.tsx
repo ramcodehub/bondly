@@ -18,7 +18,7 @@ export default function ArchivePage() {
         <div className="flex items-center space-x-4 mb-8">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/">
-              <Icons.arrowLeft className="h-4 w-4" />
+              <Icons.chevronLeft className="h-4 w-4" />
               <span className="sr-only">Back to Dashboard</span>
             </Link>
           </Button>
