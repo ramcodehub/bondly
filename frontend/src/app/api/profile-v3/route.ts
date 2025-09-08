@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabaseServer, supabaseFallback } from '@/lib/supabase-server'
 import { cookies } from 'next/headers'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/server'
 
 export const dynamic = "force-dynamic"
 
@@ -19,21 +19,21 @@ export async function PUT(request: Request) {
     
     let userId: string | null = null
     
-    // Try to get session using createRouteHandlerClient first (for browser-based requests)
+    // Try to get user using SSR client first (for browser-based requests)
     try {
-      const supabaseRoute = createRouteHandlerClient({ cookies })
-      const { data: { session }, error: sessionError } = await supabaseRoute.auth.getSession()
+      const supabaseRoute = await createClient()
+      const { data: { user }, error: sessionError } = await supabaseRoute.auth.getUser()
       
       if (sessionError) {
         console.error('Error getting session with route handler:', sessionError)
       }
       
-      console.log('Session from route handler:', session?.user?.id)
+      console.log('User from route handler:', user?.id)
       
       // If we have a session from route handler, use it
-      if (session?.user) {
-        userId = session.user.id
-        console.log('Got user ID from route handler session:', userId)
+      if (user) {
+        userId = user.id
+        console.log('Got user ID from route handler:', userId)
       }
     } catch (routeHandlerError) {
       console.log('Route handler client not available or failed, continuing with token approach')
@@ -157,20 +157,20 @@ export async function GET() {
     if (supabaseServer) {
       console.log('Using service role key - can bypass RLS')
       
-      // Try to get session using createRouteHandlerClient first (for browser-based requests)
+      // Try to get user using SSR client first (for browser-based requests)
       try {
-        const supabaseRoute = createRouteHandlerClient({ cookies })
-        const { data: { session }, error: sessionError } = await supabaseRoute.auth.getSession()
+        const supabaseRoute = await createClient()
+        const { data: { user }, error: sessionError } = await supabaseRoute.auth.getUser()
         
         if (sessionError) {
           console.error('Error getting session with route handler:', sessionError)
         }
         
-        console.log('Session from route handler:', session?.user?.id)
+        console.log('User from route handler:', user?.id)
         
         // If we have a session from route handler, use it
-        if (session?.user) {
-          userId = session.user.id
+        if (user) {
+          userId = user.id
           console.log('Got user ID from route handler session:', userId)
         }
       } catch (routeHandlerError) {
@@ -202,20 +202,20 @@ export async function GET() {
       // No service role key available, use the standard auth flow
       console.log('No service role key available, using standard auth flow')
       
-      // Try to get session using createRouteHandlerClient first (for browser-based requests)
+      // Try to get user using SSR client first (for browser-based requests)
       try {
-        const supabaseRoute = createRouteHandlerClient({ cookies })
-        const { data: { session }, error: sessionError } = await supabaseRoute.auth.getSession()
+        const supabaseRoute = await createClient()
+        const { data: { user }, error: sessionError } = await supabaseRoute.auth.getUser()
         
         if (sessionError) {
           console.error('Error getting session with route handler:', sessionError)
         }
         
-        console.log('Session from route handler:', session?.user?.id)
+        console.log('User from route handler:', user?.id)
         
         // If we have a session from route handler, use it
-        if (session?.user) {
-          userId = session.user.id
+        if (user) {
+          userId = user.id
           console.log('Got user ID from route handler session:', userId)
         }
       } catch (routeHandlerError) {

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = "force-dynamic";
 
 // GET /api/tasks - Get all tasks
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     
     const status = searchParams.get('status');
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
 // POST /api/tasks - Create new task
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = await createClient();
     const taskData = await request.json();
 
     // Validate required fields

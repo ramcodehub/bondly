@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { supabaseServer, supabaseFallback } from '@/lib/supabase-server'
+import { createClient } from '@/utils/supabase/server'
 
 export const dynamic = "force-dynamic"
 
@@ -9,12 +9,12 @@ export async function GET() {
   try {
     console.log('GET /api/test-session called')
     
-    // Test 1: Using createRouteHandlerClient
-    console.log('Test 1: Using createRouteHandlerClient')
-    const supabaseRoute = createRouteHandlerClient({ cookies })
-    const { data: { session: routeSession }, error: routeError } = await supabaseRoute.auth.getSession()
+    // Test 1: Using SSR client
+    console.log('Test 1: Using SSR client')
+    const supabaseRoute = await createClient()
+    const { data: { user: routeUser }, error: routeError } = await supabaseRoute.auth.getUser()
     
-    console.log('Route handler session:', routeSession?.user?.id)
+    console.log('Route handler user:', routeUser?.id)
     if (routeError) {
       console.error('Route handler error:', routeError)
     }
@@ -54,8 +54,8 @@ export async function GET() {
     console.log('All cookies:', Array.from(cookieStore.getAll()))
     
     return NextResponse.json({ 
-      routeSession: routeSession?.user?.id ? 'Found' : 'Not found',
-      routeUserId: routeSession?.user?.id,
+      routeSession: routeUser?.id ? 'Found' : 'Not found',
+      routeUserId: routeUser?.id,
       serverSession: serverUserId ? 'Found' : 'Not found',
       serverUserId: serverUserId,
       fallbackSession: fallbackUserId ? 'Found' : 'Not found',

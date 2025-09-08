@@ -25,7 +25,6 @@ export async function updateSession(request: NextRequest) {
           response = NextResponse.next({
             request: {
               headers: request.headers,
-              body: request.body,
             },
           })
           response.cookies.set({
@@ -43,7 +42,6 @@ export async function updateSession(request: NextRequest) {
           response = NextResponse.next({
             request: {
               headers: request.headers,
-              body: request.body,
             },
           })
           response.cookies.set({

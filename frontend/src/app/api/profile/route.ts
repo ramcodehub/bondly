@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabaseServer, supabaseFallback } from '@/lib/supabase-server'
 import { cookies } from 'next/headers'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/server'
 
 export const dynamic = "force-dynamic"
 
@@ -13,61 +13,22 @@ export async function PUT(request: Request) {
     // With the service role key now available, we can use the server client for authentication as well
     const supabase = supabaseServer || supabaseFallback
     
-    // Debug: Log cookies
-    const cookieStore = cookies()
-    console.log('Available cookies:', Array.from(cookieStore.getAll()))
+    // Create the new Supabase client using the SSR package
+    const supabaseSSR = await createClient()
     
-    // Try to get session using createRouteHandlerClient first (for browser-based requests)
-    let userId: string | null = null
+    // Get the user session
+    const { data: { user }, error: userError } = await supabaseSSR.auth.getUser()
     
-    try {
-      const supabaseRoute = createRouteHandlerClient({ cookies })
-      const { data: { session }, error: sessionError } = await supabaseRoute.auth.getSession()
-      
-      if (sessionError) {
-        console.error('Error getting session with route handler:', sessionError)
-      }
-      
-      console.log('Session from route handler:', session?.user?.id)
-      
-      // If we have a session from route handler, use it
-      if (session?.user) {
-        userId = session.user.id
-        console.log('Got user ID from route handler session:', userId)
-      }
-    } catch (routeHandlerError) {
-      console.log('Route handler client not available or failed, continuing with server client approach')
-      console.error('Route handler error:', routeHandlerError)
-    }
-    
-    // If no session from route handler, try to get session using server client
-    if (!userId) {
-      console.log('No session from route handler, trying server client approach')
-      
-      // Get the access token from the request cookies
-      const accessToken = cookieStore.get('sb-access-token')?.value
-      console.log('Access token from cookies:', accessToken ? 'Found' : 'Not found')
-      
-      if (accessToken) {
-        // Use the server client to verify the token
-        const { data, error } = await supabase.auth.getUser(accessToken)
-        
-        if (error) {
-          console.error('Error verifying token with server client:', error)
-        } else if (data.user) {
-          userId = data.user.id
-          console.log('Got user ID from server client token verification:', userId)
-        }
-      }
-    }
-    
-    if (!userId) {
-      console.log('No user ID found from any method')
+    if (userError || !user) {
+      console.log('No user found from SSR client')
       return NextResponse.json(
         { error: 'Unauthorized - No active session' },
         { status: 401 }
       )
     }
+    
+    const userId = user.id
+    console.log('Got user ID from SSR client:', userId)
 
     const formData = await request.json()
     console.log('Updating profile for user:', userId, 'with data:', formData)
@@ -122,61 +83,22 @@ export async function GET() {
     // With the service role key now available, we can use the server client for authentication as well
     const supabase = supabaseServer || supabaseFallback
     
-    // Debug: Log cookies
-    const cookieStore = cookies()
-    console.log('Available cookies:', Array.from(cookieStore.getAll()))
+    // Create the new Supabase client using the SSR package
+    const supabaseSSR = await createClient()
     
-    // Try to get session using createRouteHandlerClient first (for browser-based requests)
-    let userId: string | null = null
+    // Get the user session
+    const { data: { user }, error: userError } = await supabaseSSR.auth.getUser()
     
-    try {
-      const supabaseRoute = createRouteHandlerClient({ cookies })
-      const { data: { session }, error: sessionError } = await supabaseRoute.auth.getSession()
-      
-      if (sessionError) {
-        console.error('Error getting session with route handler:', sessionError)
-      }
-      
-      console.log('Session from route handler:', session?.user?.id)
-      
-      // If we have a session from route handler, use it
-      if (session?.user) {
-        userId = session.user.id
-        console.log('Got user ID from route handler session:', userId)
-      }
-    } catch (routeHandlerError) {
-      console.log('Route handler client not available or failed, continuing with server client approach')
-      console.error('Route handler error:', routeHandlerError)
-    }
-    
-    // If no session from route handler, try to get session using server client
-    if (!userId) {
-      console.log('No session from route handler, trying server client approach')
-      
-      // Get the access token from the request cookies
-      const accessToken = cookieStore.get('sb-access-token')?.value
-      console.log('Access token from cookies:', accessToken ? 'Found' : 'Not found')
-      
-      if (accessToken) {
-        // Use the server client to verify the token
-        const { data, error } = await supabase.auth.getUser(accessToken)
-        
-        if (error) {
-          console.error('Error verifying token with server client:', error)
-        } else if (data.user) {
-          userId = data.user.id
-          console.log('Got user ID from server client token verification:', userId)
-        }
-      }
-    }
-    
-    if (!userId) {
-      console.log('No user ID found from any method')
+    if (userError || !user) {
+      console.log('No user found from SSR client')
       return NextResponse.json(
         { error: 'Unauthorized - No active session' },
         { status: 401 }
       )
     }
+    
+    const userId = user.id
+    console.log('Got user ID from SSR client:', userId)
 
     console.log('Fetching profile for user:', userId)
     

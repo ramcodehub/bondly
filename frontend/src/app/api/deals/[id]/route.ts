@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +10,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = await createClient();
     const { id } = params;
 
     const { data, error } = await supabase
@@ -60,7 +60,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = await createClient();
     const { id } = params;
     const dealData = await request.json();
 
@@ -132,7 +132,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = await createClient();
     const { id } = params;
 
     const { error } = await supabase

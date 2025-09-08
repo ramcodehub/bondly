@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = "force-dynamic";
 
 // GET /api/deals - Get all deals
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     
     const stage = searchParams.get('stage');
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
 // POST /api/deals - Create new deal
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = await createClient();
     const dealData = await request.json();
 
     // Validate required fields

@@ -1,14 +1,18 @@
 {
   "dependencies": {
+    "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.55.0",
     "cmdk": "^1.1.1",
     "react-toastify": "^11.0.5",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
+    "@tsconfig/node18": "^18.2.4",
     "@types/node": "^24.3.0",
     "@types/prop-types": "^15.7.15",
     "@types/react": "^19.1.11",
-    "@types/react-dom": "^19.1.8"
+    "@types/react-dom": "^19.1.8",
+    "tsconfig": "^7.0.0",
+    "typescript": "^5.9.2"
   }
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabaseServer, supabaseFallback } from '@/lib/supabase-server'
 import { cookies } from 'next/headers'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/server'
 
 export async function POST(request: Request) {
   try {

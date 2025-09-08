@@ -1,24 +1,24 @@
 import { NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import { createClient } from '@/utils/supabase/server'
 
 // Helper function to get user ID with better error handling
-async function getUserId(supabase: ReturnType<typeof createRouteHandlerClient>) {
+async function getUserId(supabase: Awaited<ReturnType<typeof createClient>>) {
   try {
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    const { data: { user }, error: sessionError } = await supabase.auth.getUser()
     
     if (sessionError) {
       console.error('Session error:', sessionError)
       return null
     }
     
-    if (!session?.user) {
-      console.log('No user in session')
+    if (!user) {
+      console.log('No user found')
       return null
     }
     
-    console.log('User ID from session:', session.user.id)
-    return session.user.id
+    console.log('User ID:', user.id)
+    return user.id
   } catch (error) {
     console.error('Error getting user ID:', error)
     return null
@@ -29,7 +29,7 @@ export async function PUT(request: Request) {
   try {
     console.log('PUT /api/profile-v2 called')
     
-    const supabase = createRouteHandlerClient({ cookies })
+    const supabase = await createClient()
     
     // Get the user ID
     const userId = await getUserId(supabase)
@@ -82,7 +82,7 @@ export async function GET() {
   try {
     console.log('GET /api/profile-v2 called')
     
-    const supabase = createRouteHandlerClient({ cookies })
+    const supabase = await createClient()
     
     // Get the user ID
     const userId = await getUserId(supabase)

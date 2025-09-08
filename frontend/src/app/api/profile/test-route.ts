@@ -1,29 +1,29 @@
 import { NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import { createClient } from '@/utils/supabase/server'
 
 // This is a test route to verify the profile API is working
 export async function GET() {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const supabase = await createClient()
     
     // Get the user session
     const {
-      data: { session },
-    } = await supabase.auth.getSession()
+      data: { user },
+    } = await supabase.auth.getUser()
 
-    if (!session) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
-    // Return session info for testing
+    // Return user info for testing
     return NextResponse.json({ 
       message: 'Profile API is working',
-      userId: session.user.id,
-      userEmail: session.user.email
+      userId: user.id,
+      userEmail: user.email
     })
   } catch (error) {
     console.error('Error testing profile API:', error)
