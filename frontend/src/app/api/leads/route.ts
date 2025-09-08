@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+import { createClient as createSSRClient } from '@/utils/supabase/server';
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     console.log('POST /api/leads called');
     
     // Use authenticated client
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createSSRClient();
     const leadData: Lead = await request.json();
     
     // Log the received data for debugging
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createSSRClient();
     
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
