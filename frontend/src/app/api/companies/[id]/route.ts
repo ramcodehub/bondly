@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +28,7 @@ export async function GET(
 ) {
   try {
     console.log('GET /api/companies/[id] called with id:', params.id);
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createClient();
     
     const { data, error } = await supabase
       .from('companies')
@@ -67,7 +67,7 @@ export async function PUT(
 ) {
   try {
     console.log('PUT /api/companies/[id] called with id:', params.id);
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createClient();
     const companyData: Company = await request.json();
     
     console.log('Received company update data:', companyData);
@@ -119,7 +119,7 @@ export async function DELETE(
 ) {
   try {
     console.log('DELETE /api/companies/[id] called with id:', params.id);
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createClient();
     
     const { data, error } = await supabase
       .from('companies')
