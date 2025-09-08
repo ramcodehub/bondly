@@ -1,20 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-
-// Validate environment variables
-const validateEnv = () => {
-  if (!supabaseUrl) {
-    console.error('Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL')
-    return false
-  }
-  if (!supabaseAnonKey) {
-    console.error('Missing required environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY')
-    return false
-  }
-  return true
+// Validate environment variables first
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable. Please check your deployment settings.')
 }
+
+if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable. Please check your deployment settings.')
+}
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 // Create a new Supabase client with schema refresh options
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -35,8 +31,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 // Test the connection
 const testConnection = async () => {
-  if (!validateEnv()) return false
-  
   try {
     const { data, error } = await supabase
       .from('contacts')
