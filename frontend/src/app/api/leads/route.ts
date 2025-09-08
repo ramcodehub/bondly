@@ -1,31 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { cookies } from 'next/headers';
-import { createClient as createSSRClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = "force-dynamic";
-
-// Initialize Supabase client with service role for admin operations
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
-}
-
-// Use service role client for bypassing RLS when needed
-const supabaseAdmin = supabaseServiceKey 
-  ? createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    })
-  : null;
-
-// Regular client for user operations
-const supabaseBasic = createClient(supabaseUrl, supabaseAnonKey);
 
 type Lead = {
   first_name: string;
@@ -40,51 +16,42 @@ type Lead = {
   assigned_to?: string;
 };
 
+// POST /api/leads - Create new lead
 export async function POST(request: NextRequest) {
   try {
-    console.log('POST /api/leads called');
-    
-    // Use authenticated client
-    const supabase = await createSSRClient();
+    const supabase = await createClient();
     const leadData: Lead = await request.json();
-    
-    // Log the received data for debugging
-    console.log('Received lead data:', leadData);
     
     // Validate required fields
     if (!leadData.first_name || !leadData.last_name || !leadData.email) {
-      console.log('Validation failed: missing required fields');
       return NextResponse.json(
         { error: 'Missing required fields: first_name, last_name, email' },
         { status: 400 }
       );
     }
     
-    console.log('About to insert lead into Supabase...');
-    
-    // Try to insert the lead
+    // Set defaults
+    const lead = {
+      first_name: leadData.first_name.trim(),
+      last_name: leadData.last_name.trim(),
+      email: leadData.email.trim(),
+      phone: leadData.phone?.trim() || null,
+      company: leadData.company?.trim() || null,
+      job_title: leadData.job_title?.trim() || null,
+      source: leadData.source?.trim() || null,
+      status: leadData.status || 'New',
+      notes: leadData.notes?.trim() || null,
+      assigned_to: leadData.assigned_to || null,
+    };
+
     const { data, error } = await supabase
       .from('leads')
-      .insert([leadData])
+      .insert([lead])
       .select()
       .single();
 
     if (error) {
-      console.error('Supabase error creating lead:', error);
-      
-      // Handle RLS policy violation specifically
-      if (error.code === '42501') {
-        return NextResponse.json(
-          { 
-            error: 'Database security policy violation',
-            details: 'Row Level Security (RLS) is enabled for the leads table. Please ensure you are authenticated or contact your administrator to configure proper access policies.',
-            suggestion: 'Either disable RLS for the leads table or create an INSERT policy that allows the operation.',
-            technicalError: error.message
-          },
-          { status: 403 }
-        );
-      }
-      
+      console.error('Error creating lead:', error);
       return NextResponse.json(
         { 
           error: error.message || 'Failed to create lead',
@@ -95,8 +62,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('Successfully created lead:', data);
-    return NextResponse.json(data, { status: 201 });
+    return NextResponse.json({
+      success: true,
+      data,
+      message: 'Lead created successfully'
+    }, { status: 201 });
   } catch (error) {
     console.error('Server error in POST /api/leads:', error);
     return NextResponse.json(
@@ -106,24 +76,32 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// GET /api/leads - Get all leads
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createSSRClient();
+    const supabase = await createClient();
     
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const source = searchParams.get('source');
+    const limit = parseInt(searchParams.get('limit') || '100');
+    const offset = parseInt(searchParams.get('offset') || '0');
 
     let query = supabase
       .from('leads')
-      .select('*');
+      .select('*')
+      .order('created_at', { ascending: false });
 
+    // Apply filters
     if (status) {
       query = query.eq('status', status);
     }
     if (source) {
       query = query.eq('source', source);
     }
+    
+    // Apply pagination
+    query = query.range(offset, offset + limit - 1);
 
     const { data, error } = await query;
 
@@ -135,7 +113,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json({
+      success: true,
+      data: data || [],
+      count: data?.length || 0
+    });
+
   } catch (error) {
     console.error('Server error:', error);
     return NextResponse.json(
