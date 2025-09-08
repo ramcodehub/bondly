@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = "force-dynamic";
@@ -18,11 +17,11 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '100');
     const offset = parseInt(searchParams.get('offset') || '0');
 
+    // Try the full query first with safe joins
     let query = supabase
       .from('tasks')
       .select(`
         *,
-        deals(name, amount, stage),
         leads(first_name, last_name, email, company),
         contacts(name, email, phone),
         companies(name, industry)
@@ -54,6 +53,39 @@ export async function GET(request: NextRequest) {
     query = query.range(offset, offset + limit - 1);
 
     const { data, error } = await query;
+
+    // If there's a join error, fall back to simpler query
+    if (error && (error.code === 'PGRST200' || error.message.includes('relationship'))) {
+      console.log('Join error detected, falling back to simple query');
+      const simpleQuery = supabase
+        .from('tasks')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      // Apply same filters
+      let simpleFilteredQuery = simpleQuery;
+      if (status) simpleFilteredQuery = simpleFilteredQuery.eq('status', status);
+      if (priority) simpleFilteredQuery = simpleFilteredQuery.eq('priority', priority);
+      if (assigned_to) simpleFilteredQuery = simpleFilteredQuery.eq('assigned_to', assigned_to);
+      if (deal_id) simpleFilteredQuery = simpleFilteredQuery.eq('deal_id', deal_id);
+      if (due_date) simpleFilteredQuery = simpleFilteredQuery.eq('due_date', due_date);
+      simpleFilteredQuery = simpleFilteredQuery.range(offset, offset + limit - 1);
+      
+      const { data: simpleData, error: simpleError } = await simpleFilteredQuery;
+      
+      if (simpleError) {
+        return NextResponse.json(
+          { error: simpleError.message || 'Failed to fetch tasks' },
+          { status: 400 }
+        );
+      }
+      
+      return NextResponse.json({
+        success: true,
+        data: simpleData || [],
+        count: simpleData?.length || 0
+      });
+    }
 
     if (error) {
       console.error('Error fetching tasks:', error);

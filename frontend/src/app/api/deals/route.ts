@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = "force-dynamic";
@@ -14,11 +15,12 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '100');
     const offset = parseInt(searchParams.get('offset') || '0');
 
+    // Try the full query first
     let query = supabase
       .from('deals')
       .select(`
         *,
-        leads(first_name, last_name, email, phone, company),
+        leads!inner(first_name, last_name, email, phone, company),
         contacts(name, email, phone),
         companies(name, industry)
       `)
@@ -37,6 +39,36 @@ export async function GET(request: NextRequest) {
     query = query.range(offset, offset + limit - 1);
 
     const { data, error } = await query;
+
+    // If there's a join error, fall back to simpler query
+    if (error && error.code === 'PGRST200') {
+      console.log('Join error detected, falling back to simple query');
+      const simpleQuery = supabase
+        .from('deals')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      // Apply same filters
+      let simpleFilteredQuery = simpleQuery;
+      if (stage) simpleFilteredQuery = simpleFilteredQuery.eq('stage', stage);
+      if (owner_id) simpleFilteredQuery = simpleFilteredQuery.eq('owner_id', owner_id);
+      simpleFilteredQuery = simpleFilteredQuery.range(offset, offset + limit - 1);
+      
+      const { data: simpleData, error: simpleError } = await simpleFilteredQuery;
+      
+      if (simpleError) {
+        return NextResponse.json(
+          { error: simpleError.message || 'Failed to fetch deals' },
+          { status: 400 }
+        );
+      }
+      
+      return NextResponse.json({
+        success: true,
+        data: simpleData || [],
+        count: simpleData?.length || 0
+      });
+    }
 
     if (error) {
       console.error('Error fetching deals:', error);
