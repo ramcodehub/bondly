@@ -3,6 +3,8 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { supabaseServer, supabaseFallback } from '@/lib/supabase-server'
 
+export const dynamic = "force-dynamic"
+
 export async function GET() {
   try {
     console.log('GET /api/test-session called')

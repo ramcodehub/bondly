@@ -3,6 +3,8 @@ import { supabaseServer, supabaseFallback } from '@/lib/supabase-server'
 import { cookies } from 'next/headers'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 
+export const dynamic = "force-dynamic"
+
 export async function PUT(request: Request) {
   try {
     console.log('PUT /api/profile-v3 called')

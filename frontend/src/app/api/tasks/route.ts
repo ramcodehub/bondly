@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 
+export const dynamic = "force-dynamic";
+
 // GET /api/tasks - Get all tasks
 export async function GET(request: NextRequest) {
   try {
