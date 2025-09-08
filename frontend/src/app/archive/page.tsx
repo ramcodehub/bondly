@@ -16,12 +16,12 @@ export default function ArchivePage() {
     <div className="container mx-auto py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center space-x-4 mb-8">
-          <Link href="/" passHref>
-            <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/">
               <Icons.arrowLeft className="h-4 w-4" />
               <span className="sr-only">Back to Dashboard</span>
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Archived Pages</h1>
             <p className="text-muted-foreground">
@@ -37,11 +37,9 @@ export default function ArchivePage() {
               className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent/50 transition-colors"
             >
               <span className="font-medium">{page.name}</span>
-              <Link href={page.path} passHref>
-                <Button variant="outline" size="sm">
-                  View
-                </Button>
-              </Link>
+              <Button variant="outline" size="sm" asChild>
+                <Link href={page.path}>View</Link>
+              </Button>
             </div>
           ))}
         </div>
