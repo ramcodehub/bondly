@@ -25,10 +25,10 @@ router.get('/', asyncHandler(async (req, res) => {
 }));
 
 router.post('/', sanitizeInput, leadValidation.create, asyncHandler(async (req, res) => {
-  const { name, company, email, phone, lead_owner, lead_source } = req.body;
+  const { first_name, last_name, email, phone, company, job_title, source, status, notes } = req.body;
 
   const result = await optimizedQueries.create('leads', {
-    name, company, email, phone, lead_owner, lead_source
+    first_name, last_name, email, phone, company, job_title, source, status, notes
   });
 
   if (result.error) {
@@ -46,10 +46,10 @@ router.post('/', sanitizeInput, leadValidation.create, asyncHandler(async (req, 
 router.put('/:id', async (req, res) => {
   try {
     const leadId = req.params.id;
-    const { name, company, email, phone, lead_owner, lead_source } = req.body;
+    const { first_name, last_name, email, phone, company, job_title, source, status, notes } = req.body;
     const { data, error } = await supabase
       .from('leads')
-      .update({ name, company, email, phone, lead_owner, lead_source })
+      .update({ first_name, last_name, email, phone, company, job_title, source, status, notes })
       .eq('id', leadId)
       .select();
 

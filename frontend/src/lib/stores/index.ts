@@ -7,6 +7,9 @@ import useContactsStore from './use-contacts-store';
 import useDealsStore from './use-deals-store';
 import { useTasksStore } from './use-tasks-store';
 import { useRootStore } from './use-root-store';
+import useInteractionsStore from './use-interactions-store';
+import useTransactionsStore from './use-transactions-store';
+import useServiceLifecycleStore from './use-service-lifecycle-store';
 
 // Export store hooks
 export { 
@@ -14,7 +17,10 @@ export {
   useContactsStore,
   useDealsStore,
   useTasksStore,
-  useRootStore 
+  useRootStore,
+  useInteractionsStore,
+  useTransactionsStore,
+  useServiceLifecycleStore
 };
 
 // Export all types from types.ts
@@ -39,11 +45,23 @@ export type {
   Task,
   TaskStatus,
   
+  // Interaction types
+  Interaction,
+  
+  // Transaction types
+  Transaction,
+  
+  // Service Lifecycle types
+  ServiceStage,
+  
   // Store interfaces
   CompanyStore,
   ContactStore,
   DealsStore,
   TaskStore,
+  InteractionStore,
+  TransactionStore,
+  ServiceLifecycleStore,
   
   // Root state
   RootState,

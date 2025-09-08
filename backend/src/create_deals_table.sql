@@ -9,10 +9,10 @@ CREATE TABLE IF NOT EXISTS deals (
   description TEXT,
   
   -- Foreign key relationships (matching existing table schemas)
-  lead_id INTEGER REFERENCES leads(id) ON DELETE SET NULL,
+  lead_id UUID REFERENCES leads(id) ON DELETE SET NULL,
   contact_id INTEGER REFERENCES contacts(id) ON DELETE SET NULL,
-  account_id INTEGER REFERENCES accounts(id) ON DELETE SET NULL,
-  owner_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  company_id UUID REFERENCES companies(id) ON DELETE SET NULL,
+  owner_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   
   -- Additional fields for CRM functionality
   deal_source VARCHAR(100),
@@ -22,14 +22,14 @@ CREATE TABLE IF NOT EXISTS deals (
   -- Metadata
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by uuid REFERENCES auth.users(id) ON DELETE SET NULL
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
 );
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_deals_stage ON deals(stage);
 CREATE INDEX IF NOT EXISTS idx_deals_close_date ON deals(close_date);
 CREATE INDEX IF NOT EXISTS idx_deals_owner_id ON deals(owner_id);
-CREATE INDEX IF NOT EXISTS idx_deals_account_id ON deals(account_id);
+CREATE INDEX IF NOT EXISTS idx_deals_company_id ON deals(company_id);
 CREATE INDEX IF NOT EXISTS idx_deals_created_at ON deals(created_at);
 
 -- Create updated_at trigger

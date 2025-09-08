@@ -7,9 +7,8 @@ import type {
   Industry, 
   Deal, 
   DealStage, 
-  DealPriority, 
+  Priority,
   Task, 
-  TaskPriority, 
   TaskStatus 
 } from '.'
 
@@ -32,7 +31,7 @@ export const mockContacts: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>[] = [
     lastName: 'Williams',
     email: 'alice@example.com',
     phone: '+1 (555) 123-4567',
-    company: 'Acme Inc',
+    companyId: '', // Changed from company to companyId
     position: 'CEO',
     status: 'active',
     notes: 'Interested in enterprise plan',
@@ -42,9 +41,9 @@ export const mockContacts: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>[] = [
     lastName: 'Brown',
     email: 'michael@example.com',
     phone: '+1 (555) 987-6543',
-    company: 'Globex Corp',
+    companyId: '', // Changed from company to companyId
     position: 'CTO',
-    status: 'lead',
+    status: 'pending', // Changed from lead to pending
     notes: 'Follow up next week',
   },
   {
@@ -52,9 +51,9 @@ export const mockContacts: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>[] = [
     lastName: 'Johnson',
     email: 'sarah@example.com',
     phone: '+1 (555) 456-7890',
-    company: 'Initech',
+    companyId: '', // Changed from company to companyId
     position: 'Marketing Director',
-    status: 'customer',
+    status: 'active', // Changed from customer to active
     notes: 'VIP client',
   },
 ]
@@ -66,70 +65,46 @@ export const mockCompanies: Omit<Company, 'id' | 'createdAt' | 'updatedAt'>[] = 
     website: 'https://acme.com',
     industry: 'Technology' as Industry,
     size: '51-200' as CompanySize,
-    revenue: 5000000,
-    description: 'Leading provider of innovative solutions',
+    // Removed revenue field as it doesn't exist in the Company interface
+    notes: 'Leading provider of innovative solutions',
     phone: '+1 (555) 123-4567',
     email: 'info@acme.com',
-    address: '123 Tech Street',
-    city: 'San Francisco',
-    state: 'CA',
-    zipCode: '94105',
-    country: 'USA',
-    logo: '/logos/acme.png',
-    status: 'customer',
-    notes: 'Enterprise customer',
+    address: '123 Tech Street'
   },
   {
     name: 'Globex Corp',
     website: 'https://globex.com',
     industry: 'Finance' as Industry,
     size: '201-1000' as CompanySize,
-    revenue: 25000000,
-    description: 'Global financial services',
+    // Removed revenue field as it doesn't exist in the Company interface
+    notes: 'Global financial services',
     phone: '+1 (555) 987-6543',
     email: 'contact@globex.com',
-    address: '456 Finance Ave',
-    city: 'New York',
-    state: 'NY',
-    zipCode: '10001',
-    country: 'USA',
-    logo: '/logos/globex.png',
-    status: 'lead',
-    notes: 'In negotiations',
+    address: '456 Finance Ave'
   },
   {
     name: 'Initech',
     website: 'https://initech.com',
     industry: 'Technology' as Industry,
     size: '1000+' as CompanySize,
-    revenue: 100000000,
-    description: 'Enterprise software solutions',
+    // Removed revenue field as it doesn't exist in the Company interface
+    notes: 'Enterprise software solutions',
     phone: '+1 (555) 456-7890',
     email: 'hello@initech.com',
-    address: '789 Enterprise Blvd',
-    city: 'Austin',
-    state: 'TX',
-    zipCode: '73301',
-    country: 'USA',
-    logo: '/logos/initech.png',
-    status: 'customer',
-    notes: 'Long-term partner',
+    address: '789 Enterprise Blvd'
   },
 ]
 
 // Mock Deals
-export const mockDeals: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>[] = [
+export const mockDeals: Omit<Deal, 'id' | 'createdAt' | 'updatedAt' | 'status'>[] = [
   {
     name: 'Enterprise License',
     amount: 50000,
     stage: 'proposal' as DealStage,
     probability: 70,
-    closeDate: addDays(new Date(), 30).toISOString(),
+    expectedCloseDate: addDays(new Date(), 30).toISOString(), // Changed from closeDate to expectedCloseDate
     companyId: '', // Will be set in initialization
     contactId: '', // Will be set in initialization
-    ownerId: users[0].id,
-    priority: 'high' as DealPriority,
-    description: 'Enterprise license for 500 users',
     notes: 'Waiting for legal review',
   },
   {
@@ -137,12 +112,9 @@ export const mockDeals: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>[] = [
     amount: 5000,
     stage: 'qualification' as DealStage,
     probability: 40,
-    closeDate: addDays(new Date(), 45).toISOString(),
+    expectedCloseDate: addDays(new Date(), 45).toISOString(), // Changed from closeDate to expectedCloseDate
     companyId: '', // Will be set in initialization
     contactId: '', // Will be set in initialization
-    ownerId: users[1].id,
-    priority: 'medium' as DealPriority,
-    description: 'Team subscription for 20 users',
     notes: 'Needs budget approval',
   },
   {
@@ -150,12 +122,9 @@ export const mockDeals: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>[] = [
     amount: 15000,
     stage: 'negotiation' as DealStage,
     probability: 85,
-    closeDate: addDays(new Date(), 15).toISOString(),
+    expectedCloseDate: addDays(new Date(), 15).toISOString(), // Changed from closeDate to expectedCloseDate
     companyId: '', // Will be set in initialization
     contactId: '', // Will be set in initialization
-    ownerId: users[2].id,
-    priority: 'high' as DealPriority,
-    description: 'Custom feature development',
     notes: 'Finalizing requirements',
   },
 ]
@@ -166,90 +135,63 @@ export const mockTasks: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'status' |
     title: 'Follow up with Alice',
     description: 'Discuss enterprise plan details',
     dueDate: addDays(new Date(), 2).toISOString(),
-    priority: 'high' as TaskPriority,
-    labels: ['follow-up', 'important'],
-    companyId: '', // Will be set in initialization
-    contactId: '', // Will be set in initialization
-    dealId: '', // Will be set in initialization
-    assignedTo: [users[0].id],
-    createdBy: users[0].id,
+    priority: 'high' as Priority,
+    assignedTo: users[0].id, // Changed from array to string
+    relatedTo: {
+      type: 'contact',
+      id: ''
+    },
   },
   {
     title: 'Prepare proposal for Globex',
     description: 'Draft proposal for enterprise solution',
     dueDate: addDays(new Date(), 5).toISOString(),
-    priority: 'high' as TaskPriority,
-    labels: ['proposal', 'important'],
-    companyId: '', // Will be set in initialization
-    contactId: '', // Will be set in initialization
-    dealId: '', // Will be set in initialization
-    assignedTo: [users[1].id],
-    createdBy: users[0].id,
+    priority: 'high' as Priority,
+    assignedTo: users[1].id, // Changed from array to string
+    relatedTo: {
+      type: 'company',
+      id: ''
+    },
   },
   {
     title: 'Schedule product demo',
     description: 'Show new features to the team',
     dueDate: addDays(new Date(), 3).toISOString(),
-    priority: 'medium' as TaskPriority,
-    labels: ['demo'],
-    companyId: '', // Will be set in initialization
-    contactId: '', // Will be set in initialization
-    assignedTo: [users[2].id],
-    createdBy: users[1].id,
+    priority: 'medium' as Priority,
+    assignedTo: users[2].id, // Changed from array to string
+    relatedTo: {
+      type: 'deal',
+      id: ''
+    },
   },
 ]
 
-// Initialize stores with mock data
+// Initialization function to set up relationships
 export const initializeMockData = () => {
-  const { addContact, getContacts } = useContactsStore.getState()
-  const { addCompany, getCompanies } = useCompaniesStore.getState()
-  const { addDeal, getDeals } = useDealsStore.getState()
-  const { addTask, getTasks } = useTasksStore.getState()
+  // Set up contact-company relationships
+  mockContacts[0].companyId = 'company-1'
+  mockContacts[1].companyId = 'company-2'
+  mockContacts[2].companyId = 'company-3'
 
-  // Only initialize if stores are empty
-  if (getContacts().length === 0) {
-    mockContacts.forEach(contact => addContact(contact))
+  // Set up deal relationships
+  mockDeals[0].companyId = 'company-1'
+  mockDeals[0].contactId = 'contact-1'
+  mockDeals[1].companyId = 'company-2'
+  mockDeals[1].contactId = 'contact-2'
+  mockDeals[2].companyId = 'company-3'
+  mockDeals[2].contactId = 'contact-3'
+
+  // Set up task relationships
+  mockTasks[0].relatedTo = {
+    type: 'contact',
+    id: 'contact-1'
   }
-
-  if (getCompanies().length === 0) {
-    mockCompanies.forEach(company => addCompany(company))
+  mockTasks[1].relatedTo = {
+    type: 'company',
+    id: 'company-2'
   }
-
-  // Get company and contact IDs for relationships
-  const companies = getCompanies()
-  const contacts = getContacts()
-
-  if (getDeals().length === 0) {
-    const dealsWithRelationships = mockDeals.map((deal, index) => ({
-      ...deal,
-      companyId: companies[index % companies.length].id,
-      contactId: contacts[index % contacts.length].id,
-    }))
-    
-    dealsWithRelationships.forEach(deal => addDeal(deal))
+  mockTasks[2].relatedTo = {
+    type: 'deal',
+    id: 'deal-3'
   }
-
-  if (getTasks().length === 0) {
-    const deals = getDeals()
-    
-    const tasksWithRelationships = mockTasks.map((task, index) => ({
-      ...task,
-      companyId: companies[index % companies.length].id,
-      contactId: contacts[index % contacts.length].id,
-      dealId: deals[index % deals.length]?.id,
-    }))
-    
-    tasksWithRelationships.forEach(task => addTask(task))
-  }
-}
-
-// Export a function to reset all stores to initial mock data
-export const resetAllStores = () => {
-  useContactsStore.getState().$reset?.()
-  useCompaniesStore.getState().$reset?.()
-  useDealsStore.getState().$reset?.()
-  useTasksStore.getState().$reset?.()
-  
-  // Re-initialize with mock data
-  initializeMockData()
 }

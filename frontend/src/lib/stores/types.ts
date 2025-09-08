@@ -150,12 +150,77 @@ export interface TaskStore extends BaseStore<Task, 'all' | TaskStatus> {
   getFilteredTasks: () => Task[];
 }
 
+// New store interfaces
+export interface Interaction {
+  id: string;
+  contact_id: number;
+  type: string;
+  description: string;
+  created_at: string;
+  created_by: string;
+}
+
+export interface InteractionStore extends BaseStore<Interaction, 'all' | string> {
+  addInteraction: (interaction: Omit<Interaction, 'id' | 'created_at' | 'created_by'> & { created_by?: string }) => Interaction;
+  updateInteraction: (id: string, updates: Partial<Omit<Interaction, 'id' | 'created_at' | 'created_by'>>) => void;
+  deleteInteraction: (id: string) => void;
+  setSelectedInteraction: (id: string | null) => void;
+  getInteraction: (id: string) => Interaction | undefined;
+  getInteractionsByContact: (contactId: number) => Interaction[];
+  setFilter: (filter: 'all' | string) => void;
+  getFilteredInteractions: () => Interaction[];
+}
+
+export interface Transaction {
+  id: string;
+  company_id: string;
+  amount: number;
+  type: string;
+  description: string;
+  created_at: string;
+}
+
+export interface TransactionStore extends BaseStore<Transaction, 'all' | string> {
+  addTransaction: (transaction: Omit<Transaction, 'id' | 'created_at'>) => Transaction;
+  updateTransaction: (id: string, updates: Partial<Omit<Transaction, 'id' | 'created_at'>>) => void;
+  deleteTransaction: (id: string) => void;
+  setSelectedTransaction: (id: string | null) => void;
+  getTransaction: (id: string) => Transaction | undefined;
+  getTransactionsByCompany: (companyId: string) => Transaction[];
+  setFilter: (filter: 'all' | string) => void;
+  getFilteredTransactions: () => Transaction[];
+}
+
+export interface ServiceStage {
+  id: string;
+  company_id: string;
+  stage: string; // onboarding, engagement, retention, advocacy
+  details: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ServiceLifecycleStore extends BaseStore<ServiceStage, 'all' | string> {
+  addServiceStage: (stage: Omit<ServiceStage, 'id' | 'created_at' | 'updated_at'>) => ServiceStage;
+  updateServiceStage: (id: string, updates: Partial<Omit<ServiceStage, 'id' | 'created_at' | 'updated_at'>>) => void;
+  deleteServiceStage: (id: string) => void;
+  setSelectedServiceStage: (id: string | null) => void;
+  getServiceStage: (id: string) => ServiceStage | undefined;
+  getServiceStagesByCompany: (companyId: string) => ServiceStage[];
+  getServiceStageByType: (companyId: string, stageType: string) => ServiceStage | undefined;
+  setFilter: (filter: 'all' | string) => void;
+  getFilteredServiceStages: () => ServiceStage[];
+}
+
 // Root state type
 type RootState = {
   companies: CompanyStore;
   contacts: ContactStore;
   deals: DealsStore;
   tasks: TaskStore;
+  interactions: InteractionStore;
+  transactions: TransactionStore;
+  serviceLifecycle: ServiceLifecycleStore;
   resetAll: () => void;
   hydrate: (data: Partial<RootState>) => void;
 };
@@ -169,5 +234,8 @@ export type WithStoreProps = {
     contacts: ContactStore;
     deals: DealsStore;
     tasks: TaskStore;
+    interactions: InteractionStore;
+    transactions: TransactionStore;
+    serviceLifecycle: ServiceLifecycleStore;
   };
 };

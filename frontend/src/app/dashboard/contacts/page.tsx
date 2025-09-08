@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
-import { supabase } from "@/lib/supabase-client"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { Edit2, Plus, Loader2 } from "lucide-react"
+import { useContactsRealtime } from "@/lib/hooks/useContactsRealtime"
 
 const DataTable = dynamic(() => import("@/components/ui/data-table.client"), { ssr: false })
 import { Button } from "@/components/ui/button"
@@ -15,57 +15,29 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ContactForm } from "@/components/contact-form"
 import { cn } from "@/lib/utils"
 
-// Define the Contact type
-interface Contact {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  company_name: string;
-  status: "active" | "inactive" | "lead";
-  lastContact: string;
-}
-
 export default function ContactsPage() {
-  const [contacts, setContacts] = useState<Contact[]>([])
-  const [loading, setLoading] = useState(true)
+  const { contacts, loading, error, fetchContacts } = useContactsRealtime()
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [editingContact, setEditingContact] = useState<Contact | null>(null)
+  const [editingContact, setEditingContact] = useState<any | null>(null)
   const router = useRouter()
 
-  // Fetch contacts
-  const fetchContacts = async () => {
-    try {
-      setLoading(true)
-      const { data, error } = await supabase
-        .from('contacts')
-        .select('*')
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setContacts(data || [])
-    } catch (error) {
-      console.error('Error fetching contacts:', error)
-      toast.error('Failed to load contacts')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
-    fetchContacts()
-  }, [])
+    if (error) {
+      toast.error('Failed to load contacts', {
+        description: error
+      })
+    }
+  }, [error])
 
   const handleAddContact = () => {
     setIsAddDialogOpen(true)
   }
 
-  const handleEditContact = (contact: Contact) => {
+  const handleEditContact = (contact: any) => {
     setEditingContact(contact)
   }
 
   const handleFormSuccess = () => {
-    fetchContacts()
     setIsAddDialogOpen(false)
     setEditingContact(null)
   }
@@ -102,7 +74,7 @@ export default function ContactsPage() {
               "capitalize",
               status === "active" && "bg-green-100 text-green-800",
               status === "inactive" && "bg-gray-100 text-gray-800",
-              status === "lead" && "bg-blue-100 text-blue-800"
+              status === "pending" && "bg-blue-100 text-blue-800"
             )}
           >
             {status}
@@ -111,11 +83,11 @@ export default function ContactsPage() {
       },
     },
     {
-      accessorKey: "lastContact",
-      header: "Last Contact",
+      accessorKey: "created_at",
+      header: "Created",
       cell: ({ row }: { row: any }) => {
-        return row.original.lastContact 
-          ? new Date(row.original.lastContact).toLocaleDateString()
+        return row.original.created_at 
+          ? new Date(row.original.created_at).toLocaleDateString()
           : 'N/A'
       },
     },
@@ -169,7 +141,7 @@ export default function ContactsPage() {
                   options: [
                     { label: "Active", value: "active" },
                     { label: "Inactive", value: "inactive" },
-                    { label: "Lead", value: "lead" }
+                    { label: "Pending", value: "pending" }
                   ]
                 }
               ]}

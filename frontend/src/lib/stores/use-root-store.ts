@@ -4,6 +4,9 @@ import { createCompanyStore } from './use-companies-store';
 import { createContactStore } from './use-contacts-store';
 import { createDealsStore } from './use-deals-store';
 import { createTasksStore } from './use-tasks-store';
+import { createInteractionStore } from './use-interactions-store';
+import { createTransactionStore } from './use-transactions-store';
+import { createServiceLifecycleStore } from './use-service-lifecycle-store';
 import type { RootState } from './types';
 
 // Custom storage implementation for SSR compatibility
@@ -56,6 +59,9 @@ export const useRootStore = create<RootState>()(
       contacts: createContactStore(set, get),
       deals: createDealsStore(set, get),
       tasks: createTasksStore(set, get),
+      interactions: createInteractionStore(set, get),
+      transactions: createTransactionStore(set, get),
+      serviceLifecycle: createServiceLifecycleStore(set, get),
       
       // Reset all stores
       resetAll: () => {
@@ -80,6 +86,15 @@ export const useRootStore = create<RootState>()(
           }
           if (data.tasks) {
             newState.tasks = { ...state.tasks, ...data.tasks };
+          }
+          if (data.interactions) {
+            newState.interactions = { ...state.interactions, ...data.interactions };
+          }
+          if (data.transactions) {
+            newState.transactions = { ...state.transactions, ...data.transactions };
+          }
+          if (data.serviceLifecycle) {
+            newState.serviceLifecycle = { ...state.serviceLifecycle, ...data.serviceLifecycle };
           }
           return newState;
         });
@@ -110,6 +125,21 @@ export const useRootStore = create<RootState>()(
           selectedId: state.tasks.selectedId,
           filter: state.tasks.filter,
         },
+        interactions: {
+          items: state.interactions.items,
+          selectedId: state.interactions.selectedId,
+          filter: state.interactions.filter,
+        },
+        transactions: {
+          items: state.transactions.items,
+          selectedId: state.transactions.selectedId,
+          filter: state.transactions.filter,
+        },
+        serviceLifecycle: {
+          items: state.serviceLifecycle.items,
+          selectedId: state.serviceLifecycle.selectedId,
+          filter: state.serviceLifecycle.filter,
+        },
       }),
       version: 1,
     }
@@ -121,5 +151,8 @@ export const useCompanies = () => useRootStore((state) => state.companies);
 export const useContacts = () => useRootStore((state) => state.contacts);
 export const useDeals = () => useRootStore((state) => state.deals);
 export const useTasks = () => useRootStore((state) => state.tasks);
+export const useInteractions = () => useRootStore((state) => state.interactions);
+export const useTransactions = () => useRootStore((state) => state.transactions);
+export const useServiceLifecycle = () => useRootStore((state) => state.serviceLifecycle);
 
 export type { RootState };

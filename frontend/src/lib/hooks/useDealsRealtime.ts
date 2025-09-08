@@ -175,7 +175,7 @@ export function useDealsRealtime() {
           description: dealData.description || null,
           lead_id: dealData.lead_id || null,
           contact_id: dealData.contact_id || null,
-          company_id: dealData.account_id || null,
+          account_id: dealData.account_id || null,
           owner_id: dealData.owner_id || null,
           deal_source: dealData.deal_source || null,
           competitors: dealData.competitors || null,

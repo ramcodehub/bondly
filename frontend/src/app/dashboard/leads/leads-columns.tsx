@@ -52,6 +52,30 @@ export const leadColumns: ColumnDef<Lead>[] = [
     header: 'Source',
   },
   {
+    accessorKey: 'score',
+    header: 'Score',
+    cell: ({ row }: { row: { original: Lead } }) => {
+      const lead = row.original;
+      const score = lead.score || 0;
+      
+      // Determine badge color based on score
+      let scoreVariant = 'bg-gray-100 text-gray-800';
+      if (score >= 50) {
+        scoreVariant = 'bg-green-100 text-green-800';
+      } else if (score >= 20) {
+        scoreVariant = 'bg-yellow-100 text-yellow-800';
+      } else if (score > 0) {
+        scoreVariant = 'bg-blue-100 text-blue-800';
+      }
+      
+      return (
+        <Badge className={scoreVariant}>
+          {score}
+        </Badge>
+      );
+    },
+  },
+  {
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }: { row: { original: Lead } }) => {

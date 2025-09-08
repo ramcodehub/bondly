@@ -23,7 +23,7 @@ export default function Navbar({ isMenuOpen, setIsMenuOpen }: NavbarProps) {
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-xl">Bondly</span>
+            <span className="font-bold text-xl">AMGS CRM</span>
           </Link>
         </div>
 

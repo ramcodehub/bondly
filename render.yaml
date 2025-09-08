@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: bondly-backend
+    name: AMGS CRM-backend
     runtime: node
     plan: free
     buildCommand: npm install
@@ -21,5 +21,5 @@ services:
 # If you need a database in the future, uncomment this section:
 # databases:
 #   - name: postgres_db
-#     databaseName: my_bondly_db
-#     user: my_bondly_user
+#     databaseName: my_AMGS CRM_db
+#     user: my_AMGS CRM_user

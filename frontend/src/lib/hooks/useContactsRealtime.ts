@@ -4,17 +4,23 @@ import { useEffect, useState, useCallback } from 'react'
 import realtimeManager from '@/lib/realtime'
 import supabase from '@/lib/supabase-client'
 import { notifications } from '@/lib/notifications'
+import type { Contact as ContactType } from '@/lib/stores/types'
 
 interface Contact {
   id: string
-  name: string
+  first_name: string
+  last_name: string
   email: string
-  phone: string
-  company_name: string
-  status: "active" | "inactive" | "lead"
-  lastContact: string
+  phone?: string
+  company_id?: string
+  position?: string
+  status: "active" | "inactive" | "pending"
+  notes?: string
   created_at?: string
   updated_at?: string
+  // Computed fields
+  name: string
+  company_name?: string
 }
 
 interface ContactsRealtimeState {
@@ -77,18 +83,28 @@ export function useContactsRealtime() {
 
       const { data, error } = await supabase
         .from('contacts')
-        .select('*')
+        .select(`
+          *,
+          companies(name)
+        `)
         .order('created_at', { ascending: false })
 
       if (error) {
         throw error
       }
 
-      const stats = calculateStats(data || [])
+      // Transform data to match expected interface
+      const transformedData = (data || []).map(contact => ({
+        ...contact,
+        name: `${contact.first_name || ''} ${contact.last_name || ''}`.trim(),
+        company_name: contact.companies?.name || ''
+      }))
+
+      const stats = calculateStats(transformedData)
 
       setState(prev => ({
         ...prev,
-        contacts: data || [],
+        contacts: transformedData,
         stats,
         loading: false,
         error: null
@@ -111,12 +127,17 @@ export function useContactsRealtime() {
       const tempId = `temp-${Date.now()}`
       const optimisticContact: Contact = {
         id: tempId,
-        name: contactData.name || '',
+        first_name: contactData.first_name || '',
+        last_name: contactData.last_name || '',
+        name: `${contactData.first_name || ''} ${contactData.last_name || ''}`.trim(),
         email: contactData.email || '',
         phone: contactData.phone || '',
-        company_name: contactData.company_name || '',
+        company_id: contactData.company_id || '',
+        position: contactData.position || '',
         status: contactData.status || 'active',
-        lastContact: contactData.lastContact || new Date().toISOString(),
+        notes: contactData.notes || '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         ...contactData
       } as Contact
 
@@ -133,7 +154,16 @@ export function useContactsRealtime() {
       const response = await fetch('/api/contacts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(contactData)
+        body: JSON.stringify({
+          first_name: contactData.first_name,
+          last_name: contactData.last_name,
+          email: contactData.email,
+          phone: contactData.phone,
+          company_id: contactData.company_id,
+          position: contactData.position,
+          status: contactData.status,
+          notes: contactData.notes
+        })
       })
 
       if (!response.ok) {
@@ -145,7 +175,11 @@ export function useContactsRealtime() {
       // Replace optimistic update with real data
       setState(prev => {
         const newContacts = prev.contacts.map(contact => 
-          contact.id === tempId ? result.data : contact
+          contact.id === tempId ? {
+            ...result.data,
+            name: `${result.data.first_name || ''} ${result.data.last_name || ''}`.trim(),
+            company_name: result.data.companies?.name || ''
+          } : contact
         )
         return {
           ...prev,
@@ -204,7 +238,12 @@ export function useContactsRealtime() {
       // Update with real data
       setState(prev => {
         const newContacts = prev.contacts.map(contact => 
-          contact.id === contactId ? result.data : contact
+          contact.id === contactId ? {
+            ...contact,
+            ...result.data,
+            name: `${result.data.first_name || ''} ${result.data.last_name || ''}`.trim(),
+            company_name: result.data.companies?.name || ''
+          } : contact
         )
         return {
           ...prev,
@@ -226,10 +265,13 @@ export function useContactsRealtime() {
 
   // Optimistic update for deleting contact
   const deleteContact = useCallback(async (contactId: string) => {
-    // Save current state for rollback
-    const originalContacts = state.contacts
+    // Store original for potential rollback
+    let originalContactsState: Contact[] = []
     
     try {
+      // Store original for potential rollback
+      originalContactsState = state.contacts;
+
       // Optimistic update
       setState(prev => {
         const newContacts = prev.contacts.filter(contact => contact.id !== contactId)
@@ -255,8 +297,8 @@ export function useContactsRealtime() {
       // Revert optimistic update on error
       setState(prev => ({
         ...prev,
-        contacts: originalContacts,
-        stats: calculateStats(originalContacts)
+        contacts: originalContactsState,
+        stats: calculateStats(originalContactsState)
       }))
       
       notifications.error('Failed to delete contact')
@@ -276,12 +318,17 @@ export function useContactsRealtime() {
         console.log('Contacts realtime event:', event)
         
         if (event.eventType === 'INSERT') {
+          const newContact = {
+            ...event.new,
+            name: `${event.new.first_name || ''} ${event.new.last_name || ''}`.trim(),
+            company_name: event.new.companies?.name || ''
+          }
           setState(prev => {
             // Avoid duplicates from optimistic updates
-            if (prev.contacts.find(contact => contact.id === event.new.id)) {
+            if (prev.contacts.find(contact => contact.id === newContact.id)) {
               return prev
             }
-            const newContacts = [event.new, ...prev.contacts]
+            const newContacts = [newContact, ...prev.contacts]
             return {
               ...prev,
               contacts: newContacts,
@@ -289,12 +336,17 @@ export function useContactsRealtime() {
             }
           })
           notifications.info('New contact added', {
-            description: event.new.name
+            description: `${event.new.first_name} ${event.new.last_name}`
           })
         } else if (event.eventType === 'UPDATE') {
+          const updatedContact = {
+            ...event.new,
+            name: `${event.new.first_name || ''} ${event.new.last_name || ''}`.trim(),
+            company_name: event.new.companies?.name || ''
+          }
           setState(prev => {
             const newContacts = prev.contacts.map(contact => 
-              contact.id === event.new.id ? event.new : contact
+              contact.id === updatedContact.id ? updatedContact : contact
             )
             return {
               ...prev,
@@ -303,7 +355,7 @@ export function useContactsRealtime() {
             }
           })
           notifications.info('Contact updated', {
-            description: event.new.name
+            description: `${event.new.first_name} ${event.new.last_name}`
           })
         } else if (event.eventType === 'DELETE') {
           setState(prev => {
@@ -315,18 +367,21 @@ export function useContactsRealtime() {
             }
           })
           notifications.info('Contact deleted', {
-            description: event.old.name
+            description: `${event.old.first_name} ${event.old.last_name}`
           })
         }
       }
     })
 
-    return unsubscribe
+    // Cleanup subscription on unmount
+    return () => {
+      unsubscribe()
+    }
   }, [fetchContacts, calculateStats])
 
   return {
     ...state,
-    refetch: fetchContacts,
+    fetchContacts,
     createContact,
     updateContact,
     deleteContact

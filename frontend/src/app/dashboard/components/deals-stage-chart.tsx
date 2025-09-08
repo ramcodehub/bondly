@@ -57,7 +57,7 @@ export function DealsStageChart({ deals, stats }: DealsStageChartProps) {
                 isAnimationActive
               >
                 {funnelData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`funnel-cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
                 <LabelList position="right" fill="#000" stroke="none" dataKey="count" />
               </Funnel>
@@ -86,7 +86,7 @@ export function DealsStageChart({ deals, stats }: DealsStageChartProps) {
                 label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
               >
                 {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`pie-cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip 
@@ -130,8 +130,16 @@ export function DealsStageChart({ deals, stats }: DealsStageChartProps) {
                 }}
               />
               <Legend />
-              <Bar yAxisId="deals" dataKey="deals" name="Deals" fill="#8884d8" />
-              <Bar yAxisId="value" dataKey="value" name="Value ($)" fill="#82ca9d" />
+              <Bar yAxisId="deals" dataKey="deals" name="Deals" fill="#8884d8">
+                {barData.map((entry, index) => (
+                  <Cell key={`deals-cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Bar>
+              <Bar yAxisId="value" dataKey="value" name="Value ($)" fill="#82ca9d">
+                {barData.map((entry, index) => (
+                  <Cell key={`value-cell-${index}`} fill={COLORS[(index + 2) % COLORS.length]} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

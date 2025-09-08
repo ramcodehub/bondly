@@ -23,6 +23,10 @@ import settingsRoutes from './routes/settings.js';
 import homepageRoutes from '../routes/homepage.js';
 import dealsRoutes from './routes/deals.js';
 import tasksRoutes from './routes/tasks.js';
+import extendedLeadsRoutes from './routes/extended/leads.js';
+import extendedContactsRoutes from './routes/extended/contacts.js';
+import extendedAccountsRoutes from './routes/extended/accounts.js';
+import extendedServiceRoutes from './routes/extended/service.js';
 
 // Import Supabase client
 import supabase from './config/supabase.js';
@@ -32,7 +36,7 @@ dotenv.config();
 
 // Initialize Express app
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middleware
 // Security middleware
@@ -212,6 +216,10 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/homepage', homepageRoutes);
 app.use('/api/deals', dealsRoutes);
 app.use('/api/tasks', tasksRoutes);
+app.use('/api/extended/leads', extendedLeadsRoutes);
+app.use('/api/extended/contacts', extendedContactsRoutes);
+app.use('/api/extended/accounts', extendedAccountsRoutes);
+app.use('/api/extended/service', extendedServiceRoutes);
 
 // 404 handler for unmatched API routes
 app.use('/api/*', notFoundHandler);

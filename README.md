@@ -1,4 +1,4 @@
-# Bondly CRM - Full-Stack Customer Relationship Management System
+# AMGS CRM CRM - Full-Stack Customer Relationship Management System
 
 <div align="center">
   <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
@@ -10,9 +10,9 @@
 </div>
 
 <div align="center">
-  <img src="https://img.shields.io/github/license/your-username/bondly-crm" alt="License" />
-  <img src="https://img.shields.io/github/last-commit/your-username/bondly-crm" alt="Last Commit" />
-  <img src="https://img.shields.io/github/languages/code-size/your-username/bondly-crm" alt="Code Size" />
+  <img src="https://img.shields.io/github/license/your-username/AMGS CRM-crm" alt="License" />
+  <img src="https://img.shields.io/github/last-commit/your-username/AMGS CRM-crm" alt="Last Commit" />
+  <img src="https://img.shields.io/github/languages/code-size/your-username/AMGS CRM-crm" alt="Code Size" />
 </div>
 
 <br />
@@ -45,7 +45,7 @@ A modern, full-stack CRM (Customer Relationship Management) system designed to s
 ## 📁 Project Structure
 
 ```
-bondly-crm/
+AMGS CRM-crm/
 ├── backend/
 │   ├── src/
 │   │   ├── config/          # Configuration files (Supabase client)
@@ -79,8 +79,8 @@ bondly-crm/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/bondly-crm.git
-   cd bondly-crm
+   git clone https://github.com/your-username/AMGS CRM-crm.git
+   cd AMGS CRM-crm
    ```
 
 2. **Install backend dependencies:**
@@ -223,4 +223,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-If you have any questions or need help with setup, please [open an issue](https://github.com/your-username/bondly-crm/issues) on GitHub.
+If you have any questions or need help with setup, please [open an issue](https://github.com/your-username/AMGS CRM-crm/issues) on GitHub.

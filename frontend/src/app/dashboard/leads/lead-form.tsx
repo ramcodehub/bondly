@@ -231,7 +231,7 @@ export function LeadForm({ initialData, isEdit = false }: LeadFormProps) {
                   <SelectContent>
                     <SelectItem value="website">Website</SelectItem>
                     <SelectItem value="referral">Referral</SelectItem>
-                    <SelectItem value="social_media">Social Media</SelectItem>
+                    <SelectItem value="ads">Ads</SelectItem>
                     <SelectItem value="event">Event</SelectItem>
                     <SelectItem value="other">Other</SelectItem>
                   </SelectContent>

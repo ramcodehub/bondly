@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   deal_id INTEGER REFERENCES deals(id) ON DELETE CASCADE,
   lead_id INTEGER REFERENCES leads(id) ON DELETE CASCADE,
   contact_id INTEGER REFERENCES contacts(id) ON DELETE SET NULL,
-  account_id INTEGER REFERENCES accounts(id) ON DELETE SET NULL,
+  company_id UUID REFERENCES companies(id) ON DELETE SET NULL,
   assigned_to uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   created_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   

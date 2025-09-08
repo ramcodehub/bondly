@@ -59,7 +59,7 @@ export function TasksPriorityChart({ tasks, stats }: TasksPriorityChartProps) {
                 label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
               >
                 {priorityPieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`priority-cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip formatter={(value) => [value, 'Tasks']} />
@@ -90,7 +90,11 @@ export function TasksPriorityChart({ tasks, stats }: TasksPriorityChartProps) {
               <YAxis />
               <Tooltip formatter={(value) => [value, 'Tasks']} />
               <Legend />
-              <Bar dataKey="value" name="Tasks" fill="#8884d8" />
+              <Bar dataKey="value" name="Tasks" fill="#8884d8">
+                {statusBarData.map((entry, index) => (
+                  <Cell key={`status-cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

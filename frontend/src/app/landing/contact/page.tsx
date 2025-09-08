@@ -263,8 +263,8 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold">Email</h3>
-                      <p className="text-muted-foreground">support@bondly.com</p>
-                      <p className="text-muted-foreground">sales@bondly.com</p>
+                      <p className="text-muted-foreground">support@AMGS CRM.com</p>
+                      <p className="text-muted-foreground">sales@AMGS CRM.com</p>
                     </div>
                   </div>
                   
@@ -301,7 +301,7 @@ export default function ContactPage() {
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
               <p className="text-muted-foreground">
-                Find answers to common questions about Bondly.
+                Find answers to common questions about AMGS CRM.
               </p>
             </div>
             

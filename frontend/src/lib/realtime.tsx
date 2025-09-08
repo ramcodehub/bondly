@@ -183,10 +183,14 @@ class RealtimeManager {
             console.log(`✅ Subscribed to ${config.table} changes`)
             this.channels.set(channelName, channel)
           } else if (status === 'CHANNEL_ERROR') {
-            console.error(`❌ Failed to subscribe to ${config.table}:`, error)
-            notifications.error(`Failed to subscribe to ${config.table} updates`)
+            console.error(`❌ Failed to subscribe to ${config.table}:`, error || 'Unknown error')
+            notifications.error(`Failed to subscribe to ${config.table} updates`, {
+              description: error?.message || error || 'Unknown error occurred'
+            })
           } else if (status === 'CLOSED') {
             console.log(`🔌 Unsubscribed from ${config.table}`)
+          } else {
+            console.log(`ℹ️  Subscription status for ${config.table}:`, status, error || '')
           }
         })
 

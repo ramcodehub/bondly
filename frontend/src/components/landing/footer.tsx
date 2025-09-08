@@ -16,7 +16,7 @@ export default function Footer() {
   const navigation = {
     product: [
       { name: "Features", href: "/#services" },
-      { name: "Bondly", href: "#" },
+      { name: "AMGS CRM", href: "#" },
       { name: "Pricing", href: "#" },
       { name: "Demo", href: "#" },
     ],
@@ -41,7 +41,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <div className="flex flex-col space-y-4">
               <Link href="/" className="flex items-center space-x-2">
-                <span className="font-bold text-2xl">Bondly</span>
+                <span className="font-bold text-2xl">AMGS CRM</span>
               </Link>
               <p className="text-muted-foreground max-w-sm">
                 Transform your customer relationships with our powerful, intuitive CRM platform designed for modern businesses.
@@ -109,7 +109,7 @@ export default function Footer() {
         
         <div className="mt-16 pt-8 border-t flex flex-col md:flex-row justify-between items-center">
           <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} Bondly. All rights reserved.
+            &copy; {new Date().getFullYear()} AMGS CRM. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link href="#" className="text-muted-foreground hover:text-foreground text-sm">

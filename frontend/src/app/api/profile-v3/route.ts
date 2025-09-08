@@ -17,95 +17,61 @@ export async function PUT(request: Request) {
     
     let userId: string | null = null
     
-    // If we have the service role key, we can bypass RLS and update any user
-    // But we still need to identify which user to update
-    if (supabaseServer) {
-      console.log('Using service role key - can bypass RLS')
+    // Try to get session using createRouteHandlerClient first (for browser-based requests)
+    try {
+      const supabaseRoute = createRouteHandlerClient({ cookies })
+      const { data: { session }, error: sessionError } = await supabaseRoute.auth.getSession()
       
-      // Try to get session using createRouteHandlerClient first (for browser-based requests)
-      try {
-        const supabaseRoute = createRouteHandlerClient({ cookies })
-        const { data: { session }, error: sessionError } = await supabaseRoute.auth.getSession()
-        
-        if (sessionError) {
-          console.error('Error getting session with route handler:', sessionError)
-        }
-        
-        console.log('Session from route handler:', session?.user?.id)
-        
-        // If we have a session from route handler, use it
-        if (session?.user) {
-          userId = session.user.id
-          console.log('Got user ID from route handler session:', userId)
-        }
-      } catch (routeHandlerError) {
-        console.log('Route handler client not available or failed, continuing with token approach')
-        console.error('Route handler error:', routeHandlerError)
+      if (sessionError) {
+        console.error('Error getting session with route handler:', sessionError)
       }
       
-      // If no session from route handler, try to get session using token verification
-      if (!userId) {
-        console.log('No session from route handler, trying token verification approach')
+      console.log('Session from route handler:', session?.user?.id)
+      
+      // If we have a session from route handler, use it
+      if (session?.user) {
+        userId = session.user.id
+        console.log('Got user ID from route handler session:', userId)
+      }
+    } catch (routeHandlerError) {
+      console.log('Route handler client not available or failed, continuing with token approach')
+      console.error('Route handler error:', routeHandlerError)
+    }
+    
+    // If no session from route handler, try to get session using token verification
+    if (!userId) {
+      console.log('No session from route handler, trying token verification approach')
+      
+      // Get the access token from the request cookies
+      const accessToken = cookieStore.get('sb-access-token')?.value
+      console.log('Access token from cookies:', accessToken ? 'Found' : 'Not found')
+      
+      if (accessToken) {
+        // Use the appropriate client to verify the token
+        const { data, error } = await (supabaseServer ? supabaseFallback : supabase).auth.getUser(accessToken)
         
-        // Get the access token from the request cookies
-        const accessToken = cookieStore.get('sb-access-token')?.value
-        console.log('Access token from cookies:', accessToken ? 'Found' : 'Not found')
-        
-        if (accessToken) {
-          // Use the fallback client to verify the token (since server client bypasses auth)
-          const { data, error } = await supabaseFallback.auth.getUser(accessToken)
-          
-          if (error) {
-            console.error('Error verifying token with fallback client:', error)
-          } else if (data.user) {
-            userId = data.user.id
-            console.log('Got user ID from token verification:', userId)
-          }
+        if (error) {
+          console.error('Error verifying token:', error)
+        } else if (data.user) {
+          userId = data.user.id
+          console.log('Got user ID from token verification:', userId)
         }
       }
-    } else {
-      // No service role key available, use the standard auth flow
-      console.log('No service role key available, using standard auth flow')
-      
-      // Try to get session using createRouteHandlerClient first (for browser-based requests)
-      try {
-        const supabaseRoute = createRouteHandlerClient({ cookies })
-        const { data: { session }, error: sessionError } = await supabaseRoute.auth.getSession()
+    }
+    
+    // As a last resort, try to get user from Authorization header
+    if (!userId) {
+      console.log('No user ID from cookies, trying Authorization header')
+      const authHeader = request.headers.get('Authorization')
+      if (authHeader?.startsWith('Bearer ')) {
+        const token = authHeader.substring(7)
+        const { data, error } = await (supabaseServer ? supabaseFallback : supabase).auth.getUser(token)
         
-        if (sessionError) {
-          console.error('Error getting session with route handler:', sessionError)
-        }
-        
-        console.log('Session from route handler:', session?.user?.id)
-        
-        // If we have a session from route handler, use it
-        if (session?.user) {
-          userId = session.user.id
-          console.log('Got user ID from route handler session:', userId)
-        }
-      } catch (routeHandlerError) {
-        console.log('Route handler client not available or failed, continuing with token approach')
-        console.error('Route handler error:', routeHandlerError)
-      }
-      
-      // If no session from route handler, try to get session using token verification
-      if (!userId) {
-        console.log('No session from route handler, trying token verification approach')
-        
-        // Get the access token from the request cookies
-        const accessToken = cookieStore.get('sb-access-token')?.value
-        console.log('Access token from cookies:', accessToken ? 'Found' : 'Not found')
-        
-        if (accessToken) {
-          // Use the fallback client to verify the token
-          const { data, error } = await supabase.auth.getUser(accessToken)
-          
-          if (error) {
-            console.error('Error verifying token:', error)
-          } else if (data.user) {
-            userId = data.user.id
-            console.log('Got user ID from token verification:', userId)
-          }
+        if (error) {
+          console.error('Error verifying token from Authorization header:', error)
+        } else if (data.user) {
+          userId = data.user.id
+          console.log('Got user ID from Authorization header:', userId)
         }
       }
     }

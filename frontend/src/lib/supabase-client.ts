@@ -16,12 +16,21 @@ const validateEnv = () => {
   return true
 }
 
+// Create a new Supabase client with schema refresh options
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true
   },
+  db: {
+    schema: 'public'
+  },
+  global: {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
 })
 
 // Test the connection

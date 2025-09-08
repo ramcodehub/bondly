@@ -1,5 +1,5 @@
 {
-  "name": "bondly-frontend",
+  "name": "amgs-crm-frontend",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -46,6 +46,7 @@
     "class-variance-authority": "0.7.0",
     "clsx": "2.1.0",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.2",
     "lucide-react": "^0.541.0",
     "next": "13.5.6",
     "next-themes": "0.2.1",
@@ -56,7 +57,7 @@
     "react-icons": "5.0.1",
     "react-markdown": "9.0.1",
     "react-toastify": "10.0.5",
-    "recharts": "2.12.7",
+    "recharts": "^2.15.0",
     "sonner": "1.5.0",
     "tailwind-merge": "2.2.1",
     "tailwindcss-animate": "1.0.7",

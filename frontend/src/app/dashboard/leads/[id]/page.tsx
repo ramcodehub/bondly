@@ -1,6 +1,9 @@
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LeadForm } from '../lead-form';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { NurturingTab } from './nurturing-tab';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,16 +36,45 @@ export default async function LeadDetailPage({
   return (
     <div className="container mx-auto py-6">
       <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              Edit Lead: {lead.first_name} {lead.last_name}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <LeadForm initialData={lead} isEdit />
-          </CardContent>
-        </Card>
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">
+                {lead.first_name} {lead.last_name}
+              </h1>
+              <p className="text-muted-foreground">{lead.email}</p>
+            </div>
+            {lead.score !== undefined && (
+              <Badge variant="default" className="text-lg py-2 px-4">
+                Score: {lead.score}
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        <Tabs defaultValue="details" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="nurturing">Nurturing</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="details">
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Edit Lead: {lead.first_name} {lead.last_name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <LeadForm initialData={lead} isEdit />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="nurturing">
+            <NurturingTab leadId={params.id} />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
