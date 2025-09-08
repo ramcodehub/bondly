@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+import { createClient as createSSRClient } from '@/utils/supabase/server';
 
 export const dynamic = "force-dynamic";
 
@@ -48,7 +48,7 @@ type Company = {
 export async function POST(request: NextRequest) {
   try {
     // Try authenticated client first, fallback to admin client if RLS issues
-    let supabase = createRouteHandlerClient({ cookies });
+    let supabase = await createSSRClient();
     const companyData: Company = await request.json();
     
     // Validate required fields
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createSSRClient();
     
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');

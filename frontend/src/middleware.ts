@@ -1,32 +1,30 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
+import { updateSession } from '@/utils/supabase/middleware'
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  
+export async function middleware(request: NextRequest) {
   // Hard-redirect away from legacy Vite artifacts
-  if (pathname === '/index.html') {
+  if (request.nextUrl.pathname === '/index.html') {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
   // let /assets/* be handled by route handler
 
   // Rewrite missing icons to available assets
-  if (pathname === '/favicon-16x16.png' || pathname === '/apple-touch-icon.png') {
+  if (request.nextUrl.pathname === '/favicon-16x16.png' || request.nextUrl.pathname === '/apple-touch-icon.png') {
     return NextResponse.rewrite(new URL('/favicon-32x32.png', request.url))
   }
 
   // Skip middleware for static files and API routes
   if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/static') ||
-    pathname.includes('.')
+    request.nextUrl.pathname.startsWith('/_next') ||
+    request.nextUrl.pathname.startsWith('/api') ||
+    request.nextUrl.pathname.startsWith('/static') ||
+    request.nextUrl.pathname.includes('.')
   ) {
     return NextResponse.next()
   }
 
   // Redirect /dashboard/home to /dashboard
-  if (pathname === '/dashboard/home') {
+  if (request.nextUrl.pathname === '/dashboard/home') {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
@@ -39,14 +37,14 @@ export function middleware(request: NextRequest) {
     '/reports': '/dashboard/reports',
     '/settings': '/dashboard/settings',
   }
-  if (pathname in shortcuts) {
-    return NextResponse.redirect(new URL(shortcuts[pathname], request.url))
+  if (request.nextUrl.pathname in shortcuts) {
+    return NextResponse.redirect(new URL(shortcuts[request.nextUrl.pathname], request.url))
   }
 
   // For now, we'll handle dashboard authentication in the dashboard component itself
   // rather than in middleware to avoid server-side auth complexity
 
-  return NextResponse.next()
+  return await updateSession(request)
 }
 
 export const config = {

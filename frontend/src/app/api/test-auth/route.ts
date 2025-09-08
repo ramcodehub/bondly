@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import { createClient } from '@/utils/supabase/server'
 
 export const dynamic = "force-dynamic"
 
@@ -8,21 +8,21 @@ export async function GET() {
   try {
     console.log('GET /api/test-auth called')
     
-    const supabase = createRouteHandlerClient({ cookies })
+    const supabase = await createClient()
     
     // Get the user session
     const {
-      data: { session },
-    } = await supabase.auth.getSession()
+      data: { user },
+    } = await supabase.auth.getUser()
 
-    console.log('Session data in test route:', session?.user?.id)
+    console.log('User data in test route:', user?.id)
 
-    if (!session) {
-      console.log('No session found in test route')
+    if (!user) {
+      console.log('No user found in test route')
       return NextResponse.json(
         { 
-          error: 'No session found',
-          hasSession: false,
+          error: 'No user found',
+          hasUser: false,
           cookies: typeof cookies === 'function' ? 'function available' : 'not available'
         },
         { status: 401 }
@@ -30,10 +30,10 @@ export async function GET() {
     }
 
     return NextResponse.json({ 
-      message: 'Session found',
-      hasSession: true,
-      userId: session.user.id,
-      userEmail: session.user.email
+      message: 'User found',
+      hasUser: true,
+      userId: user.id,
+      userEmail: user.email
     })
   } catch (error: unknown) {
     console.error('Error in test auth route:', error)
