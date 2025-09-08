@@ -36,7 +36,8 @@ dotenv.config();
 
 // Initialize Express app
 const app = express();
-const PORT = process.env.PORT || 5001;
+// Use PORT from environment variable, default to 10000 to match Render config
+const PORT = process.env.PORT || 10000;
 
 // Middleware
 // Security middleware
@@ -161,6 +162,15 @@ app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 // Handle preflight requests
 app.options('*', cors(corsOptions));
+
+// Add a root route for health check and basic response
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Bondly CRM Backend API',
+    timestamp: new Date().toISOString(),
+    status: 'OK'
+  });
+});
 
 // Serve static files from the React app in production
 if (process.env.NODE_ENV === 'production') {
