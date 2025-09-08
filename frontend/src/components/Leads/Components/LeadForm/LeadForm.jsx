@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { leadService } from '../../../../lib/supabase';
 import { toast } from 'react-toastify';
 
 const LeadForm = ({ isEdit = false }) => {
-  const navigate = useNavigate();
-  const { id } = useParams();
+  const router = useRouter();
+  const { id } = router.query;
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -60,7 +60,7 @@ const LeadForm = ({ isEdit = false }) => {
         await leadService.createLead(formData);
         toast.success('Lead created successfully');
       }
-      navigate('/leads');
+      router.push('/leads');
     } catch (error) {
       console.error('Error saving lead:', error);
       toast.error(`Failed to ${isEdit ? 'update' : 'create'} lead`);
@@ -198,7 +198,7 @@ const LeadForm = ({ isEdit = false }) => {
         <div className="flex justify-end space-x-3 pt-4">
           <button
             type="button"
-            onClick={() => navigate('/leads')}
+            onClick={() => router.push('/leads')}
             className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
             disabled={loading}
           >

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { leadService } from '../lib/supabase';
 
 const LeadsPage = () => {
@@ -41,7 +41,7 @@ const LeadsPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Leads Management</h1>
         <Link 
-          to="/leads/create" 
+          href="/leads/create" 
           className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base font-medium shadow-sm"
         >
           <i className="bi bi-plus-lg"></i>
@@ -141,7 +141,7 @@ const LeadsPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <Link 
-                        to={`/leads/edit/${lead.lead_id}`}
+                        href={`/leads/edit/${lead.lead_id}`}
                         className="text-blue-600 hover:text-blue-900 mr-4"
                       >
                         <i className="bi bi-pencil-square"></i>
@@ -163,7 +163,7 @@ const LeadsPage = () => {
 
       {/* Floating action button for mobile */}
       <Link 
-        to="/leads/create" 
+        href="/leads/create" 
         className="fixed bottom-4 right-4 sm:hidden inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-colors z-50"
         aria-label="Create Lead"
       >

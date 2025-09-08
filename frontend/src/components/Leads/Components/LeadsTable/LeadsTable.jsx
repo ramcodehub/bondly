@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { leadService } from '../../../../lib/supabase';
 import { toast } from 'react-toastify';
 
 const LeadsTable = () => {
+  const router = useRouter();
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   const fetchLeads = async () => {
     try {
@@ -113,7 +114,7 @@ const LeadsTable = () => {
                 <tr 
                   key={lead.id} 
                   className="hover:bg-gray-50 cursor-pointer"
-                  onClick={() => navigate(`/leads/${lead.id}`)}
+                  onClick={() => router.push(`/leads/${lead.id}`)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -153,7 +154,7 @@ const LeadsTable = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/leads/edit/${lead.id}`);
+                          router.push(`/leads/edit/${lead.id}`);
                         }}
                         className="text-blue-600 hover:text-blue-900 mr-3"
                       >

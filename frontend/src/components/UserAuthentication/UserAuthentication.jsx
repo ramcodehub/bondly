@@ -1,6 +1,6 @@
 import React from 'react'
 import Logo from '../../assets/logo.png'
-import {Link} from 'react-router-dom'
+import Link from 'next/link'
 
 const UserAuthentication = () => {
   return (
@@ -38,7 +38,7 @@ const UserAuthentication = () => {
             </label>
             <a href='#' className='text-sm text-blue-600 hover:text-blue-800'>Forgot Password?</a>
           </div>
-          <Link to='/' className='w-full block'>
+          <Link href='/' className='w-full block'>
             <button type='submit' className='w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors'>
               Login
             </button>

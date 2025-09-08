@@ -1,4 +1,6 @@
 import { Link, NavLink } from 'react-router-dom'
+import Link from 'next/link';
+import NavLink from 'next/link';
 
 const Header = () => {
   return (

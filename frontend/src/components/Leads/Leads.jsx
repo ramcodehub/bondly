@@ -1,5 +1,5 @@
 import React from 'react'
-import {Link, Outlet} from 'react-router-dom'
+import Link from 'next/link'
 import LeadsTable from './Components/LeadsTable/LeadsTable'
 
 const Leads = () => {
@@ -18,7 +18,7 @@ const Leads = () => {
         </div>
         <div className='flex justify-center sm:justify-end'>
             <div className="flex rounded-lg overflow-hidden shadow-sm">
-                <Link className="bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2" to='/leads/create'>
+                <Link className="bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2" href='/leads/create'>
                   <i className="bi bi-plus-lg"></i>
                   <span>Create Lead</span>
                 </Link>
@@ -29,7 +29,6 @@ const Leads = () => {
         </div>
       </div>
       <LeadsTable/>
-      <Outlet/>
     </div>
   )
 }

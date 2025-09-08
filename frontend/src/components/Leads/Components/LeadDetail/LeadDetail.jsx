@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { leadService } from '../../../../lib/supabase';
 import { toast } from 'react-toastify';
 
 const LeadDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const router = useRouter();
+  const { id } = router.query;
   const [lead, setLead] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,7 +36,7 @@ const LeadDetail = () => {
       try {
         await leadService.deleteLead(id);
         toast.success('Lead deleted successfully');
-        navigate('/leads');
+        router.push('/leads');
       } catch (error) {
         console.error('Error deleting lead:', error);
         toast.error('Failed to delete lead');
@@ -73,7 +74,7 @@ const LeadDetail = () => {
           <h3 className="text-lg font-medium text-gray-900 mb-2">Lead Not Found</h3>
           <p className="text-gray-500 mb-6">The requested lead could not be found or you don't have permission to view it.</p>
           <Link
-            to="/leads"
+            href="/leads"
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Back to Leads
@@ -105,7 +106,7 @@ const LeadDetail = () => {
         </div>
         <div className="mt-4 flex sm:mt-0 sm:ml-4">
           <Link
-            to={`/leads/edit/${lead.id}`}
+            href={`/leads/edit/${lead.id}`}
             className="mr-3 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             <i className="bi bi-pencil mr-2"></i>

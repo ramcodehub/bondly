@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { 
   Users, 
   Briefcase, 
@@ -142,7 +142,7 @@ const HomePage = () => {
                     )}
                     {item.cta_link && (
                       <Link 
-                        to={item.cta_link}
+                        href={item.cta_link}
                         className="inline-flex items-center px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-lg"
                       >
                         {item.cta_text || 'Learn More'} <ArrowRight className="ml-2 h-5 w-5" />
