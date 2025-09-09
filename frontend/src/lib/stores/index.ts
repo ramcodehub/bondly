@@ -10,6 +10,7 @@ import { useRootStore } from './use-root-store';
 import useInteractionsStore from './use-interactions-store';
 import useTransactionsStore from './use-transactions-store';
 import useServiceLifecycleStore from './use-service-lifecycle-store';
+import { useChatAssistantStore } from './use-chat-assistant-store';
 
 // Export store hooks
 export { 
@@ -20,7 +21,8 @@ export {
   useRootStore,
   useInteractionsStore,
   useTransactionsStore,
-  useServiceLifecycleStore
+  useServiceLifecycleStore,
+  useChatAssistantStore
 };
 
 // Export all types from types.ts

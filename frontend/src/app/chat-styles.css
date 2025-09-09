@@ -1,0 +1,92 @@
+/* Additional styles for chat assistant to ensure proper display */
+.chat-assistant-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+}
+
+.chat-assistant-button {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease-in-out;
+}
+
+.chat-assistant-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.chat-assistant-card {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Smooth scrolling for chat messages */
+.chat-assistant-card [data-radix-scroll-area-viewport] {
+  transition: scroll-behavior 0.3s ease;
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for chat area */
+.chat-assistant-card [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-assistant-card [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-assistant-card [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.chat-assistant-card [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode scrollbar */
+.dark .chat-assistant-card [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark .chat-assistant-card [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Message styling improvements */
+.chat-assistant-card .bg-blue-500 {
+  background-color: #3b82f6; /* Consistent blue color */
+}
+
+.chat-assistant-card .bg-gray-100 {
+  background-color: #f3f4f6;
+}
+
+.dark .chat-assistant-card .bg-gray-800 {
+  background-color: #1f2937;
+}
+
+/* Quick questions section */
+.chat-assistant-card .max-h-24 {
+  max-height: 6rem;
+}
+
+.chat-assistant-card .overflow-y-auto {
+  overflow-y: auto;
+}
+
+.chat-assistant-card .overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-assistant-card .overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-assistant-card .overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}

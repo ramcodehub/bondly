@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "question": "How do I add a new lead?",
+    "answer": "Go to Dashboard → Leads → Add Lead button. Fill in name, email, phone, and source, then click Save."
+  },
+  {
+    "id": 2,
+    "question": "How do I view lead nurturing actions?",
+    "answer": "Navigate to Dashboard → Leads, select a lead, and click on the 'Nurturing' tab to see all nurturing actions and activities."
+  },
+  {
+    "id": 3,
+    "question": "How do I check opportunity pipeline?",
+    "answer": "Go to Dashboard → Deals to view your opportunity pipeline. You can filter by stage, owner, or date range to see specific opportunities."
+  },
+  {
+    "id": 4,
+    "question": "How do I add an interaction to a contact?",
+    "answer": "Go to Dashboard → Contacts, select a contact, and click 'Add Interaction'. Choose the type (call, email, meeting), add details, and save."
+  },
+  {
+    "id": 5,
+    "question": "How do I track company transactions?",
+    "answer": "Navigate to Dashboard → Companies, select a company, and view the 'Transactions' tab to see all financial activities and payment history."
+  },
+  {
+    "id": 6,
+    "question": "How do I view service lifecycle stages?",
+    "answer": "Go to Dashboard → Services to see all services and their lifecycle stages. You can filter by status or service type to find specific information."
+  },
+  {
+    "id": 7,
+    "question": "How do I generate lead source analytics report?",
+    "answer": "Go to Dashboard → Reports → Lead Analytics. Select date range and lead sources to generate a detailed report on lead performance by source."
+  },
+  {
+    "id": 8,
+    "question": "How do I update account details?",
+    "answer": "Navigate to Dashboard → Companies, select the company account, and click 'Edit'. Update the required fields and save your changes."
+  },
+  {
+    "id": 9,
+    "question": "How do I view team performance dashboard?",
+    "answer": "Go to Dashboard → Reports → Team Performance to see metrics on deals closed, revenue generated, and tasks completed by team members."
+  },
+  {
+    "id": 10,
+    "question": "How do I get system help?",
+    "answer": "Click on the chat assistant icon in the bottom-right corner for instant help, or go to Dashboard → Settings → Help for documentation and support."
+  }
+]

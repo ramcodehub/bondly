@@ -64,6 +64,11 @@ const navigation: NavItem[] = [
     label: "tasks",
   },
   {
+    title: "Chat Review",
+    href: "/dashboard/chat/review",
+    icon: "bell",
+  },
+  {
     title: "Settings",
     href: "/dashboard/settings",
     icon: "settings",

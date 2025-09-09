@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import ErrorBoundary from "@/components/error-boundary"
+import ChatAssistant from "@/components/chat-assistant"
 
 interface ClientLayoutProps {
   children: React.ReactNode
@@ -24,6 +25,7 @@ export default function ClientLayout({ children, className = "" }: ClientLayoutP
       <ErrorBoundary>
         {children}
       </ErrorBoundary>
+      <ChatAssistant />
     </div>
   )
 }

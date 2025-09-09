@@ -9,6 +9,7 @@ import FeatureShowcase from "@/components/landing/feature-showcase";
 import Services from "@/components/landing/services";
 import Contact from "@/components/landing/contact";
 import Footer from "@/components/landing/footer";
+// ChatAssistant is now included globally in the client layout
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -56,6 +57,7 @@ export default function LandingPage() {
         <Contact />
       </main>
       <Footer />
+      {/* ChatAssistant is now included globally in the client layout */}
     </div>
   );
 }
