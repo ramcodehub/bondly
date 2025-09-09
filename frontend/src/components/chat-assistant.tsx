@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bot, Send, X, MessageCircle, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import { Bot, Send, X, MessageCircle, ChevronDown, ChevronUp, Sparkles, ThumbsUp, ThumbsDown } from "lucide-react";
 import { useChatAssistantStore } from "@/lib/stores/use-chat-assistant-store";
 import { ChatConversation } from "@/types/chat";
 import "./../app/chat-styles.css";
@@ -24,7 +24,9 @@ export default function ChatAssistant() {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [showSuggestions, setShowSuggestions] = useState(false); // Changed to false by default
+  const [showSatisfactionPrompt, setShowSatisfactionPrompt] = useState(false);
+  const [lastAssistantMessageId, setLastAssistantMessageId] = useState<string | null>(null);
 
   // Improved scroll to bottom with better performance
   const scrollToBottom = () => {
@@ -44,6 +46,22 @@ export default function ChatAssistant() {
 
   useEffect(() => {
     scrollToBottom();
+  }, [messages]);
+
+  // Check if we need to show satisfaction prompt after assistant messages
+  useEffect(() => {
+    if (messages.length > 1) {
+      const lastMessage = messages[messages.length - 1];
+      const secondLastMessage = messages[messages.length - 2];
+      
+      // Show satisfaction prompt only after assistant responds to user
+      if (lastMessage.role === "assistant" && secondLastMessage.role === "user") {
+        setLastAssistantMessageId(lastMessage.id);
+        setShowSatisfactionPrompt(true);
+        // Hide quick questions by default
+        setShowSuggestions(false);
+      }
+    }
   }, [messages]);
 
   // Listen for custom event to open chat
@@ -70,6 +88,10 @@ export default function ChatAssistant() {
       role: "user"
     });
 
+    // Hide satisfaction prompt and quick questions when user sends a new message
+    setShowSatisfactionPrompt(false);
+    setShowSuggestions(false);
+
     // Find matching conversation
     const matchingConversation = findMatchingConversation(inputValue);
     
@@ -94,6 +116,27 @@ export default function ChatAssistant() {
     setTimeout(() => {
       handleSend();
     }, 100);
+  };
+
+  const handleSatisfactionResponse = (satisfied: boolean) => {
+    if (satisfied) {
+      // Add thank you message
+      addMessage({
+        content: "Thank you!",
+        role: "assistant"
+      });
+    } else {
+      // Add message indicating we're showing options again
+      addMessage({
+        content: "Here are some other options that might help:",
+        role: "assistant"
+      });
+      // Show quick questions when user clicks No
+      setShowSuggestions(true);
+    }
+    
+    // Hide satisfaction prompt
+    setShowSatisfactionPrompt(false);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -192,32 +235,62 @@ export default function ChatAssistant() {
                           </div>
                         </div>
                       ))}
+                      
+                      {/* Satisfaction prompt */}
+                      {showSatisfactionPrompt && lastAssistantMessageId === messages[messages.length - 1]?.id && (
+                        <div className="flex justify-start">
+                          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 rounded-bl-none max-w-[85%]">
+                            <p className="text-sm mb-2">Are you satisfied with this response?</p>
+                            <div className="flex gap-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => handleSatisfactionResponse(true)}
+                                className="h-8 px-3"
+                              >
+                                <ThumbsUp className="h-4 w-4 mr-1" />
+                                Yes
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => handleSatisfactionResponse(false)}
+                                className="h-8 px-3"
+                              >
+                                <ThumbsDown className="h-4 w-4 mr-1" />
+                                No
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Quick Questions - now only shown when user clicks No */}
+                      {showSuggestions && quickQuestions.length > 0 && (
+                        <div className="px-4 pb-3 border-t pt-3 bg-gray-50 dark:bg-gray-900">
+                          <div className="flex items-center mb-2">
+                            <Sparkles className="h-4 w-4 text-blue-500 mr-2" />
+                            <span className="text-xs font-medium text-muted-foreground">Quick questions:</span>
+                          </div>
+                          <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto">
+                            {quickQuestions.map((conversation: ChatConversation) => (
+                              <Button
+                                key={conversation.id}
+                                variant="outline"
+                                size="sm"
+                                className="h-auto py-1 px-2 text-xs leading-tight max-w-full"
+                                onClick={() => handleQuickQuestion(conversation.question)}
+                              >
+                                <span className="truncate">{conversation.question}</span>
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
                       <div ref={messagesEndRef} />
                     </div>
                   </ScrollArea>
-                  
-                  {/* Quick Questions - now inside the chat box */}
-                  {showSuggestions && quickQuestions.length > 0 && (
-                    <div className="px-4 pb-3 border-t pt-3 bg-gray-50 dark:bg-gray-900">
-                      <div className="flex items-center mb-2">
-                        <Sparkles className="h-4 w-4 text-blue-500 mr-2" />
-                        <span className="text-xs font-medium text-muted-foreground">Quick questions:</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto">
-                        {quickQuestions.map((conversation: ChatConversation) => (
-                          <Button
-                            key={conversation.id}
-                            variant="outline"
-                            size="sm"
-                            className="h-auto py-1 px-2 text-xs leading-tight max-w-full"
-                            onClick={() => handleQuickQuestion(conversation.question)}
-                          >
-                            <span className="truncate">{conversation.question}</span>
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
                 
                 {/* Input area */}
