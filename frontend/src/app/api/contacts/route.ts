@@ -9,44 +9,25 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
     const contactData = await request.json();
 
-    // Validate required fields based on actual table structure
-    // Check which structure we're using - name or first_name/last_name
-    let contact;
-    if (contactData.first_name && contactData.last_name) {
-      // Using first_name/last_name structure
-      if (!contactData.first_name || !contactData.last_name || !contactData.email) {
-        return NextResponse.json(
-          { error: 'Contact first_name, last_name, and email are required' },
-          { status: 400 }
-        );
-      }
-      
-      contact = {
-        first_name: contactData.first_name.trim(),
-        last_name: contactData.last_name.trim(),
-        email: contactData.email.trim(),
-        phone: contactData.phone?.trim() || null,
-        company_id: contactData.company_id || null,
-        position: contactData.position?.trim() || null,
-        notes: contactData.notes?.trim() || null,
-      };
-    } else {
-      // Using name structure
-      if (!contactData.name || !contactData.email) {
-        return NextResponse.json(
-          { error: 'Contact name and email are required' },
-          { status: 400 }
-        );
-      }
-      
-      contact = {
-        name: contactData.name.trim(),
-        email: contactData.email.trim(),
-        role: contactData.role?.trim() || null,
-        phone: contactData.phone?.trim() || null,
-        image_url: contactData.image_url?.trim() || null,
-      };
+    // Validate required fields
+    if (!contactData.name) {
+      return NextResponse.json(
+        { error: 'Contact name is required' },
+        { status: 400 }
+      );
     }
+
+    const contact = {
+      name: contactData.name.trim(),
+      role: contactData.role?.trim() || null,
+      email: contactData.email?.trim() || null,
+      phone: contactData.phone?.trim() || null,
+      image_url: contactData.image_url?.trim() || null,
+      company_name: contactData.company_name?.trim() || null,
+      status: contactData.status || 'pending',
+      lastContact: contactData.lastContact || null,
+      company_id: contactData.company_id || null,
+    };
 
     const { data, error } = await supabase
       .from('contacts')
@@ -142,6 +123,99 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error in contacts API:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT /api/contacts/:id - Update contact
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const supabase = await createClient();
+    const contactData = await request.json();
+    const { id } = params;
+
+    // Remove fields that shouldn't be updated
+    const { id: _, created_at: __, updated_at: ___, ...updateData } = contactData;
+
+    // Ensure updated_at is set automatically by the database
+    const { data, error } = await supabase
+      .from('contacts')
+      .update({
+        ...updateData,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating contact:', error);
+      return NextResponse.json(
+        { error: error.message || 'Failed to update contact' },
+        { status: 400 }
+      );
+    }
+
+    if (!data) {
+      return NextResponse.json(
+        { error: 'Contact not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data,
+      message: 'Contact updated successfully'
+    });
+
+  } catch (error) {
+    console.error('Error in contacts PUT API:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/contacts/:id - Delete contact
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const supabase = await createClient();
+    const { id } = params;
+
+    const { data, error } = await supabase
+      .from('contacts')
+      .delete()
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error deleting contact:', error);
+      return NextResponse.json(
+        { error: error.message || 'Failed to delete contact' },
+        { status: 400 }
+      );
+    }
+
+    if (!data) {
+      return NextResponse.json(
+        { error: 'Contact not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Contact deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Error in contacts DELETE API:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

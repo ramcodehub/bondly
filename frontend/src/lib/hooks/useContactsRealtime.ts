@@ -8,19 +8,19 @@ import type { Contact as ContactType } from '@/lib/stores/types'
 
 interface Contact {
   id: string
-  first_name: string
-  last_name: string
+  name: string
+  role?: string
   email: string
   phone?: string
-  company_id?: string
-  position?: string
-  status: "active" | "inactive" | "pending"
-  notes?: string
+  image_url?: string
+  company_name?: string
   created_at?: string
   updated_at?: string
+  lastContact?: string
+  status: "active" | "inactive" | "pending"
+  company_id?: string
   // Computed fields
-  name: string
-  company_name?: string
+  full_name?: string
 }
 
 interface ContactsRealtimeState {
@@ -96,8 +96,7 @@ export function useContactsRealtime() {
       // Transform data to match expected interface
       const transformedData = (data || []).map(contact => ({
         ...contact,
-        name: `${contact.first_name || ''} ${contact.last_name || ''}`.trim(),
-        company_name: contact.companies?.name || ''
+        company_name: contact.companies?.name || contact.company_name || ''
       }))
 
       const stats = calculateStats(transformedData)
@@ -127,17 +126,17 @@ export function useContactsRealtime() {
       const tempId = `temp-${Date.now()}`
       const optimisticContact: Contact = {
         id: tempId,
-        first_name: contactData.first_name || '',
-        last_name: contactData.last_name || '',
-        name: `${contactData.first_name || ''} ${contactData.last_name || ''}`.trim(),
+        name: contactData.name || '',
+        role: contactData.role || '',
         email: contactData.email || '',
         phone: contactData.phone || '',
-        company_id: contactData.company_id || '',
-        position: contactData.position || '',
-        status: contactData.status || 'active',
-        notes: contactData.notes || '',
+        image_url: contactData.image_url || '',
+        company_name: contactData.company_name || '',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        lastContact: contactData.lastContact || '',
+        status: contactData.status || 'active',
+        company_id: contactData.company_id || '',
         ...contactData
       } as Contact
 
@@ -155,14 +154,15 @@ export function useContactsRealtime() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          first_name: contactData.first_name,
-          last_name: contactData.last_name,
+          name: contactData.name,
+          role: contactData.role,
           email: contactData.email,
           phone: contactData.phone,
-          company_id: contactData.company_id,
-          position: contactData.position,
+          image_url: contactData.image_url,
+          company_name: contactData.company_name,
+          lastContact: contactData.lastContact,
           status: contactData.status,
-          notes: contactData.notes
+          company_id: contactData.company_id
         })
       })
 
@@ -177,8 +177,7 @@ export function useContactsRealtime() {
         const newContacts = prev.contacts.map(contact => 
           contact.id === tempId ? {
             ...result.data,
-            name: `${result.data.first_name || ''} ${result.data.last_name || ''}`.trim(),
-            company_name: result.data.companies?.name || ''
+            company_name: result.data.companies?.name || result.data.company_name || ''
           } : contact
         )
         return {
@@ -241,8 +240,7 @@ export function useContactsRealtime() {
           contact.id === contactId ? {
             ...contact,
             ...result.data,
-            name: `${result.data.first_name || ''} ${result.data.last_name || ''}`.trim(),
-            company_name: result.data.companies?.name || ''
+            company_name: result.data.companies?.name || result.data.company_name || ''
           } : contact
         )
         return {
@@ -320,8 +318,7 @@ export function useContactsRealtime() {
         if (event.eventType === 'INSERT') {
           const newContact = {
             ...event.new,
-            name: `${event.new.first_name || ''} ${event.new.last_name || ''}`.trim(),
-            company_name: event.new.companies?.name || ''
+            company_name: event.new.companies?.name || event.new.company_name || ''
           }
           setState(prev => {
             // Avoid duplicates from optimistic updates
@@ -336,13 +333,12 @@ export function useContactsRealtime() {
             }
           })
           notifications.info('New contact added', {
-            description: `${event.new.first_name} ${event.new.last_name}`
+            description: event.new.name
           })
         } else if (event.eventType === 'UPDATE') {
           const updatedContact = {
             ...event.new,
-            name: `${event.new.first_name || ''} ${event.new.last_name || ''}`.trim(),
-            company_name: event.new.companies?.name || ''
+            company_name: event.new.companies?.name || event.new.company_name || ''
           }
           setState(prev => {
             const newContacts = prev.contacts.map(contact => 
@@ -355,7 +351,7 @@ export function useContactsRealtime() {
             }
           })
           notifications.info('Contact updated', {
-            description: `${event.new.first_name} ${event.new.last_name}`
+            description: event.new.name
           })
         } else if (event.eventType === 'DELETE') {
           setState(prev => {
@@ -367,7 +363,7 @@ export function useContactsRealtime() {
             }
           })
           notifications.info('Contact deleted', {
-            description: `${event.old.first_name} ${event.old.last_name}`
+            description: event.old.name
           })
         }
       }

@@ -1,3 +1,5 @@
+"use client"
+
 import { ThemeProvider } from "@/components/theme-provider"
 import { AppSidebar, MobileSidebar } from "@/components/app-sidebar"
 import TopbarActions from "@/components/topbar-actions"
@@ -16,7 +18,7 @@ export default function DashboardLayout({
     >
       <div className="flex min-h-screen">
         <AppSidebar />
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col md:ml-64 ml-16">
           <div className="flex items-center justify-between p-4 border-b">
             <div className="md:hidden">
               <MobileSidebar />

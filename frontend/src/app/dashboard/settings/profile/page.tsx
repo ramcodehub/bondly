@@ -138,6 +138,28 @@ export default function ProfilePage() {
         </p>
       </div>
 
+      {/* Profile Summary Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Profile Summary</CardTitle>
+          <CardDescription>
+            Your account information at a glance
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center space-x-6">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={profileData.avatar_url || '/avatars/01.png'} alt={profileData.full_name} />
+              <AvatarFallback>{profileData.full_name ? profileData.full_name.split(' ').map(n => n[0]).join('') : 'U'}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className="text-xl font-semibold">{profileData.full_name || 'No name provided'}</h3>
+              <p className="text-muted-foreground">{profileData.email || 'No email provided'}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Profile Information</CardTitle>
@@ -146,21 +168,6 @@ export default function ProfilePage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center space-x-6">
-            <div className="space-y-1">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src={profileData.avatar_url || '/avatars/01.png'} alt={profileData.full_name} />
-                <AvatarFallback>{profileData.full_name ? profileData.full_name.split(' ').map(n => n[0]).join('') : 'U'}</AvatarFallback>
-              </Avatar>
-              <Button variant="ghost" size="sm" className="w-full">
-                Change
-              </Button>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              <p>JPG, GIF or PNG. Max size of 2MB</p>
-            </div>
-          </div>
-
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="full_name">Full Name</Label>

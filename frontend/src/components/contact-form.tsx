@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 
 // Define the form schema using zod
@@ -24,16 +25,15 @@ const contactFormSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),
+  role: z.string().optional(),
   email: z.string().email({
     message: "Please enter a valid email address.",
-  }),
-  phone: z.string().min(10, {
-    message: "Please enter a valid phone number.",
   }).optional(),
-  company_name: z.string().min(2, {
-    message: "Company name must be at least 2 characters.",
-  }).optional(),
-  status: z.enum(["active", "inactive", "lead"], {
+  phone: z.string().optional(),
+  image_url: z.string().optional(),
+  company_name: z.string().optional(),
+  company_id: z.string().optional(),
+  status: z.enum(["active", "inactive", "pending"], {
     required_error: "Please select a status.",
   }),
   lastContact: z.string().optional(),
@@ -45,10 +45,13 @@ interface ContactFormProps {
   initialData?: {
     id?: string
     name: string
-    email: string
+    role?: string
+    email?: string
     phone?: string
+    image_url?: string
     company_name?: string
-    status: "active" | "inactive" | "lead"
+    company_id?: string
+    status: "active" | "inactive" | "pending"
     lastContact?: string
   } | null
   onSuccess?: () => void
@@ -69,10 +72,13 @@ export function ContactForm({
     resolver: zodResolver(contactFormSchema),
     defaultValues: initialData || {
       name: "",
+      role: "",
       email: "",
       phone: "",
+      image_url: "",
       company_name: "",
-      status: "lead" as const,
+      company_id: "",
+      status: "pending" as const,
       lastContact: new Date().toISOString().split('T')[0],
     },
   })
@@ -84,7 +90,18 @@ export function ContactForm({
   const onSubmit = async (data: ContactFormValues) => {
     try {
       setLoading(true);
-      
+      const contactData = {
+        name: data.name,
+        role: data.role,
+        email: data.email,
+        phone: data.phone,
+        image_url: data.image_url,
+        company_name: data.company_name,
+        company_id: data.company_id,
+        lastContact: data.lastContact,
+        status: data.status,
+      }
+
       let response;
       if (isEdit && initialData?.id) {
         // Update existing contact
@@ -93,7 +110,17 @@ export function ContactForm({
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            name: data.name,
+            role: data.role,
+            email: data.email,
+            phone: data.phone,
+            image_url: data.image_url,
+            company_name: data.company_name,
+            company_id: data.company_id,
+            lastContact: data.lastContact,
+            status: data.status,
+          }),
         });
       } else {
         // Create new contact
@@ -102,7 +129,17 @@ export function ContactForm({
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            name: data.name,
+            role: data.role,
+            email: data.email,
+            phone: data.phone,
+            image_url: data.image_url,
+            company_name: data.company_name,
+            company_id: data.company_id,
+            lastContact: data.lastContact,
+            status: data.status,
+          }),
         });
       }
 
@@ -168,10 +205,24 @@ export function ContactForm({
           
           <FormField
             control={form.control}
+            name="role"
+            render={({ field }: { field: any }) => (
+              <FormItem>
+                <FormLabel>Role</FormLabel>
+                <FormControl>
+                  <Input placeholder="Manager" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
             name="email"
             render={({ field }: { field: any }) => (
               <FormItem>
-                <FormLabel>Email *</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input type="email" placeholder="john@example.com" {...field} />
                 </FormControl>
@@ -223,7 +274,7 @@ export function ContactForm({
                   <SelectContent>
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="lead">Lead</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -239,6 +290,34 @@ export function ContactForm({
                 <FormLabel>Last Contact</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="image_url"
+            render={({ field }: { field: any }) => (
+              <FormItem>
+                <FormLabel>Image URL</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://example.com/image.jpg" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="company_id"
+            render={({ field }: { field: any }) => (
+              <FormItem>
+                <FormLabel>Company ID</FormLabel>
+                <FormControl>
+                  <Input placeholder="Company UUID" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

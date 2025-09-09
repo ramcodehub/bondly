@@ -18,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Icons } from "@/components/icons"
 import { ChevronLeft, Menu } from "lucide-react"
+import { useUser } from "@/hooks/useUser"
 
 interface NavItem {
   title: string
@@ -83,6 +84,7 @@ interface AppSidebarProps extends React.HTMLAttributes<HTMLDivElement> {
 export const AppSidebar = React.memo(function AppSidebar({ className, isOpen = true, onClose }: AppSidebarProps) {
   const pathname = usePathname()
   const [isCollapsed, setIsCollapsed] = React.useState(false)
+  const { user, profile, loading } = useUser()
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -99,10 +101,19 @@ export const AppSidebar = React.memo(function AppSidebar({ className, isOpen = t
   }
 
   const sidebarClasses = cn(
-    "relative h-screen border-r transition-all duration-300 ease-in-out",
+    "fixed h-screen border-r transition-all duration-300 ease-in-out z-50",
     isCollapsed ? "w-16" : "w-64",
     className
   )
+
+  // Get user display name and email
+  const userDisplayName = profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
+  const userEmail = user?.email || ''
+
+  // Debug logging to help identify issues
+  React.useEffect(() => {
+    console.log('Sidebar user data:', { user, profile, loading })
+  }, [user, profile, loading])
 
   return (
     <div className={sidebarClasses}>
@@ -161,12 +172,14 @@ export const AppSidebar = React.memo(function AppSidebar({ className, isOpen = t
                 isCollapsed ? "justify-center" : ""
               )}>
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback>UN</AvatarFallback>
+                  <AvatarFallback>{userDisplayName.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 {!isCollapsed && (
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">User Name</p>
-                    <p className="truncate text-xs text-muted-foreground">user@example.com</p>
+                    <p className="truncate text-sm font-medium">{userDisplayName}</p>
+                    {userEmail && (
+                      <p className="truncate text-xs text-muted-foreground">{userEmail}</p>
+                    )}
                   </div>
                 )}
               </button>
@@ -190,6 +203,16 @@ export const AppSidebar = React.memo(function AppSidebar({ className, isOpen = t
 export const MobileSidebar = React.memo(function MobileSidebar() {
   const [open, setOpen] = React.useState(false)
   const pathname = usePathname()
+  const { user, profile, loading } = useUser()
+
+  // Get user display name and email
+  const userDisplayName = profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
+  const userEmail = user?.email || ''
+
+  // Debug logging to help identify issues
+  React.useEffect(() => {
+    console.log('Mobile sidebar user data:', { user, profile, loading })
+  }, [user, profile, loading])
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -234,6 +257,33 @@ export const MobileSidebar = React.memo(function MobileSidebar() {
                 )
               })}
             </nav>
+            {/* Profile footer for mobile */}
+            <div className="mt-auto border-t p-3">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left hover:bg-accent/50">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>{userDisplayName.charAt(0).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">{userDisplayName}</p>
+                      {userEmail && (
+                        <p className="truncate text-xs text-muted-foreground">{userEmail}</p>
+                      )}
+                    </div>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => (window.location.href = "/dashboard/settings/profile")}>Profile</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => (window.location.href = "/dashboard/settings/notifications")}>Notifications</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => (window.location.href = "/dashboard/settings/account")}>Account settings</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => (window.location.href = "/login")}>Sign out</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </ScrollArea>
         </div>
       </SheetContent>

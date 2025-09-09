@@ -44,11 +44,22 @@ export default function ContactsPage() {
 
   const columns = [
     {
+      accessorKey: "id",
+      header: "S.NO",
+      cell: ({ row }: { row: any }) => (
+        <div className="font-medium">#{row.original.id}</div>
+      ),
+    },
+    {
       accessorKey: "name",
       header: "Name",
       cell: ({ row }: { row: any }) => (
         <div className="font-medium">{row.original.name}</div>
       ),
+    },
+    {
+      accessorKey: "role",
+      header: "Role",
     },
     {
       accessorKey: "email",
@@ -83,11 +94,29 @@ export default function ContactsPage() {
       },
     },
     {
+      accessorKey: "lastContact",
+      header: "Last Contact",
+      cell: ({ row }: { row: any }) => {
+        return row.original.lastContact 
+          ? new Date(row.original.lastContact).toLocaleDateString()
+          : 'N/A'
+      },
+    },
+    {
       accessorKey: "created_at",
       header: "Created",
       cell: ({ row }: { row: any }) => {
         return row.original.created_at 
           ? new Date(row.original.created_at).toLocaleDateString()
+          : 'N/A'
+      },
+    },
+    {
+      accessorKey: "updated_at",
+      header: "Updated",
+      cell: ({ row }: { row: any }) => {
+        return row.original.updated_at 
+          ? new Date(row.original.updated_at).toLocaleDateString()
           : 'N/A'
       },
     },

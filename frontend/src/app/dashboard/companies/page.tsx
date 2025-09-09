@@ -32,8 +32,9 @@ async function fetchCompanies(): Promise<Company[]> {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
-    return data;
+    const result = await response.json();
+    // The API returns an object with a data property containing the array
+    return result.data || [];
   } catch (error) {
     console.error('Error fetching companies:', error);
     throw error;
