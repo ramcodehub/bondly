@@ -27,13 +27,9 @@ router.get('/', asyncHandler(async (req, res) => {
   if (error) throw error;
   
   res.json({
+    success: true,
     data,
-    pagination: {
-      total: count,
-      page: parseInt(page),
-      limit: parseInt(limit),
-      totalPages: Math.ceil(count / limit)
-    }
+    count: data?.length || 0
   });
 }));
 
@@ -47,9 +43,15 @@ router.get('/:id', asyncHandler(async (req, res) => {
     .single();
 
   if (error) throw error;
-  if (!data) return res.status(404).json({ message: 'Company not found' });
+  if (!data) return res.status(404).json({ 
+    success: false,
+    message: 'Company not found' 
+  });
 
-  res.json(data);
+  res.json({
+    success: true,
+    data
+  });
 }));
 
 // POST /api/companies - create new company
@@ -58,7 +60,10 @@ router.post('/', sanitizeInput, asyncHandler(async (req, res) => {
   
   // Basic validation
   if (!companyData.name) {
-    return res.status(400).json({ message: 'Company name is required' });
+    return res.status(400).json({ 
+      success: false,
+      message: 'Company name is required' 
+    });
   }
 
   const { data, error } = await supabase
@@ -73,7 +78,10 @@ router.post('/', sanitizeInput, asyncHandler(async (req, res) => {
 
   if (error) throw error;
 
-  res.status(201).json(data);
+  res.status(201).json({
+    success: true,
+    data
+  });
 }));
 
 // PUT /api/companies/:id - update company
@@ -88,7 +96,10 @@ router.put('/:id', sanitizeInput, asyncHandler(async (req, res) => {
     .single();
 
   if (!existingCompany) {
-    return res.status(404).json({ message: 'Company not found' });
+    return res.status(404).json({ 
+      success: false,
+      message: 'Company not found' 
+    });
   }
 
   const { data, error } = await supabase
@@ -103,7 +114,10 @@ router.put('/:id', sanitizeInput, asyncHandler(async (req, res) => {
 
   if (error) throw error;
 
-  res.json(data);
+  res.json({
+    success: true,
+    data
+  });
 }));
 
 // DELETE /api/companies/:id - delete company
@@ -117,7 +131,10 @@ router.delete('/:id', asyncHandler(async (req, res) => {
     .single();
 
   if (!existingCompany) {
-    return res.status(404).json({ message: 'Company not found' });
+    return res.status(404).json({ 
+      success: false,
+      message: 'Company not found' 
+    });
   }
 
   const { error } = await supabase

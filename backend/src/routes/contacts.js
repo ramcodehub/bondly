@@ -38,12 +38,7 @@ router.get('/', asyncHandler(async (req, res) => {
   res.json({
     success: true,
     data: transformedData,
-    pagination: {
-      total: count,
-      page: parseInt(page),
-      limit: parseInt(limit),
-      totalPages: Math.ceil(count / limit)
-    }
+    count: data?.length || 0
   });
 }));
 
@@ -60,7 +55,10 @@ router.get('/:id', asyncHandler(async (req, res) => {
     .single();
 
   if (error) throw error;
-  if (!data) return res.status(404).json({ message: 'Contact not found' });
+  if (!data) return res.status(404).json({ 
+    success: false,
+    message: 'Contact not found' 
+  });
 
   // Transform data to match expected interface
   const transformedData = {
@@ -117,7 +115,10 @@ router.put('/:id', sanitizeInput, asyncHandler(async (req, res) => {
     .single();
 
   if (!existingContact) {
-    return res.status(404).json({ message: 'Contact not found' });
+    return res.status(404).json({ 
+      success: false,
+      message: 'Contact not found' 
+    });
   }
 
   const { data, error } = await supabase
@@ -158,7 +159,10 @@ router.delete('/:id', asyncHandler(async (req, res) => {
     .single();
 
   if (!existingContact) {
-    return res.status(404).json({ message: 'Contact not found' });
+    return res.status(404).json({ 
+      success: false,
+      message: 'Contact not found' 
+    });
   }
 
   const { error } = await supabase
@@ -168,7 +172,10 @@ router.delete('/:id', asyncHandler(async (req, res) => {
 
   if (error) throw error;
 
-  res.status(204).send();
+  res.json({
+    success: true,
+    message: 'Contact deleted successfully'
+  });
 }));
 
 export default router;

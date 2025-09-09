@@ -9,7 +9,6 @@ import { DataTable } from '@/components/ui/data-table';
 import { leadColumns } from './leads-columns';
 import { Lead } from './types';
 import { ErrorDisplay } from './components/error-display';
-import DebugAPI from './debug-api';
 
 function LeadsPage() {
   const [data, setData] = useState<Lead[]>([]);
@@ -78,44 +77,38 @@ function LeadsPage() {
           message={`Error loading leads: ${error}. Please check your connection and try again.`}
         />
       ) : data.length === 0 ? (
-        <div>
-          <DebugAPI />
-          <ErrorDisplay 
-            message="No leads found. This could be due to a connection issue or no leads have been created yet."
-          />
-        </div>
+        <ErrorDisplay 
+          message="No leads found. This could be due to a connection issue or no leads have been created yet."
+        />
       ) : (
-        <div>
-          <DebugAPI />
-          <DataTable
-            columns={leadColumns}
-            data={data}
-            searchKey="email"
-            filterOptions={[
-              {
-                label: "Status",
-                value: "status",
-                options: [
-                  { label: "New", value: "new" },
-                  { label: "Contacted", value: "contacted" },
-                  { label: "Qualified", value: "qualified" },
-                  { label: "Unqualified", value: "unqualified" },
-                ],
-              },
-              {
-                label: "Source",
-                value: "source",
-                options: [
-                  { label: "Website", value: "website" },
-                  { label: "Referral", value: "referral" },
-                  { label: "Social Media", value: "social_media" },
-                  { label: "Event", value: "event" },
-                  { label: "Other", value: "other" },
-                ],
-              },
-            ]}
-          />
-        </div>
+        <DataTable
+          columns={leadColumns}
+          data={data}
+          searchKey="email"
+          filterOptions={[
+            {
+              label: "Status",
+              value: "status",
+              options: [
+                { label: "New", value: "new" },
+                { label: "Contacted", value: "contacted" },
+                { label: "Qualified", value: "qualified" },
+                { label: "Unqualified", value: "unqualified" },
+              ],
+            },
+            {
+              label: "Source",
+              value: "source",
+              options: [
+                { label: "Website", value: "website" },
+                { label: "Referral", value: "referral" },
+                { label: "Social Media", value: "social_media" },
+                { label: "Event", value: "event" },
+                { label: "Other", value: "other" },
+              ],
+            },
+          ]}
+        />
       )}
     </div>
   );

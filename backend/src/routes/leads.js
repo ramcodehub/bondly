@@ -54,10 +54,17 @@ router.put('/:id', async (req, res) => {
       .select();
 
     if (error) throw error;
-    res.json(data[0]);
+    res.json({
+      success: true,
+      data: data[0]
+    });
   } catch (error) {
     console.error('Error updating lead:', error);
-    res.status(500).json({ message: 'Failed to update lead', error: error.message });
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to update lead', 
+      error: error.message 
+    });
   }
 });
 
@@ -71,10 +78,17 @@ router.delete('/:id', async (req, res) => {
       .eq('id', leadId);
 
     if (error) throw error;
-    res.json({ success: true });
+    res.json({ 
+      success: true,
+      message: 'Lead deleted successfully' 
+    });
   } catch (error) {
     console.error('Error deleting lead:', error);
-    res.status(500).json({ message: 'Failed to delete lead', error: error.message });
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to delete lead', 
+      error: error.message 
+    });
   }
 });
 
