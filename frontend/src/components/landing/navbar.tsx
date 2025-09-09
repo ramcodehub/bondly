@@ -19,11 +19,13 @@ export default function Navbar({ isMenuOpen, setIsMenuOpen }: NavbarProps) {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur transition-all duration-300">
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-xl">AMGS CRM</span>
+          <Link href="/" className="flex items-center space-x-2 group">
+            <span className="font-bold text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent group-hover:from-primary/80 group-hover:to-secondary/80 transition-all duration-300">
+              AMGS CRM
+            </span>
           </Link>
         </div>
 
@@ -33,7 +35,7 @@ export default function Navbar({ isMenuOpen, setIsMenuOpen }: NavbarProps) {
             <Link
               key={link.name}
               href={link.href}
-              className="text-sm font-medium transition-colors hover:text-primary"
+              className="text-sm font-medium transition-colors hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
             >
               {link.name}
             </Link>
@@ -41,24 +43,34 @@ export default function Navbar({ isMenuOpen, setIsMenuOpen }: NavbarProps) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="hidden md:flex" asChild>
+          <Button variant="outline" className="hidden md:flex group hover:scale-105 transition-transform duration-300" asChild>
             <Link href="/login">Login</Link>
           </Button>
-          <Button asChild>
-            <Link href="/signup">Sign Up</Link>
+          <Button asChild className="group hover:scale-105 transition-transform duration-300">
+            <Link href="/signup">
+              Sign Up
+              <svg 
+                className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 20 20" 
+                fill="currentColor"
+              >
+                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </Link>
           </Button>
           
           {/* Mobile menu button */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="md:hidden hover:scale-110 transition-transform duration-300"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (
-              <X className="h-6 w-6" />
+              <X className="h-6 w-6 transition-transform duration-300" />
             ) : (
-              <Menu className="h-6 w-6" />
+              <Menu className="h-6 w-6 transition-transform duration-300" />
             )}
             <span className="sr-only">Toggle menu</span>
           </Button>
@@ -67,7 +79,7 @@ export default function Navbar({ isMenuOpen, setIsMenuOpen }: NavbarProps) {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden border-t">
+        <div className="md:hidden border-t animate-fade-in">
           <div className="container flex flex-col space-y-1 px-4 py-4">
             {navLinks.map((link) => (
               <Link

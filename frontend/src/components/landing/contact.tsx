@@ -124,7 +124,7 @@ export default function Contact() {
         </div>
         
         <div className="grid gap-12 lg:grid-cols-2">
-          <Card>
+          <Card className="transition-all duration-300 hover:shadow-xl">
             <CardHeader>
               <CardTitle>Contact Us</CardTitle>
             </CardHeader>
@@ -139,6 +139,7 @@ export default function Contact() {
                     onChange={handleChange} 
                     placeholder="Your name" 
                     required 
+                    className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 
@@ -152,6 +153,7 @@ export default function Contact() {
                     onChange={handleChange} 
                     placeholder="your.email@example.com" 
                     required 
+                    className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
 
@@ -164,6 +166,7 @@ export default function Contact() {
                     onChange={handleChange} 
                     placeholder="What is this regarding?" 
                     required 
+                    className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
 
@@ -174,7 +177,7 @@ export default function Contact() {
                     value={formData.companyType} 
                     onValueChange={(value) => handleSelectChange("companyType", value)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="transition-all duration-300 focus:ring-2 focus:ring-primary/50">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -194,6 +197,7 @@ export default function Contact() {
                       onChange={handleChange} 
                       placeholder="Your company name" 
                       required 
+                      className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
                     />
                   </div>
                 )}
@@ -207,6 +211,7 @@ export default function Contact() {
                     onChange={handleChange} 
                     placeholder="Your location (city, state)" 
                     required 
+                    className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 
@@ -220,21 +225,46 @@ export default function Contact() {
                     placeholder="How can we help you?" 
                     rows={5} 
                     required 
+                    className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Sending..." : "Send Message"}
+                <Button 
+                  type="submit" 
+                  className="w-full group transition-all duration-300 hover:scale-105"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      Send Message
+                      <svg 
+                        className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </>
+                  )}
                 </Button>
                 
                 {submitError && (
-                  <div className="text-red-600 text-center mt-4">
+                  <div className="text-red-600 text-center mt-4 animate-fade-in">
                     {submitError}
                   </div>
                 )}
                 
                 {submitSuccess && (
-                  <div className="text-green-600 text-center mt-4">
+                  <div className="text-green-600 text-center mt-4 animate-fade-in">
                     {successMessage}
                   </div>
                 )}
@@ -252,8 +282,11 @@ export default function Contact() {
             
             <div className="space-y-6">
               {contactInfo.map((info, index) => (
-                <div key={index} className="flex items-start space-x-4">
-                  <div className="mt-1 p-2 bg-primary/10 rounded-lg text-primary">
+                <div 
+                  key={index} 
+                  className="flex items-start space-x-4 group hover:bg-background/50 p-4 rounded-lg transition-all duration-300 hover:shadow-md"
+                >
+                  <div className="mt-1 p-2 bg-primary/10 rounded-lg text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     {info.icon}
                   </div>
                   <div>
@@ -264,13 +297,36 @@ export default function Contact() {
               ))}
             </div>
             
-            <div className="bg-background p-6 rounded-lg border">
+            <div className="bg-background p-6 rounded-lg border transition-all duration-300 hover:shadow-md">
               <h4 className="font-semibold mb-2">Office Hours</h4>
               <p className="text-muted-foreground">
                 Monday - Friday: 9:00 AM - 6:00 PM (PST)<br />
                 Saturday: 10:00 AM - 4:00 PM (PST)<br />
                 Sunday: Closed
               </p>
+            </div>
+            
+            {/* Enhanced CTA section */}
+            <div className="bg-gradient-to-r from-primary to-secondary rounded-xl p-6 text-primary-foreground">
+              <h4 className="font-semibold text-lg mb-2">Need immediate assistance?</h4>
+              <p className="mb-4 opacity-90">
+                Chat with our support team right now for instant help.
+              </p>
+              <Button 
+                variant="secondary" 
+                className="group"
+                onClick={() => alert('Live chat would open here')}
+              >
+                Start Live Chat
+                <svg 
+                  className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 20 20" 
+                  fill="currentColor"
+                >
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+                </svg>
+              </Button>
             </div>
           </div>
         </div>

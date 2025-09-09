@@ -40,26 +40,28 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <div className="flex flex-col space-y-4">
-              <Link href="/" className="flex items-center space-x-2">
-                <span className="font-bold text-2xl">AMGS CRM</span>
+              <Link href="/" className="flex items-center space-x-2 group">
+                <span className="font-bold text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent group-hover:from-primary/80 group-hover:to-secondary/80 transition-all duration-300">
+                  AMGS CRM
+                </span>
               </Link>
               <p className="text-muted-foreground max-w-sm">
                 Transform your customer relationships with our powerful, intuitive CRM platform designed for modern businesses.
               </p>
               <div className="flex space-x-4">
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className="transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground">
                   <Facebook className="h-4 w-4" />
                   <span className="sr-only">Facebook</span>
                 </Button>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className="transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground">
                   <Twitter className="h-4 w-4" />
                   <span className="sr-only">Twitter</span>
                 </Button>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className="transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground">
                   <Linkedin className="h-4 w-4" />
                   <span className="sr-only">LinkedIn</span>
                 </Button>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className="transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground">
                   <Instagram className="h-4 w-4" />
                   <span className="sr-only">Instagram</span>
                 </Button>
@@ -72,7 +74,7 @@ export default function Footer() {
             <ul className="mt-4 space-y-3">
               {navigation.product.map((item) => (
                 <li key={item.name}>
-                  <Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors">
+                  <Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
                     {item.name}
                   </Link>
                 </li>
@@ -85,7 +87,7 @@ export default function Footer() {
             <ul className="mt-4 space-y-3">
               {navigation.resources.map((item) => (
                 <li key={item.name}>
-                  <Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors">
+                  <Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
                     {item.name}
                   </Link>
                 </li>
@@ -98,7 +100,7 @@ export default function Footer() {
             <ul className="mt-4 space-y-3">
               {navigation.company.map((item) => (
                 <li key={item.name}>
-                  <Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors">
+                  <Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
                     {item.name}
                   </Link>
                 </li>
@@ -112,13 +114,13 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} AMGS CRM. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="#" className="text-muted-foreground hover:text-foreground text-sm">
+            <Link href="#" className="text-muted-foreground hover:text-foreground text-sm relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
               Privacy Policy
             </Link>
-            <Link href="#" className="text-muted-foreground hover:text-foreground text-sm">
+            <Link href="#" className="text-muted-foreground hover:text-foreground text-sm relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
               Terms of Service
             </Link>
-            <Link href="#" className="text-muted-foreground hover:text-foreground text-sm">
+            <Link href="#" className="text-muted-foreground hover:text-foreground text-sm relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
               Cookie Policy
             </Link>
           </div>
