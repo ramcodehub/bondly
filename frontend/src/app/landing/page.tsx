@@ -27,7 +27,7 @@ export default function LandingPage() {
           <div className="container px-4 md:px-6 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Transform Your Business?</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-              Join thousands of businesses that trust AMGS CRM to manage their customer relationships.
+              Join thousands of businesses that trust Bondly to manage their customer relationships.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 

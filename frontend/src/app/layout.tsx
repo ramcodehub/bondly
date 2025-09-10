@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next"
+import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import ClientLayout from "./client-layout"
@@ -6,11 +6,11 @@ import ClientLayout from "./client-layout"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "CRM Dashboard",
-  description: "Next.js CRM Dashboard with TypeScript and Tailwind CSS",
+  title: "Bondly",
+  description: "Next.js Bondly with TypeScript and Tailwind CSS",
 }
 
-export const viewport: Viewport = {
+export const viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "white" },
     { media: "(prefers-color-scheme: dark)", color: "black" },

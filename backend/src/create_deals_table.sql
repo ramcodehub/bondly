@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS deals (
   company_id UUID REFERENCES companies(id) ON DELETE SET NULL,
   owner_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   
-  -- Additional fields for CRM functionality
+  -- Additional fields for Bondly functionality
   deal_source VARCHAR(100),
   competitors TEXT[],
   next_step TEXT,

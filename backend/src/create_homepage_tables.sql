@@ -28,7 +28,7 @@ CREATE INDEX IF NOT EXISTS idx_activities_created_at ON public.activities(create
 -- Insert sample carousel data (optional)
 INSERT INTO public.homepage_carousel (title, description, image_url, cta_link, "order")
 VALUES 
-  ('Welcome to Our CRM', 'Manage your customer relationships efficiently', 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80', '/about', 1),
+  ('Welcome to Our Bondly', 'Manage your customer relationships efficiently', 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80', '/about', 1),
   ('Track Your Leads', 'Never miss an opportunity with our lead tracking system', 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80', '/leads', 2),
   ('Boost Your Sales', 'Convert more leads into customers with our tools', 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80', '/opportunities', 3)
 ON CONFLICT (id) DO NOTHING;

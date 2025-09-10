@@ -10,7 +10,7 @@ DROP POLICY IF EXISTS "Allow authenticated delete on companies" ON companies;
 DROP POLICY IF EXISTS "Allow authenticated all operations on companies" ON companies;
 
 -- Step 2: Create the fix policy (allows all operations for any user)
--- This is appropriate for a CRM system where users need full access
+-- This is appropriate for a Bondly system where users need full access
 CREATE POLICY "Allow all operations on companies"
 ON companies
 FOR ALL
@@ -59,5 +59,5 @@ WITH CHECK (true);
 -- To verify RLS is enabled:
 -- SELECT tablename, rowsecurity FROM pg_tables WHERE tablename = 'companies';
 
--- RECOMMENDED: Use SOLUTION 2 (the comprehensive policy above) for most CRM applications
+-- RECOMMENDED: Use SOLUTION 2 (the comprehensive policy above) for most Bondly applications
 -- This provides full CRUD access to authenticated users while maintaining security

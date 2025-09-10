@@ -29,21 +29,21 @@ export function ContactsGrowthChart({ contactsData, stats }: ContactsGrowthChart
   ]
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
       {/* Contacts Growth Line Chart */}
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
-          <CardTitle>Contacts Growth</CardTitle>
+          <CardTitle className="text-base sm:text-lg">Contacts Growth</CardTitle>
         </CardHeader>
-        <CardContent className="h-80">
+        <CardContent className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={growthData}
               margin={{
                 top: 5,
-                right: 30,
-                left: 20,
-                bottom: 60,
+                right: 10,
+                left: 0,
+                bottom: 40,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -65,19 +65,19 @@ export function ContactsGrowthChart({ contactsData, stats }: ContactsGrowthChart
       </Card>
 
       {/* Companies vs Contacts Bar Chart */}
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
-          <CardTitle>Companies vs Contacts</CardTitle>
+          <CardTitle className="text-base sm:text-lg">Companies vs Contacts</CardTitle>
         </CardHeader>
-        <CardContent className="h-80">
+        <CardContent className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={companiesContactsData}
               margin={{
                 top: 5,
-                right: 30,
-                left: 20,
-                bottom: 60,
+                right: 10,
+                left: 0,
+                bottom: 40,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -92,19 +92,19 @@ export function ContactsGrowthChart({ contactsData, stats }: ContactsGrowthChart
       </Card>
 
       {/* Contacts Growth Area Chart */}
-      <Card className="md:col-span-2">
+      <Card className="md:col-span-2 min-w-0">
         <CardHeader>
-          <CardTitle>Contacts Accumulation</CardTitle>
+          <CardTitle className="text-base sm:text-lg">Contacts Accumulation</CardTitle>
         </CardHeader>
-        <CardContent className="h-80">
+        <CardContent className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={growthData}
               margin={{
                 top: 5,
-                right: 30,
-                left: 20,
-                bottom: 60,
+                right: 10,
+                left: 0,
+                bottom: 40,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />

@@ -11,10 +11,10 @@ export default function Hero() {
         <div className="flex flex-col items-center text-center space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight animate-fade-in">
-              Transform Your Business with <span className="text-primary">AMGS CRM</span>
+              Transform Your Business with <span className="text-primary">Bondly</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto animate-fade-in-delay">
-              Streamline your customer relationships, manage leads, track deals, and boost productivity with AMGS CRM, the all-in-one CRM platform designed for modern businesses.
+              Streamline your customer relationships, manage leads, track deals, and boost productivity with Bondly, the all-in-one Bondly platform designed for modern businesses.
             </p>
           </div>
           

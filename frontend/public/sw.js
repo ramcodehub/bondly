@@ -1,6 +1,6 @@
-// Service Worker for CRM Dashboard
+// Service Worker for Bondly
 
-const CACHE_NAME = 'crm-dashboard-v1';
+const CACHE_NAME = 'Bondly-dashboard-v1';
 const urlsToCache = [
   '/',
   '/dashboard',

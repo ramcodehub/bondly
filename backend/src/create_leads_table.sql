@@ -5,6 +5,7 @@ CREATE TABLE leads (
   email TEXT NOT NULL,
   phone TEXT,
   status TEXT,
+  campaign_id BIGINT REFERENCES marketing_campaign(campaign_id) ON DELETE SET NULL,
   created_at TIMESTAMP DEFAULT NOW()
 );
 

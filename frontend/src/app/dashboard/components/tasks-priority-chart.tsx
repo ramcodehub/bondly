@@ -38,13 +38,13 @@ export function TasksPriorityChart({ tasks, stats }: TasksPriorityChartProps) {
   }, [])
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
       {/* Priority Distribution Pie Chart */}
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
-          <CardTitle>Tasks by Priority</CardTitle>
+          <CardTitle className="text-base sm:text-lg">Tasks by Priority</CardTitle>
         </CardHeader>
-        <CardContent className="h-80">
+        <CardContent className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -52,7 +52,7 @@ export function TasksPriorityChart({ tasks, stats }: TasksPriorityChartProps) {
                 cx="50%"
                 cy="50%"
                 labelLine={true}
-                outerRadius={80}
+                outerRadius={60}
                 fill="#8884d8"
                 dataKey="value"
                 nameKey="name"
@@ -70,23 +70,23 @@ export function TasksPriorityChart({ tasks, stats }: TasksPriorityChartProps) {
       </Card>
 
       {/* Status Distribution Bar Chart */}
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
-          <CardTitle>Tasks by Status</CardTitle>
+          <CardTitle className="text-base sm:text-lg">Tasks by Status</CardTitle>
         </CardHeader>
-        <CardContent className="h-80">
+        <CardContent className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={statusBarData}
               margin={{
                 top: 5,
-                right: 30,
-                left: 20,
-                bottom: 60,
+                right: 10,
+                left: 0,
+                bottom: 40,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
+              <XAxis dataKey="name" angle={-45} textAnchor="end" height={40} />
               <YAxis />
               <Tooltip formatter={(value) => [value, 'Tasks']} />
               <Legend />
@@ -101,23 +101,23 @@ export function TasksPriorityChart({ tasks, stats }: TasksPriorityChartProps) {
       </Card>
 
       {/* Timeline Line Chart */}
-      <Card className="md:col-span-2">
+      <Card className="md:col-span-2 min-w-0">
         <CardHeader>
-          <CardTitle>Tasks Over Time</CardTitle>
+          <CardTitle className="text-base sm:text-lg">Tasks Over Time</CardTitle>
         </CardHeader>
-        <CardContent className="h-80">
+        <CardContent className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={timelineData}
               margin={{
                 top: 5,
-                right: 30,
-                left: 20,
-                bottom: 60,
+                right: 10,
+                left: 0,
+                bottom: 40,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" angle={-45} textAnchor="end" height={60} />
+              <XAxis dataKey="date" angle={-45} textAnchor="end" height={40} />
               <YAxis />
               <Tooltip formatter={(value) => [value, 'Tasks']} />
               <Legend />

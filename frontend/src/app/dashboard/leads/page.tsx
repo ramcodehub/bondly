@@ -1,117 +1,138 @@
-'use client';
+"use client"
 
-import { Plus } from 'lucide-react';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Plus, Users, TrendingUp, Calendar, Filter, Search } from "lucide-react"
 
-import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/data-table';
-import { leadColumns } from './leads-columns';
-import { Lead } from './types';
-import { ErrorDisplay } from './components/error-display';
-
-function LeadsPage() {
-  const [data, setData] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchLeads() {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/leads');
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch leads: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        // Handle both response formats
-        const leadsData = result.data || result || [];
-        setData(Array.isArray(leadsData) ? leadsData : []);
-      } catch (err) {
-        console.error('Error fetching leads:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch leads');
-        setData([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchLeads();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="container mx-auto py-10">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Leads</h1>
-          <Button asChild>
-            <Link href="/dashboard/leads/new">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Lead
-            </Link>
-          </Button>
-        </div>
-        <div className="text-center py-10">
-          <p className="text-muted-foreground">Loading leads...</p>
-        </div>
-      </div>
-    );
-  }
-
+export default function LeadsPage() {
   return (
-    <div className="container mx-auto py-10">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Leads</h1>
-        <Button asChild>
-          <Link href="/dashboard/leads/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Lead
-          </Link>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Leads</h1>
+          <p className="text-muted-foreground">
+            Manage and track your sales leads
+          </p>
+        </div>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Lead
         </Button>
       </div>
-      
-      {error ? (
-        <ErrorDisplay 
-          message={`Error loading leads: ${error}. Please check your connection and try again.`}
-        />
-      ) : data.length === 0 ? (
-        <ErrorDisplay 
-          message="No leads found. This could be due to a connection issue or no leads have been created yet."
-        />
-      ) : (
-        <DataTable
-          columns={leadColumns}
-          data={data}
-          searchKey="email"
-          filterOptions={[
-            {
-              label: "Status",
-              value: "status",
-              options: [
-                { label: "New", value: "new" },
-                { label: "Contacted", value: "contacted" },
-                { label: "Qualified", value: "qualified" },
-                { label: "Unqualified", value: "unqualified" },
-              ],
-            },
-            {
-              label: "Source",
-              value: "source",
-              options: [
-                { label: "Website", value: "website" },
-                { label: "Referral", value: "referral" },
-                { label: "Social Media", value: "social_media" },
-                { label: "Event", value: "event" },
-                { label: "Other", value: "other" },
-              ],
-            },
-          ]}
-        />
-      )}
-    </div>
-  );
-}
 
-export default LeadsPage;
+      <div className="flex items-center space-x-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <input
+            placeholder="Search leads..."
+            className="w-full rounded-lg bg-background pl-8 py-2 text-sm border"
+          />
+        </div>
+        <Button variant="outline">
+          <Filter className="mr-2 h-4 w-4" />
+          Filter
+        </Button>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">1,248</div>
+            <p className="text-xs text-muted-foreground">+12% from last month</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">New Leads</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">142</div>
+            <p className="text-xs text-muted-foreground">+8% from last week</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Qualified Leads</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">842</div>
+            <p className="text-xs text-muted-foreground">+5% from last month</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">67%</div>
+            <p className="text-xs text-muted-foreground">+3% from last month</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Leads</CardTitle>
+          <CardDescription>
+            Latest leads added to your pipeline
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div>
+                <h3 className="font-medium">Alex Johnson</h3>
+                <p className="text-sm text-muted-foreground">Marketing Manager at TechCorp</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary">Hot</Badge>
+                <Button variant="outline" size="sm">View</Button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div>
+                <h3 className="font-medium">Sarah Williams</h3>
+                <p className="text-sm text-muted-foreground">CTO at StartupXYZ</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">Warm</Badge>
+                <Button variant="outline" size="sm">View</Button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div>
+                <h3 className="font-medium">Michael Chen</h3>
+                <p className="text-sm text-muted-foreground">Product Director at InnovateCo</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">Cold</Badge>
+                <Button variant="outline" size="sm">View</Button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div>
+                <h3 className="font-medium">Emma Davis</h3>
+                <p className="text-sm text-muted-foreground">Operations Lead at Global Inc</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary">Hot</Badge>
+                <Button variant="outline" size="sm">View</Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

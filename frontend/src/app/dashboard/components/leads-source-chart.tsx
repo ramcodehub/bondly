@@ -60,13 +60,13 @@ export function LeadsSourceChart() {
 
   if (loading) {
     return (
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
-          <CardTitle>Lead Sources</CardTitle>
-          <CardDescription>Distribution of leads by source</CardDescription>
+          <CardTitle className="text-base sm:text-lg">Lead Sources</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">Distribution of leads by source</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-80">
+          <div className="flex items-center justify-center h-64 sm:h-80">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         </CardContent>
@@ -76,13 +76,13 @@ export function LeadsSourceChart() {
 
   if (error) {
     return (
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
-          <CardTitle>Lead Sources</CardTitle>
-          <CardDescription>Distribution of leads by source</CardDescription>
+          <CardTitle className="text-base sm:text-lg">Lead Sources</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">Distribution of leads by source</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-80 text-destructive">
+          <div className="flex items-center justify-center h-64 sm:h-80 text-destructive">
             Error loading data: {error}
           </div>
         </CardContent>
@@ -92,13 +92,13 @@ export function LeadsSourceChart() {
 
   if (data.length === 0) {
     return (
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
-          <CardTitle>Lead Sources</CardTitle>
-          <CardDescription>Distribution of leads by source</CardDescription>
+          <CardTitle className="text-base sm:text-lg">Lead Sources</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">Distribution of leads by source</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-80 text-muted-foreground">
+          <div className="flex items-center justify-center h-64 sm:h-80 text-muted-foreground">
             No lead source data available
           </div>
         </CardContent>
@@ -107,13 +107,13 @@ export function LeadsSourceChart() {
   }
 
   return (
-    <Card>
+    <Card className="min-w-0">
       <CardHeader>
-        <CardTitle>Lead Sources</CardTitle>
-        <CardDescription>Distribution of leads by source</CardDescription>
+        <CardTitle className="text-base sm:text-lg">Lead Sources</CardTitle>
+        <CardDescription className="text-xs sm:text-sm">Distribution of leads by source</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="h-80">
+        <div className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -122,7 +122,7 @@ export function LeadsSourceChart() {
                 cy="50%"
                 labelLine={true}
                 label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                outerRadius={80}
+                outerRadius={60}
                 fill="#8884d8"
                 dataKey="value"
               >

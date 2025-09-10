@@ -18,7 +18,7 @@ export const useChatAssistantStore = create<ChatAssistantState>((set, get) => ({
   messages: [
     {
       id: '1',
-      content: 'Hello! I\'m your Bondly CRM assistant. How can I help you today?',
+      content: 'Hello! I\'m your Bondly assistant. How can I help you today?',
       role: 'assistant',
       timestamp: new Date(),
     }
@@ -44,7 +44,7 @@ export const useChatAssistantStore = create<ChatAssistantState>((set, get) => ({
     messages: [
       {
         id: '1',
-        content: 'Hello! I\'m your Bondly CRM assistant. How can I help you today?',
+        content: 'Hello! I\'m your Bondly assistant. How can I help you today?',
         role: 'assistant',
         timestamp: new Date(),
       }

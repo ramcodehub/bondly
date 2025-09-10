@@ -172,7 +172,7 @@ const USE_MOCK = process.env.NODE_ENV === 'development' && process.env.NEXT_PUBL
 
 ### Phase 3: Advanced Features
 - Real-time updates
-- Advanced CRM features
+- Advanced Bondly features
 - Enhanced reporting
 
 ## How to Run Tests

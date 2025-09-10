@@ -1,6 +1,6 @@
 # Companies API Troubleshooting Guide
 
-This guide helps you resolve issues with the companies API in your Bondly CRM application.
+This guide helps you resolve issues with the companies API in your Bondly application.
 
 ## Common Issues and Solutions
 

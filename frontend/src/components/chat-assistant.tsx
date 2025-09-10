@@ -24,9 +24,10 @@ export default function ChatAssistant() {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const [showSuggestions, setShowSuggestions] = useState(false); // Changed to false by default
+  const [showSuggestions, setShowSuggestions] = useState(true); // Changed to true by default
   const [showSatisfactionPrompt, setShowSatisfactionPrompt] = useState(false);
   const [lastAssistantMessageId, setLastAssistantMessageId] = useState<string | null>(null);
+  const [isAssistantTyping, setIsAssistantTyping] = useState(false);
 
   // Improved scroll to bottom with better performance
   const scrollToBottom = () => {
@@ -58,8 +59,8 @@ export default function ChatAssistant() {
       if (lastMessage.role === "assistant" && secondLastMessage.role === "user") {
         setLastAssistantMessageId(lastMessage.id);
         setShowSatisfactionPrompt(true);
-        // Hide quick questions by default
-        setShowSuggestions(false);
+        // Keep quick questions visible by default
+        // setShowSuggestions(false);
       }
     }
   }, [messages]);
@@ -88,24 +89,30 @@ export default function ChatAssistant() {
       role: "user"
     });
 
-    // Hide satisfaction prompt and quick questions when user sends a new message
+    // Hide satisfaction prompt when user sends a new message
     setShowSatisfactionPrompt(false);
-    setShowSuggestions(false);
+    // Keep quick questions visible by default
+    // setShowSuggestions(false);
 
     // Find matching conversation
     const matchingConversation = findMatchingConversation(inputValue);
     
-    // Simulate assistant response after a delay
+    // Show typing indicator
+    setIsAssistantTyping(true);
+    
+    // Simulate assistant response after a 2-second delay
     setTimeout(() => {
       const response = matchingConversation 
         ? matchingConversation.answer 
         : "I'm still learning! Please contact support or check documentation.";
       
+      // Hide typing indicator and add response
+      setIsAssistantTyping(false);
       addMessage({
         content: response,
         role: "assistant"
       });
-    }, 300);
+    }, 2000);
     
     setInputValue("");
   };
@@ -265,7 +272,7 @@ export default function ChatAssistant() {
                         </div>
                       )}
                       
-                      {/* Quick Questions - now only shown when user clicks No */}
+                      {/* Quick Questions - now shown by default when chat opens */}
                       {showSuggestions && quickQuestions.length > 0 && (
                         <div className="px-4 pb-3 border-t pt-3 bg-gray-50 dark:bg-gray-900">
                           <div className="flex items-center mb-2">
@@ -284,6 +291,19 @@ export default function ChatAssistant() {
                                 <span className="truncate">{conversation.question}</span>
                               </Button>
                             ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Assistant typing indicator */}
+                      {isAssistantTyping && (
+                        <div className="flex justify-start">
+                          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 rounded-bl-none max-w-[85%]">
+                            <div className="flex space-x-1">
+                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                            </div>
                           </div>
                         </div>
                       )}

@@ -1,5 +1,5 @@
 -- =============================
--- Supabase CRM Database Setup (with deal_summary_view)
+-- Supabase Bondly Database Setup (with deal_summary_view)
 -- =============================
 
 DROP TABLE IF EXISTS invoices CASCADE;

@@ -1,4 +1,4 @@
-# AMGS CRM CRM - Full-Stack Customer Relationship Management System
+# Bondly Bondly - Full-Stack Customer Relationship Management System
 
 <div align="center">
   <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
@@ -10,14 +10,14 @@
 </div>
 
 <div align="center">
-  <img src="https://img.shields.io/github/license/your-username/AMGS CRM-crm" alt="License" />
-  <img src="https://img.shields.io/github/last-commit/your-username/AMGS CRM-crm" alt="Last Commit" />
-  <img src="https://img.shields.io/github/languages/code-size/your-username/AMGS CRM-crm" alt="Code Size" />
+  <img src="https://img.shields.io/github/license/your-username/Bondly-Bondly" alt="License" />
+  <img src="https://img.shields.io/github/last-commit/your-username/Bondly-Bondly" alt="Last Commit" />
+  <img src="https://img.shields.io/github/languages/code-size/your-username/Bondly-Bondly" alt="Code Size" />
 </div>
 
 <br />
 
-A modern, full-stack CRM (Customer Relationship Management) system designed to streamline business operations, manage customer interactions, and improve data-driven decision-making. Built with a cutting-edge tech stack featuring React/Next.js frontend and Node.js/Express backend, all powered by Supabase for database and authentication services.
+A modern, full-stack Bondly (Customer Relationship Management) system designed to streamline business operations, manage customer interactions, and improve data-driven decision-making. Built with a cutting-edge tech stack featuring React/Next.js frontend and Node.js/Express backend, all powered by Supabase for database and authentication services.
 
 ## 🌟 Key Features
 
@@ -45,7 +45,7 @@ A modern, full-stack CRM (Customer Relationship Management) system designed to s
 ## 📁 Project Structure
 
 ```
-AMGS CRM-crm/
+Bondly-Bondly/
 ├── backend/
 │   ├── src/
 │   │   ├── config/          # Configuration files (Supabase client)
@@ -79,8 +79,8 @@ AMGS CRM-crm/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/AMGS CRM-crm.git
-   cd AMGS CRM-crm
+   git clone https://github.com/your-username/Bondly-Bondly.git
+   cd Bondly-Bondly
    ```
 
 2. **Install backend dependencies:**
@@ -149,7 +149,7 @@ AMGS CRM-crm/
 
 ## 🗄️ Database Schema
 
-The CRM uses Supabase (PostgreSQL) with the following key tables:
+The Bondly uses Supabase (PostgreSQL) with the following key tables:
 
 - **leads**: Stores information about potential customers
   - `id`, `name`, `email`, `phone`, `company`, `status`, `created_at`
@@ -223,4 +223,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-If you have any questions or need help with setup, please [open an issue](https://github.com/your-username/AMGS CRM-crm/issues) on GitHub.
+If you have any questions or need help with setup, please [open an issue](https://github.com/your-username/Bondly-Bondly/issues) on GitHub.

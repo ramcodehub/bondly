@@ -1,5 +1,4 @@
 "use client"
-"use client"
 
 import * as React from "react"
 import dynamic from "next/dynamic"
@@ -19,11 +18,12 @@ const CommandPalette = dynamic(() => import("./command-palette").then(m => m.Com
 
 export default function TopbarActions() {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1 sm:gap-2">
       {/* Command Palette trigger */}
       <Button
         variant="ghost"
         size="icon"
+        className="h-8 w-8 sm:h-9 sm:w-9"
         aria-label="Command Palette"
         title="Search (Ctrl/⌘+K)"
         onClick={() => {
@@ -31,7 +31,7 @@ export default function TopbarActions() {
           document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true } as any))
         }}
       >
-        <Search className="h-5 w-5" />
+        <Search className="h-4 w-4 sm:h-5 sm:w-5" />
       </Button>
 
       {/* Mount palette only when user triggers via keyboard or click (defer initial hydration) */}
@@ -39,14 +39,14 @@ export default function TopbarActions() {
       {/* Notifications */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Notifications">
-            <Bell className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" aria-label="Notifications">
+            <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-72 p-0">
-          <DropdownMenuLabel className="px-4 py-2">Notifications</DropdownMenuLabel>
+        <DropdownMenuContent align="end" className="w-64 sm:w-72 p-0">
+          <DropdownMenuLabel className="px-3 py-2 sm:px-4 sm:py-2">Notifications</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <div className="max-h-80 overflow-auto">
+          <div className="max-h-64 sm:max-h-80 overflow-auto">
             <NotificationsList />
           </div>
         </DropdownMenuContent>
@@ -55,8 +55,8 @@ export default function TopbarActions() {
       {/* Profile */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Profile">
-            <User className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" aria-label="Profile">
+            <User className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
@@ -71,5 +71,3 @@ export default function TopbarActions() {
     </div>
   )
 }
-
-

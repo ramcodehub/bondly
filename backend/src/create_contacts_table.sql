@@ -1,4 +1,4 @@
--- Create contacts table with proper structure for CRM
+-- Create contacts table with proper structure for Bondly
 CREATE TABLE IF NOT EXISTS contacts (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     first_name VARCHAR(150) NOT NULL,

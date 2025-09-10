@@ -6,9 +6,10 @@ interface DataTableProps<TData> {
   data: TData[]
   searchKey?: string
   filterOptions?: { label: string; value: string; options: { label: string; value: string }[] }[]
+  onRowClick?: (row: TData) => void
 }
 
-export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
+export function DataTable<TData>({ columns, data, onRowClick }: DataTableProps<TData>) {
   // Create mock table context for functions that need it
   const mockTableContext = {
     getIsAllPageRowsSelected: () => false,
@@ -41,7 +42,7 @@ export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
 
   return (
     <div className="space-y-4">
-      <SimpleTable columns={simpleColumns} data={data} />
+      <SimpleTable columns={simpleColumns} data={data} onRowClick={onRowClick} />
     </div>
   )
 }

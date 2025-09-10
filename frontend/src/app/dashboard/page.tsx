@@ -190,16 +190,16 @@ function DashboardContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome to your CRM dashboard. Here's a real-time overview of your business.
+          <h1 className="text-2xl sm:text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
+            Welcome to your Bondly. Here's a real-time overview of your business.
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           {realtimeError ? (
-            <div className="flex items-center gap-2 text-sm text-amber-600">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-amber-600">
               <div className="w-2 h-2 bg-amber-600 rounded-full animate-pulse" />
               Realtime Unavailable
             </div>
@@ -207,7 +207,7 @@ function DashboardContent() {
             <RealtimeStatus />
           )}
           {(loading || dealsLoading || tasksLoading || leadsLoading || contactsLoading) && (
-            <div className="flex items-center gap-2 text-sm text-blue-600">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-600">
               <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
               Loading...
             </div>
@@ -215,8 +215,8 @@ function DashboardContent() {
         </div>
       </div>
 
-      {/* Metrics Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Metrics Grid - Responsive layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricTooltip 
           title="Total Revenue" 
           description={`$${dealStats.totalValue.toLocaleString()}`}
@@ -230,7 +230,7 @@ function DashboardContent() {
             { key: 'stage', label: 'Stage' }
           ]}
         >
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -255,7 +255,7 @@ function DashboardContent() {
             { key: 'status', label: 'Status' }
           ]}
         >
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Leads</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -280,7 +280,7 @@ function DashboardContent() {
             { key: 'status', label: 'Status' }
           ]}
         >
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
               <CheckSquare className="h-4 w-4 text-muted-foreground" />
@@ -305,7 +305,7 @@ function DashboardContent() {
             { key: 'company_name', label: 'Company' }
           ]}
         >
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Contacts</CardTitle>
               <Phone className="h-4 w-4 text-muted-foreground" />
@@ -318,9 +318,9 @@ function DashboardContent() {
         </MetricTooltip>
       </div>
 
-      {/* Charts Section */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      {/* Charts Section - Responsive layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-7 gap-4">
+        <Card className="col-span-1 lg:col-span-4">
           <CardHeader>
             <CardTitle>Deals by Stage</CardTitle>
           </CardHeader>
@@ -328,7 +328,7 @@ function DashboardContent() {
             <DealsStageChart deals={deals} stats={dealStats} />
           </CardContent>
         </Card>
-        <Card className="col-span-3">
+        <Card className="col-span-1 lg:col-span-3">
           <CardHeader>
             <CardTitle>Tasks by Priority</CardTitle>
           </CardHeader>
@@ -338,8 +338,8 @@ function DashboardContent() {
         </Card>
       </div>
 
-      {/* Additional Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Additional Metrics - Responsive layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricTooltip 
           title="Companies" 
           description={companyStats.totalCompanies.toString()}
@@ -353,7 +353,7 @@ function DashboardContent() {
             { key: 'website', label: 'Website' }
           ]}
         >
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Companies</CardTitle>
               <Building2 className="h-4 w-4 text-muted-foreground" />
@@ -377,7 +377,7 @@ function DashboardContent() {
             { key: 'status', label: 'Status' }
           ]}
         >
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Urgent Tasks</CardTitle>
               <AlertCircle className="h-4 w-4 text-muted-foreground" />
@@ -400,7 +400,7 @@ function DashboardContent() {
             { key: 'completed_at', label: 'Completed At' }
           ]}
         >
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Completed Tasks</CardTitle>
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
@@ -424,7 +424,7 @@ function DashboardContent() {
             { key: 'company_name', label: 'Company' }
           ]}
         >
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Recent Contacts</CardTitle>
               <Activity className="h-4 w-4 text-muted-foreground" />
@@ -437,35 +437,35 @@ function DashboardContent() {
         </MetricTooltip>
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Responsive layout */}
       <Card>
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <Link href="/dashboard/leads">
               <Button variant="outline" className="w-full h-16 flex flex-col gap-2">
                 <Target className="h-5 w-5" />
-                <span className="text-sm">Add Lead</span>
+                <span className="text-xs sm:text-sm">Add Lead</span>
               </Button>
             </Link>
             <Link href="/dashboard/deals">
               <Button variant="outline" className="w-full h-16 flex flex-col gap-2">
                 <DollarSign className="h-5 w-5" />
-                <span className="text-sm">Create Deal</span>
+                <span className="text-xs sm:text-sm">Create Deal</span>
               </Button>
             </Link>
             <Link href="/dashboard/tasks">
               <Button variant="outline" className="w-full h-16 flex flex-col gap-2">
                 <CheckSquare className="h-5 w-5" />
-                <span className="text-sm">New Task</span>
+                <span className="text-xs sm:text-sm">New Task</span>
               </Button>
             </Link>
             <Link href="/dashboard/contacts">
               <Button variant="outline" className="w-full h-16 flex flex-col gap-2">
                 <Users className="h-5 w-5" />
-                <span className="text-sm">Add Contact</span>
+                <span className="text-xs sm:text-sm">Add Contact</span>
               </Button>
             </Link>
           </div>

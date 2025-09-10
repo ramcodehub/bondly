@@ -1,6 +1,6 @@
-# CRM Database Schema Documentation
+# Bondly Database Schema Documentation
 
-This document describes the database schema for the CRM system implemented in **Supabase/PostgreSQL**.  
+This document describes the database schema for the Bondly system implemented in **Supabase/PostgreSQL**.  
 It covers table structures, relationships, and data types for easy reference in your IDE.
 
 ---

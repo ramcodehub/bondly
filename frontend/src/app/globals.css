@@ -26,6 +26,9 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
+    /* Sidebar width variables */
+    --sidebar-width: 16rem; /* 256px when expanded */
+    --sidebar-width-collapsed: 4rem; /* 64px when collapsed */
   }
 
   .dark {
@@ -131,5 +134,29 @@
   }
   75% {
     transform: translateY(-30px) translateX(5px);
+  }
+}
+
+/* Responsive utilities for charts and components */
+@layer utilities {
+  .min-w-0 {
+    min-width: 0;
+  }
+  
+  .flex-1 {
+    flex: 1 1 0%;
+  }
+  
+  .overflow-x-auto {
+    overflow-x: auto;
+  }
+  
+  /* Custom utility for sidebar-aware padding */
+  .sidebar-expanded-padding {
+    padding-left: var(--sidebar-width);
+  }
+  
+  .sidebar-collapsed-padding {
+    padding-left: var(--sidebar-width-collapsed);
   }
 }

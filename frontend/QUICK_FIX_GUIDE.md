@@ -81,4 +81,4 @@ The Next.js config has been updated to suppress the critical dependency warnings
 4. **Contact support** if RLS error still occurs
 
 ---
-**Note**: This fix uses a permissive policy appropriate for CRM systems where users need full data access. For production, consider more restrictive authentication-based policies.
+**Note**: This fix uses a permissive policy appropriate for Bondly systems where users need full data access. For production, consider more restrictive authentication-based policies.

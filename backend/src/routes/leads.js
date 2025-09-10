@@ -3,6 +3,7 @@ import supabase from '../config/supabase.js';
 import { asyncHandler, createValidationError, createNotFoundError } from '../middleware/errorHandler.js';
 import { leadValidation, sanitizeInput } from '../middleware/validation.js';
 import { optimizedQueries } from '../middleware/databaseOptimizer.js';
+import { handleCampaignOnLeadCreate, handleCampaignOnLeadUpdate } from '../middleware/campaignHandler.js';
 
 const router = express.Router();
 
@@ -24,11 +25,11 @@ router.get('/', asyncHandler(async (req, res) => {
   });
 }));
 
-router.post('/', sanitizeInput, leadValidation.create, asyncHandler(async (req, res) => {
-  const { first_name, last_name, email, phone, company, job_title, source, status, notes } = req.body;
+router.post('/', sanitizeInput, leadValidation.create, handleCampaignOnLeadCreate, asyncHandler(async (req, res) => {
+  const { first_name, last_name, email, phone, company, job_title, source, status, notes, campaign_id } = req.body;
 
   const result = await optimizedQueries.create('leads', {
-    first_name, last_name, email, phone, company, job_title, source, status, notes
+    first_name, last_name, email, phone, company, job_title, source, status, notes, campaign_id
   });
 
   if (result.error) {
@@ -43,13 +44,13 @@ router.post('/', sanitizeInput, leadValidation.create, asyncHandler(async (req, 
 }));
 
 // PUT /api/leads/:id - update lead
-router.put('/:id', async (req, res) => {
+router.put('/:id', handleCampaignOnLeadUpdate, async (req, res) => {
   try {
     const leadId = req.params.id;
-    const { first_name, last_name, email, phone, company, job_title, source, status, notes } = req.body;
+    const { first_name, last_name, email, phone, company, job_title, source, status, notes, campaign_id } = req.body;
     const { data, error } = await supabase
       .from('leads')
-      .update({ first_name, last_name, email, phone, company, job_title, source, status, notes })
+      .update({ first_name, last_name, email, phone, company, job_title, source, status, notes, campaign_id })
       .eq('id', leadId)
       .select();
 

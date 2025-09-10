@@ -1,13 +1,13 @@
-# CRM Database Schema Documentation
+# Bondly Database Schema Documentation
 
-This document describes the database schema for the CRM (Customer Relationship Management) system.  
+This document describes the database schema for the Bondly (Customer Relationship Management) system.  
 The database is implemented in **PostgreSQL** (compatible with Supabase) and contains 8 main tables.
 
 ---
 
 ## 1. Overview
 
-The schema supports core CRM functions:
+The schema supports core Bondly functions:
 - **Sales Management**: Campaigns, Opportunities, Leads
 - **Customer Records**: Accounts, Contacts
 - **Service & Activities**: Tasks, Events

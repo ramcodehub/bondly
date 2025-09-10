@@ -34,7 +34,7 @@ The RLS fix script creates a comprehensive policy that allows authenticated user
 - UPDATE (modify) companies
 - DELETE (remove) companies
 
-This is appropriate for a CRM system where authenticated users need full access to company data.
+This is appropriate for a Bondly system where authenticated users need full access to company data.
 
 ## Files Modified
 - `src/app/api/companies/route.ts` - Enhanced error handling and fallback to admin client

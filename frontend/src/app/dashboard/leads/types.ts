@@ -47,5 +47,6 @@ export interface LeadFormValues {
   status: string;
   notes?: string;
   score?: number;
+  campaign_id?: number;
   [key: string]: any;
 }

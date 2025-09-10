@@ -74,7 +74,7 @@ export default function ServicesPage() {
     {
       icon: <FileText className="h-6 w-6" />,
       title: "Document Management",
-      description: "Store, share, and collaborate on documents directly within the CRM."
+      description: "Store, share, and collaborate on documents directly within the Bondly."
     }
   ];
 
@@ -87,7 +87,7 @@ export default function ServicesPage() {
         <section className="py-20 md:py-32 bg-gradient-to-b from-primary/5 to-background">
           <div className="container px-4 md:px-6">
             <div className="max-w-3xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Our CRM Features</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Bondly Features</h1>
               <p className="text-xl text-muted-foreground mb-8">
                 Everything you need to manage customer relationships, streamline processes, and grow your business.
               </p>
@@ -104,7 +104,7 @@ export default function ServicesPage() {
         <section className="py-20">
           <div className="container px-4 md:px-6">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-3xl font-bold mb-4">Core CRM Modules</h2>
+              <h2 className="text-3xl font-bold mb-4">Core Bondly Modules</h2>
               <p className="text-muted-foreground">
                 Our comprehensive suite of tools designed to cover every aspect of customer relationship management.
               </p>
@@ -134,7 +134,7 @@ export default function ServicesPage() {
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-3xl font-bold mb-4">Additional Capabilities</h2>
               <p className="text-muted-foreground">
-                Powerful features that extend beyond basic CRM functionality.
+                Powerful features that extend beyond basic Bondly functionality.
               </p>
             </div>
             
@@ -183,7 +183,7 @@ export default function ServicesPage() {
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Transform Your Business?</h2>
               <p className="text-primary-foreground/90 mb-8 text-lg">
-                Join thousands of businesses that trust our CRM to manage their customer relationships.
+                Join thousands of businesses that trust our Bondly to manage their customer relationships.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="secondary" asChild>

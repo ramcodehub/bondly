@@ -27,10 +27,10 @@ export default function About() {
         <div className="grid gap-12 lg:grid-cols-2 items-center">
           <div className="space-y-6">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold">About Our CRM Solution</h2>
+              <h2 className="text-3xl md:text-4xl font-bold">About Our Bondly Solution</h2>
               <p className="text-muted-foreground mt-4">
                 We've been helping businesses build stronger customer relationships for over a decade. 
-                Our CRM platform is designed to be intuitive, powerful, and scalable for businesses of all sizes.
+                Our Bondly platform is designed to be intuitive, powerful, and scalable for businesses of all sizes.
               </p>
             </div>
             
@@ -55,7 +55,7 @@ export default function About() {
           <div className="relative">
             <div className="aspect-video bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center transform transition-transform duration-500 hover:scale-105">
               <div className="text-center p-8">
-                <h3 className="text-2xl font-bold mb-4">Why Choose Our CRM?</h3>
+                <h3 className="text-2xl font-bold mb-4">Why Choose Our Bondly?</h3>
                 <p className="text-muted-foreground">
                   Experience the difference with our all-in-one solution that grows with your business.
                 </p>
@@ -89,7 +89,7 @@ export default function About() {
                 </div>
               </div>
               <p className="text-muted-foreground">
-                "AMGS CRM transformed how we manage customer relationships. Our sales team is 40% more productive!"
+                "Bondly transformed how we manage customer relationships. Our sales team is 40% more productive!"
               </p>
               <div className="flex mt-4 text-yellow-500">
                 {[...Array(5)].map((_, i) => (

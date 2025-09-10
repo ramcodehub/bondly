@@ -29,6 +29,7 @@ import extendedLeadsRoutes from './routes/extended/leads.js';
 import extendedContactsRoutes from './routes/extended/contacts.js';
 import extendedAccountsRoutes from './routes/extended/accounts.js';
 import extendedServiceRoutes from './routes/extended/service.js';
+import extendedCampaignsRoutes from './routes/extended/campaigns.js';
 
 // Import Supabase client
 import supabase from './config/supabase.js';
@@ -76,12 +77,12 @@ const allowedOrigins = {
     'http://127.0.0.1:5175'
   ],
   production: [
-    'https://prototypecrm.netlify.app',
+    'https://prototypeBondly.netlify.app',
     'https://bondly-0r0c.onrender.com',
     process.env.FRONTEND_URL
   ].filter(Boolean), // Remove undefined values
   staging: [
-    'https://staging-prototypecrm.netlify.app',
+    'https://staging-prototypeBondly.netlify.app',
     process.env.STAGING_FRONTEND_URL
   ].filter(Boolean)
 };
@@ -165,7 +166,7 @@ app.options('*', cors(corsOptions));
 // Add a root route for health check and basic response
 app.get('/', (req, res) => {
   res.json({
-    message: 'Bondly CRM Backend API',
+    message: 'Bondly Backend API',
     timestamp: new Date().toISOString(),
     status: 'OK'
   });
@@ -231,6 +232,7 @@ app.use('/api/extended/leads', extendedLeadsRoutes);
 app.use('/api/extended/contacts', extendedContactsRoutes);
 app.use('/api/extended/accounts', extendedAccountsRoutes);
 app.use('/api/extended/service', extendedServiceRoutes);
+app.use('/api/extended/campaigns', extendedCampaignsRoutes);
 
 // 404 handler for unmatched API routes
 app.use('/api/*', notFoundHandler);

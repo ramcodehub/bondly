@@ -1,6 +1,6 @@
 # Profile Management System Update
 
-This document describes the changes made to the profile management system in the Travels CRM application.
+This document describes the changes made to the profile management system in the Travels Bondly application.
 
 ## Changes Made
 

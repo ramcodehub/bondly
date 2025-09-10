@@ -29,6 +29,7 @@ async function createLeadsTable() {
           phone TEXT,
           lead_owner TEXT,
           lead_source TEXT,
+          campaign_id BIGINT REFERENCES marketing_campaign(campaign_id) ON DELETE SET NULL,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );
       `
@@ -47,6 +48,7 @@ async function createLeadsTable() {
           phone TEXT,
           lead_owner TEXT,
           lead_source TEXT,
+          campaign_id BIGINT REFERENCES marketing_campaign(campaign_id) ON DELETE SET NULL,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );
       `);

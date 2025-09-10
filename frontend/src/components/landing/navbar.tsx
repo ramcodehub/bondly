@@ -24,7 +24,7 @@ export default function Navbar({ isMenuOpen, setIsMenuOpen }: NavbarProps) {
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2 group">
             <span className="font-bold text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent group-hover:from-primary/80 group-hover:to-secondary/80 transition-all duration-300">
-              AMGS CRM
+              Bondly
             </span>
           </Link>
         </div>

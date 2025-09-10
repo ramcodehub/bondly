@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Page Not Found | CRM Dashboard',
+  title: 'Page Not Found | Bondly',
   description: 'The page you are looking for does not exist or has been moved.',
   robots: 'noindex, nofollow',
 };

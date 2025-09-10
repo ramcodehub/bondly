@@ -1,5 +1,5 @@
 -- Companies Table Schema for Supabase
--- This creates a companies table with all necessary fields for CRM functionality
+-- This creates a companies table with all necessary fields for Bondly functionality
 
 CREATE TABLE IF NOT EXISTS companies (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

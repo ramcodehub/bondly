@@ -1,8 +1,8 @@
-# AMGS CRM CRM - Full-Stack Customer Relationship Management System
+# Bondly Bondly - Full-Stack Customer Relationship Management System
 
 ## Project Overview
 
-AMGS CRM CRM is a modern, full-stack Customer Relationship Management system designed to streamline business operations, manage customer interactions, and improve data-driven decision-making. The system features a cutting-edge tech stack with a React/Next.js frontend and Node.js/Express backend, all powered by Supabase for database and authentication services.
+Bondly Bondly is a modern, full-stack Customer Relationship Management system designed to streamline business operations, manage customer interactions, and improve data-driven decision-making. The system features a cutting-edge tech stack with a React/Next.js frontend and Node.js/Express backend, all powered by Supabase for database and authentication services.
 
 ### Key Features
 
@@ -47,7 +47,7 @@ AMGS CRM CRM is a modern, full-stack Customer Relationship Management system des
 ## Project Structure
 
 ```
-AMGS CRM-crm/
+Bondly-Bondly/
 ├── backend/
 │   ├── src/
 │   │   ├── config/          # Configuration files (Supabase client)
@@ -71,7 +71,7 @@ AMGS CRM-crm/
 
 ## Database Schema
 
-The CRM uses Supabase (PostgreSQL) with the following key tables:
+The Bondly uses Supabase (PostgreSQL) with the following key tables:
 
 ### Leads Table
 ```sql

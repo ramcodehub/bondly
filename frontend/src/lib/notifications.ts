@@ -87,10 +87,10 @@ class NotificationService {
     })
   }
 
-  // Specialized notifications for common CRM actions
+  // Specialized notifications for common Bondly actions
   public leadCreated(leadName: string) {
     this.success(`Lead "${leadName}" created successfully`, {
-      description: 'The lead has been added to your CRM',
+      description: 'The lead has been added to your Bondly',
       action: {
         label: 'View Leads',
         onClick: () => window.location.href = '/dashboard/leads'

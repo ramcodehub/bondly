@@ -301,7 +301,7 @@ export class EmailService {
       {
         id: '1',
         leadId,
-        subject: 'Welcome to our CRM platform',
+        subject: 'Welcome to our Bondly platform',
         status: 'opened',
         sentAt: new Date(Date.now() - 86400000 * 2),
         deliveredAt: new Date(Date.now() - 86400000 * 2 + 300000),

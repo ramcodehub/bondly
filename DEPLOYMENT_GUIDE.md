@@ -1,6 +1,6 @@
-# Deployment Guide for AMGS CRM CRM
+# Deployment Guide for Bondly Bondly
 
-This guide will help you deploy the AMGS CRM CRM application with the frontend on Netlify and the backend on Render.
+This guide will help you deploy the Bondly Bondly application with the frontend on Netlify and the backend on Render.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ This guide will help you deploy the AMGS CRM CRM application with the frontend o
 1. Go to [Netlify](https://app.netlify.com/) and sign in to your account
 2. Click "New site from Git"
 3. Connect your GitHub repository
-4. Select the repository that contains the AMGS CRM CRM code
+4. Select the repository that contains the Bondly Bondly code
 
 ### 2. Configure Build Settings
 
@@ -49,11 +49,11 @@ Click "Deploy site" to start the deployment process.
 1. Go to [Render](https://dashboard.render.com/) and sign in to your account
 2. Click "New Web Service"
 3. Connect your GitHub repository
-4. Select the repository that contains the AMGS CRM CRM code
+4. Select the repository that contains the Bondly Bondly code
 
 ### 2. Configure Service Settings
 
-- Name: AMGS CRM-backend (or any name you prefer)
+- Name: Bondly-backend (or any name you prefer)
 - Runtime: Node
 - Build command: `npm install`
 - Start command: `npm start`
@@ -91,7 +91,7 @@ Click "Create Web Service" to start the deployment process.
 
 After your backend is deployed on Render:
 
-1. Copy the Render URL (e.g., https://AMGS CRM-backend.onrender.com)
+1. Copy the Render URL (e.g., https://Bondly-backend.onrender.com)
 2. Go to your Netlify site settings
 3. Update the `NEXT_PUBLIC_BACKEND_API_URL` environment variable with the Render URL
 4. Trigger a new deployment of your frontend

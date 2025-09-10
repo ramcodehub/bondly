@@ -23,7 +23,8 @@ import {
   LogIn as LogInIcon,
   Plus as PlusIcon,
   CreditCard as CreditCardIcon,
-  Download as DownloadIcon
+  Download as DownloadIcon,
+  Megaphone as MegaphoneIcon
 } from "lucide-react"
 
 // Re-export all Lucide icons with dynamic imports
@@ -85,6 +86,7 @@ export const Icons = {
   plus: (props: LucideProps) => <PlusIcon {...props} />,
   creditCard: (props: LucideProps) => <CreditCardIcon {...props} />,
   download: (props: LucideProps) => <DownloadIcon {...props} />,
+  megaphone: (props: LucideProps) => <MegaphoneIcon {...props} />,
   
   // Social Media
   google: (props: LucideProps) => (

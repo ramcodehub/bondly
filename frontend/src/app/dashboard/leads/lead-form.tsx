@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import * as z from 'zod';
+import { useCampaigns } from '@/lib/hooks/useCampaigns';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -36,6 +37,7 @@ const formSchema = z.object({
   source: z.string().optional(),
   status: z.string().default('new'),
   notes: z.string().optional(),
+  campaign_id: z.number().optional(),
 });
 
 type LeadFormProps = {
@@ -46,6 +48,7 @@ type LeadFormProps = {
 export function LeadForm({ initialData, isEdit = false }: LeadFormProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const { campaigns, loading: campaignsLoading } = useCampaigns();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,6 +62,7 @@ export function LeadForm({ initialData, isEdit = false }: LeadFormProps) {
       source: '',
       status: 'new',
       notes: '',
+      campaign_id: undefined,
     },
   });
 
@@ -263,6 +267,37 @@ export function LeadForm({ initialData, isEdit = false }: LeadFormProps) {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="campaign_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Campaign</FormLabel>
+                <Select 
+                  onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)} 
+                  value={field.value?.toString() || ''}
+                  disabled={isLoading || campaignsLoading}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a campaign" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {campaigns.map((campaign) => (
+                      <SelectItem 
+                        key={campaign.campaign_id} 
+                        value={campaign.campaign_id.toString()}
+                      >
+                        {campaign.campaign_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
         <FormField
           control={form.control}
@@ -291,7 +326,7 @@ export function LeadForm({ initialData, isEdit = false }: LeadFormProps) {
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isLoading || campaignsLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isEdit ? 'Update Lead' : 'Create Lead'}
           </Button>

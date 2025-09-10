@@ -1,214 +1,137 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import dynamic from "next/dynamic"
-import { toast } from "sonner"
-import { useRouter } from "next/navigation"
-import { Edit2, Plus, Loader2 } from "lucide-react"
-import { useContactsRealtime } from "@/lib/hooks/useContactsRealtime"
-
-const DataTable = dynamic(() => import("@/components/ui/data-table.client"), { ssr: false })
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { ContactForm } from "@/components/contact-form"
-import { cn } from "@/lib/utils"
+import { Plus, Users, Filter, Search, MoreHorizontal } from "lucide-react"
 
 export default function ContactsPage() {
-  const { contacts, loading, error, fetchContacts } = useContactsRealtime()
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [editingContact, setEditingContact] = useState<any | null>(null)
-  const router = useRouter()
-
-  useEffect(() => {
-    if (error) {
-      toast.error('Failed to load contacts', {
-        description: error
-      })
-    }
-  }, [error])
-
-  const handleAddContact = () => {
-    setIsAddDialogOpen(true)
-  }
-
-  const handleEditContact = (contact: any) => {
-    setEditingContact(contact)
-  }
-
-  const handleFormSuccess = () => {
-    setIsAddDialogOpen(false)
-    setEditingContact(null)
-  }
-
-  const columns = [
-    {
-      accessorKey: "id",
-      header: "S.NO",
-      cell: ({ row }: { row: any }) => (
-        <div className="font-medium">#{row.original.id}</div>
-      ),
-    },
-    {
-      accessorKey: "name",
-      header: "Name",
-      cell: ({ row }: { row: any }) => (
-        <div className="font-medium">{row.original.name}</div>
-      ),
-    },
-    {
-      accessorKey: "role",
-      header: "Role",
-    },
-    {
-      accessorKey: "email",
-      header: "Email",
-    },
-    {
-      accessorKey: "phone",
-      header: "Phone",
-    },
-    {
-      accessorKey: "company_name",
-      header: "Company",
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }: { row: any }) => {
-        const status = row.original.status
-        return (
-          <Badge
-            variant={status === "active" ? "default" : "outline"}
-            className={cn(
-              "capitalize",
-              status === "active" && "bg-green-100 text-green-800",
-              status === "inactive" && "bg-gray-100 text-gray-800",
-              status === "pending" && "bg-blue-100 text-blue-800"
-            )}
-          >
-            {status}
-          </Badge>
-        )
-      },
-    },
-    {
-      accessorKey: "lastContact",
-      header: "Last Contact",
-      cell: ({ row }: { row: any }) => {
-        return row.original.lastContact 
-          ? new Date(row.original.lastContact).toLocaleDateString()
-          : 'N/A'
-      },
-    },
-    {
-      accessorKey: "created_at",
-      header: "Created",
-      cell: ({ row }: { row: any }) => {
-        return row.original.created_at 
-          ? new Date(row.original.created_at).toLocaleDateString()
-          : 'N/A'
-      },
-    },
-    {
-      accessorKey: "updated_at",
-      header: "Updated",
-      cell: ({ row }: { row: any }) => {
-        return row.original.updated_at 
-          ? new Date(row.original.updated_at).toLocaleDateString()
-          : 'N/A'
-      },
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }: { row: any }) => (
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleEditContact(row.original)}
-          >
-            <Edit2 className="h-4 w-4" />
-          </Button>
-        </div>
-      ),
-    },
-  ]
-
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Contacts</h1>
+          <h1 className="text-3xl font-bold">Contacts</h1>
           <p className="text-muted-foreground">
-            Manage your contacts and their information
+            Manage your contact database
           </p>
         </div>
-        <Button onClick={handleAddContact}>
+        <Button>
           <Plus className="mr-2 h-4 w-4" />
           Add Contact
         </Button>
       </div>
 
+      <div className="flex items-center space-x-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <input
+            placeholder="Search contacts..."
+            className="w-full rounded-lg bg-background pl-8 py-2 text-sm border"
+          />
+        </div>
+        <Button variant="outline">
+          <Filter className="mr-2 h-4 w-4" />
+          Filter
+        </Button>
+      </div>
+
       <Card>
-        <CardContent className="p-6">
-          {loading ? (
-            <div className="flex items-center justify-center h-64">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <CardHeader>
+          <CardTitle>Contact List</CardTitle>
+          <CardDescription>
+            Your complete contact database
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+                  AJ
+                </div>
+                <div>
+                  <h3 className="font-medium">Alex Johnson</h3>
+                  <p className="text-sm text-muted-foreground">alex@techcorp.com</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary">VIP</Badge>
+                <Button variant="ghost" size="icon">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-          ) : (
-            <DataTable
-              columns={columns}
-              data={contacts}
-              searchKey="name"
-              filterOptions={[
-                {
-                  label: "Status",
-                  value: "status",
-                  options: [
-                    { label: "Active", value: "active" },
-                    { label: "Inactive", value: "inactive" },
-                    { label: "Pending", value: "pending" }
-                  ]
-                }
-              ]}
-            />
-          )}
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+                  SW
+                </div>
+                <div>
+                  <h3 className="font-medium">Sarah Williams</h3>
+                  <p className="text-sm text-muted-foreground">sarah@startupxyz.com</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">Lead</Badge>
+                <Button variant="ghost" size="icon">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+                  MC
+                </div>
+                <div>
+                  <h3 className="font-medium">Michael Chen</h3>
+                  <p className="text-sm text-muted-foreground">michael@innovateco.com</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary">Customer</Badge>
+                <Button variant="ghost" size="icon">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+                  ED
+                </div>
+                <div>
+                  <h3 className="font-medium">Emma Davis</h3>
+                  <p className="text-sm text-muted-foreground">emma@globalinc.com</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">Prospect</Badge>
+                <Button variant="ghost" size="icon">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+                  RJ
+                </div>
+                <div>
+                  <h3 className="font-medium">Robert Johnson</h3>
+                  <p className="text-sm text-muted-foreground">robert@megacorp.com</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary">VIP</Badge>
+                <Button variant="ghost" size="icon">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
-
-      {/* Add Contact Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Add New Contact</DialogTitle>
-          </DialogHeader>
-          <ContactForm
-            onSuccess={handleFormSuccess}
-            onCancel={() => setIsAddDialogOpen(false)}
-            isOpen={isAddDialogOpen}
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Contact Dialog */}
-      <Dialog open={!!editingContact} onOpenChange={(open) => !open && setEditingContact(null)}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Edit Contact</DialogTitle>
-          </DialogHeader>
-          {editingContact && (
-            <ContactForm
-              initialData={editingContact}
-              onSuccess={handleFormSuccess}
-              onCancel={() => setEditingContact(null)}
-              isOpen={!!editingContact}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

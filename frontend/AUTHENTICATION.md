@@ -1,6 +1,6 @@
 # Authentication Setup
 
-This document describes the authentication implementation for the CRM Dashboard application.
+This document describes the authentication implementation for the Bondly application.
 
 ## Overview
 

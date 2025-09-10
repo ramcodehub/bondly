@@ -2247,7 +2247,7 @@
   "version" "2.0.6"
 
 "acorn-globals@^7.0.0":
-  "integrity" "sha512-umOSDSDrfHbTNPuNpC2NSnnA3LUrqpevPb4T9jRx4MagXNS0rs+gwiTcAvqCRmsD6utzsrzNt+ebm00SNWiC3Q=="
+  "integrity" "sha512-umOSDSDrfHbTNPuNpC2NSnnA3LUrqpevPb4T9jRx4MagXNS0rs+gwiTcAvqBondlysD6utzsrzNt+ebm00SNWiC3Q=="
   "resolved" "https://registry.npmjs.org/acorn-globals/-/acorn-globals-7.0.1.tgz"
   "version" "7.0.1"
   dependencies:
@@ -2267,7 +2267,7 @@
     "acorn" "^8.11.0"
 
 "acorn@^6.0.0 || ^7.0.0 || ^8.0.0", "acorn@^8.1.0", "acorn@^8.11.0", "acorn@^8.8.1", "acorn@^8.9.0":
-  "integrity" "sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg=="
+  "integrity" "sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieBondlyNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg=="
   "resolved" "https://registry.npmjs.org/acorn/-/acorn-8.15.0.tgz"
   "version" "8.15.0"
 
@@ -5219,7 +5219,7 @@
   "version" "1.1.0"
 
 "mdast-util-from-markdown@^2.0.0":
-  "integrity" "sha512-uZhTV/8NBuw0WHkPTrCqDOl0zVe1BIng5ZtHoDk49ME1qqcjYmmLmOf0gELgcRMxN4w2iuIeVso5/6QymSrgmA=="
+  "integrity" "sha512-uZhTV/8NBuw0WHkPTrCqDOl0zVe1BIng5ZtHoDk49ME1qqcjYmmLmOf0gELgBondlyxN4w2iuIeVso5/6QymSrgmA=="
   "resolved" "https://registry.npmjs.org/mdast-util-from-markdown/-/mdast-util-from-markdown-2.0.2.tgz"
   "version" "2.0.2"
   dependencies:
@@ -6516,7 +6516,7 @@
   "version" "3.0.0"
 
 "side-channel-list@^1.0.0":
-  "integrity" "sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KCrMrTA=="
+  "integrity" "sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KBondlyrTA=="
   "resolved" "https://registry.npmjs.org/side-channel-list/-/side-channel-list-1.0.0.tgz"
   "version" "1.0.0"
   dependencies:

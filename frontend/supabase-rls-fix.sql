@@ -5,7 +5,7 @@
 -- WARNING: This removes all security restrictions
 ALTER TABLE leads DISABLE ROW LEVEL SECURITY;
 
--- SOLUTION 2: Create permissive INSERT policy (Recommended for CRM)
+-- SOLUTION 2: Create permissive INSERT policy (Recommended for Bondly)
 -- This allows anyone to insert leads (good for lead capture forms)
 CREATE POLICY "Allow public insert on leads"
 ON leads
@@ -44,5 +44,5 @@ WITH CHECK (true);
 -- To remove a policy (if needed):
 -- DROP POLICY "policy_name" ON leads;
 
--- RECOMMENDED: For a CRM system, use SOLUTION 2 or SOLUTION 5
+-- RECOMMENDED: For a Bondly system, use SOLUTION 2 or SOLUTION 5
 -- depending on whether you want public lead submission or authenticated-only access

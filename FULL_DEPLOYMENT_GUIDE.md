@@ -1,6 +1,6 @@
-# Full Deployment Guide for Bondly CRM
+# Full Deployment Guide for Bondly
 
-This guide provides step-by-step instructions for deploying both the frontend and backend of the Bondly CRM application.
+This guide provides step-by-step instructions for deploying both the frontend and backend of the Bondly application.
 
 ## Prerequisites
 

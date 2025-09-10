@@ -1,7 +1,7 @@
 # Phase 2: Contact & Account Enhancements + Service Platform Implementation
 
 ## Overview
-This document outlines the implementation of Phase 2 enhancements for the Bondly CRM system, which includes:
+This document outlines the implementation of Phase 2 enhancements for the Bondly system, which includes:
 1. Contact & Account Enhancements
 2. Service Platform
 

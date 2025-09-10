@@ -1,6 +1,6 @@
 # Phase 1: Lead Enhancements Implementation
 
-This document outlines the implementation of Phase 1 Lead Enhancements for the Bondly CRM system.
+This document outlines the implementation of Phase 1 Lead Enhancements for the Bondly system.
 
 ## Features Implemented
 

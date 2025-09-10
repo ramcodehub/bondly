@@ -31,7 +31,7 @@ The application was returning a **400 Bad Request** error when trying to create 
 
 ### 3. **Database Solutions** (Choose One)
 
-#### **Option A: Allow Public Insert (Recommended for CRM)**
+#### **Option A: Allow Public Insert (Recommended for Bondly)**
 ```sql
 CREATE POLICY "Allow public insert on leads"
 ON leads
@@ -65,10 +65,10 @@ WITH CHECK (true);
 ```
 
 ## Recommended Action
-For a CRM system, **Option A** or **Option D** is recommended:
+For a Bondly system, **Option A** or **Option D** is recommended:
 
 - **Option A**: Allows public lead creation (good for lead capture forms on websites)
-- **Option D**: Requires authentication but allows full management (good for internal CRM operations)
+- **Option D**: Requires authentication but allows full management (good for internal Bondly operations)
 
 ## Implementation Steps
 1. **Immediate Fix**: Run one of the SQL commands above in your Supabase SQL editor

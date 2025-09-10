@@ -51,7 +51,7 @@ export default function LoginPage() {
       <div className="flex flex-1 items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <h1 className="text-3xl font-bold tracking-tight">CRM Dashboard</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Bondly</h1>
             <h2 className="mt-6 text-2xl font-bold text-gray-900">Sign in to your account</h2>
             <p className="mt-2 text-sm text-gray-600">
               Or{' '}
@@ -196,7 +196,7 @@ export default function LoginPage() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-gray-50 px-2 text-gray-500">New to CRM Dashboard?</span>
+                <span className="bg-gray-50 px-2 text-gray-500">New to Bondly?</span>
               </div>
             </div>
 

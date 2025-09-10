@@ -10,7 +10,7 @@ type NotificationItem = {
 }
 
 const demoItems: NotificationItem[] = [
-  { id: "1", title: "Welcome to the CRM!", description: "Explore the dashboard and features.", time: "Just now" },
+  { id: "1", title: "Welcome to the Bondly!", description: "Explore the dashboard and features.", time: "Just now" },
   { id: "2", title: "New lead assigned", description: "Acme Corp - John Doe", time: "5m" },
   { id: "3", title: "Deal updated", description: "Proposal sent for Globex", time: "1h" },
 ]

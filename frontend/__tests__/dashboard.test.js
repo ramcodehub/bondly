@@ -24,7 +24,7 @@ describe('Dashboard Page', () => {
     render(<DashboardPage />);
     
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Welcome to your CRM dashboard. Here\'s an overview of your business.')).toBeInTheDocument();
+    expect(screen.getByText('Welcome to your Bondly. Here\'s an overview of your business.')).toBeInTheDocument();
   });
 
   it('displays metric cards', async () => {

@@ -1,17 +1,17 @@
 # Database Schema Corrections for Phase 2 Implementation
 
 ## Overview
-This document explains the corrections made to the Phase 2 database schema implementation to align with the actual Supabase database structure used in the Bondly CRM system.
+This document explains the corrections made to the Phase 2 database schema implementation to align with the actual Supabase database structure used in the Bondly system.
 
 ## Database Structure Analysis
 
 ### Companies Table
-The CRM system uses a [companies](file://c:\Users\sathi\OneDrive\Desktop\NextGen_AI\Travels\frontend\src\lib\stores\mock-data.ts#L218-L218) table (not [accounts](file://c:\Users\sathi\OneDrive\Desktop\NextGen_AI\Travels\backend\src\create_account_table.sql#L2-L2)) with the following characteristics:
+The Bondly system uses a [companies](file://c:\Users\sathi\OneDrive\Desktop\NextGen_AI\Travels\frontend\src\lib\stores\mock-data.ts#L218-L218) table (not [accounts](file://c:\Users\sathi\OneDrive\Desktop\NextGen_AI\Travels\backend\src\create_account_table.sql#L2-L2)) with the following characteristics:
 - Primary key: `id` (UUID type)
 - Table name: `companies` (plural)
 
 ### Contacts Table
-The CRM system uses a [contacts](file://c:\Users\sathi\OneDrive\Desktop\NextGen_AI\Travels\backend\src\create_contact_table.sql#L1-L1) table with the following characteristics:
+The Bondly system uses a [contacts](file://c:\Users\sathi\OneDrive\Desktop\NextGen_AI\Travels\backend\src\create_contact_table.sql#L1-L1) table with the following characteristics:
 - Primary key: `id` (SERIAL/INTEGER type)
 - Table name: `contacts` (plural)
 
@@ -103,7 +103,7 @@ Updated type definitions to use `company_id: string` (UUID) instead of `account_
 
 ## Summary
 
-These corrections ensure that the Phase 2 implementation properly aligns with the existing Supabase database schema used by the Bondly CRM system. The key changes were:
+These corrections ensure that the Phase 2 implementation properly aligns with the existing Supabase database schema used by the Bondly system. The key changes were:
 
 1. **Table Name Consistency**: Using `companies` instead of `accounts`
 2. **Data Type Alignment**: Using UUID for company references instead of INTEGER

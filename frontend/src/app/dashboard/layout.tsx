@@ -17,17 +17,25 @@ export default function DashboardLayout({
       disableTransitionOnChange
     >
       <div className="flex min-h-screen">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col md:ml-64 ml-16">
+        {/* Desktop Sidebar - fixed position */}
+        <div className="hidden md:block md:w-64 fixed h-screen">
+          <AppSidebar />
+        </div>
+        
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col md:ml-64">
+          {/* Topbar */}
           <div className="flex items-center justify-between p-4 border-b">
-            <div className="md:hidden">
+            <div className="md:hidden block">
               <MobileSidebar />
             </div>
             <div className="ml-auto">
               <TopbarActions />
             </div>
           </div>
-          <main className="flex-1 overflow-y-auto bg-background p-6">
+          
+          {/* Main Content */}
+          <main className="flex-1 overflow-y-auto bg-background p-4 sm:p-6">
             {children}
           </main>
         </div>

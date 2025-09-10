@@ -12,7 +12,7 @@ This document provides a comprehensive guide to fix all the issues identified in
    - `Error fetching companies: Error: HTTP error! status: 500`
 
 3. **Missing Avatar Image**:
-   - `GET https://amgs.netlify.app/avatars/01.png [HTTP/2 404]`
+   - `GET https://Bondly.netlify.app/avatars/01.png [HTTP/2 404]`
 
 4. **User Settings Error**:
    - `HTTP 406 Not Acceptable` for user_settings requests

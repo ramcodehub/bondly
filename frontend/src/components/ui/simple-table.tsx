@@ -12,9 +12,10 @@ export interface SimpleTableProps<T = any> extends React.HTMLAttributes<HTMLDivE
   columns: SimpleColumn<T>[]
   data: T[]
   emptyText?: string
+  onRowClick?: (row: T) => void
 }
 
-export function SimpleTable<T = any>({ columns, data, emptyText = "No results.", className }: SimpleTableProps<T>) {
+export function SimpleTable<T = any>({ columns, data, emptyText = "No results.", className, onRowClick }: SimpleTableProps<T>) {
   return (
     <div className={cn("w-full overflow-x-auto rounded-md border", className)}>
       <table className="w-full text-sm">
@@ -30,7 +31,11 @@ export function SimpleTable<T = any>({ columns, data, emptyText = "No results.",
         <tbody>
           {data.length ? (
             data.map((row, ri) => (
-              <tr key={ri} className="border-t">
+              <tr 
+                key={ri} 
+                className={cn("border-t", onRowClick && "cursor-pointer hover:bg-muted/50")}
+                onClick={() => onRowClick && onRowClick(row)}
+              >
                 {columns.map((col, ci) => (
                   <td key={ci} className={cn("px-3 py-2 align-middle", col.className)}>
                     {col.cell ? col.cell(row) : (col.key ? (row as any)[col.key as any] : null)}

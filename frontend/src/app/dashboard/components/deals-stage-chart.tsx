@@ -34,13 +34,13 @@ export function DealsStageChart({ deals, stats }: DealsStageChartProps) {
   }))
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
       {/* Funnel Chart */}
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
-          <CardTitle>Deal Stages Funnel</CardTitle>
+          <CardTitle className="text-base sm:text-lg">Deal Stages Funnel</CardTitle>
         </CardHeader>
-        <CardContent className="h-80">
+        <CardContent className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <FunnelChart>
               <Tooltip 
@@ -67,11 +67,11 @@ export function DealsStageChart({ deals, stats }: DealsStageChartProps) {
       </Card>
 
       {/* Pie Chart */}
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
-          <CardTitle>Deal Stages Distribution</CardTitle>
+          <CardTitle className="text-base sm:text-lg">Deal Stages Distribution</CardTitle>
         </CardHeader>
-        <CardContent className="h-80">
+        <CardContent className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -79,7 +79,7 @@ export function DealsStageChart({ deals, stats }: DealsStageChartProps) {
                 cx="50%"
                 cy="50%"
                 labelLine={true}
-                outerRadius={80}
+                outerRadius={60}
                 fill="#8884d8"
                 dataKey="value"
                 nameKey="name"
@@ -103,23 +103,23 @@ export function DealsStageChart({ deals, stats }: DealsStageChartProps) {
       </Card>
 
       {/* Bar Chart */}
-      <Card className="md:col-span-2">
+      <Card className="md:col-span-2 min-w-0">
         <CardHeader>
-          <CardTitle>Deals by Stage</CardTitle>
+          <CardTitle className="text-base sm:text-lg">Deals by Stage</CardTitle>
         </CardHeader>
-        <CardContent className="h-80">
+        <CardContent className="h-64 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={barData}
               margin={{
                 top: 5,
-                right: 30,
-                left: 20,
-                bottom: 60,
+                right: 10,
+                left: 0,
+                bottom: 40,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
+              <XAxis dataKey="name" angle={-45} textAnchor="end" height={40} />
               <YAxis yAxisId="deals" orientation="left" />
               <YAxis yAxisId="value" orientation="right" />
               <Tooltip 
