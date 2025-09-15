@@ -25,7 +25,7 @@ export default function Hero() {
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="hover:scale-105 transition-transform duration-300">
-              <Link href="/#about">Learn More</Link>
+              <Link href="/crm#about">Learn More</Link>
             </Button>
           </div>
           

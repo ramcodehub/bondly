@@ -12,17 +12,17 @@ interface NavbarProps {
 
 export default function Navbar({ isMenuOpen, setIsMenuOpen }: NavbarProps) {
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "/#about" },
-    { name: "Services", href: "/#services" },
-    { name: "Contact", href: "/#contact" },
+    { name: "Home", href: "/crm" },
+    { name: "About", href: "/crm#about" },
+    { name: "Services", href: "/crm#services" },
+    { name: "Contact", href: "/crm#contact" },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur transition-all duration-300">
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center">
-          <Link href="/" className="flex items-center space-x-2 group">
+          <Link href="/crm" className="flex items-center space-x-2 group">
             <span className="font-bold text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent group-hover:from-primary/80 group-hover:to-secondary/80 transition-all duration-300">
               Bondly
             </span>

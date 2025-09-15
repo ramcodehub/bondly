@@ -15,8 +15,8 @@ import {
 export default function Footer() {
   const navigation = {
     product: [
-      { name: "Features", href: "/#services" },
-      { name: "Bondly", href: "#" },
+      { name: "Features", href: "/crm#services" },
+      { name: "Bondly", href: "/crm" },
       { name: "Pricing", href: "#" },
       { name: "Demo", href: "#" },
     ],
@@ -27,10 +27,10 @@ export default function Footer() {
       { name: "Support", href: "#" },
     ],
     company: [
-      { name: "About", href: "/#about" },
+      { name: "About", href: "/crm#about" },
       { name: "Careers", href: "#" },
       { name: "Partners", href: "#" },
-      { name: "Contact", href: "/#contact" },
+      { name: "Contact", href: "/crm#contact" },
     ],
   };
 
@@ -40,7 +40,7 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <div className="flex flex-col space-y-4">
-              <Link href="/" className="flex items-center space-x-2 group">
+              <Link href="/crm" className="flex items-center space-x-2 group">
                 <span className="font-bold text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent group-hover:from-primary/80 group-hover:to-secondary/80 transition-all duration-300">
                   Bondly
                 </span>
