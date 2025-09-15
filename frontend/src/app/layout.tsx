@@ -6,8 +6,8 @@ import ClientLayout from "./client-layout"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Bondly",
-  description: "Next.js Bondly with TypeScript and Tailwind CSS",
+  title: "Dwansys",
+  description: "Next.js Dwansys with TypeScript and Tailwind CSS",
 }
 
 export const viewport = {

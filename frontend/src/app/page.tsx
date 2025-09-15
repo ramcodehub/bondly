@@ -81,7 +81,8 @@ export default function Home() {
               className="space-y-4"
             >
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight">
-                Welcome to <span className="text-primary"></span>Dwansys</h1>
+                Welcome to <span className="text-primary">Dwansys</span>
+              </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
                 Your all-in-one platform for managing customer relationships, marketing campaigns, 
                 sales processes, and business analytics. Everything you need to grow your business in one place.
@@ -169,7 +170,7 @@ export default function Home() {
                         </span>
                       )}
                     </div>
-                    <CardTitle className="text-xl">{product.title}</CardTitle>
+                    <CardTitle className="text-xl">Dwansys {product.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="flex-grow">
                     <p className="text-muted-foreground mb-6">{product.description}</p>
