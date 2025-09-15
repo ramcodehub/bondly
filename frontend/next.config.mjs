@@ -11,6 +11,7 @@ const nextConfig = {
   images: {
     domains: ['avatars.githubusercontent.com', 'lh3.googleusercontent.com'],
     disableStaticImages: false,
+    unoptimized: true,
   },
   serverExternalPackages: [
     '@radix-ui/react-select',
@@ -65,17 +66,13 @@ const nextConfig = {
   devIndicators: {
     buildActivity: false,
   },
-  // Disable static optimization for now
-  output: 'standalone',
+  // Use default output instead of standalone for Netlify compatibility
+  // output: 'standalone',
   // Disable static optimization for development
   // This will ensure all pages are server-rendered
   experimental: {
     serverActions: true,
     serverComponentsExternalPackages: ['@radix-ui/react-dialog'],
-  },
-  // Disable image optimization in development
-  images: {
-    unoptimized: true,
   },
 };
 

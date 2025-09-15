@@ -13,17 +13,5 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-[[redirects]]
-  from = "/api/*"
-  to = "https://bondly-0r0c.onrender.com/api/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/health"
-  to = "https://bondly-0r0c.onrender.com/health"
-  status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Remove the conflicting redirects that interfere with Next.js routing
+# Next.js and the Netlify Next.js plugin handle routing automatically
