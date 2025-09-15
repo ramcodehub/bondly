@@ -1,6 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
 // Validate environment variables first
+console.log('Supabase config check:', {
+  url: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'SET' : 'MISSING',
+  anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'MISSING'
+});
+
 if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
   throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable. Please check your deployment settings.')
 }
@@ -11,6 +16,8 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+console.log('Creating Supabase client with:', { supabaseUrl, supabaseAnonKey });
 
 // Create a new Supabase client with schema refresh options
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -32,6 +39,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // Test the connection
 const testConnection = async () => {
   try {
+    console.log('Testing Supabase connection...');
     const { data, error } = await supabase
       .from('contacts')
       .select('*')
@@ -51,8 +59,8 @@ const testConnection = async () => {
 }
 
 // Optional: enable only if you need to verify connection manually in dev
-// if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
-//   testConnection()
-// }
+if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+  testConnection()
+}
 
 export default supabase

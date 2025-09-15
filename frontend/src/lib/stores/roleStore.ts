@@ -189,10 +189,13 @@ export const useRoleStore = create<RoleState>()(
     fetchMyRoles: async () => {
       set({ loading: true, error: null });
       try {
+        console.log('Fetching user roles from /api/extended/roles/me');
         const response = await fetch('/api/extended/roles/me');
         const data = await response.json();
+        console.log('Role API response:', data);
         if (data.success) {
           set({ myRoles: data.data, loading: false });
+          console.log('User roles set:', data.data);
         } else {
           // If there's an error fetching roles, we should still complete the loading
           console.error('Error fetching my roles:', data.message);

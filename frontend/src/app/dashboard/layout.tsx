@@ -1,7 +1,7 @@
 "use client"
 
 import { ThemeProvider } from "@/components/theme-provider"
-import { AppSidebar, MobileSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
 import TopbarActions from "@/components/topbar-actions"
 
 export default function DashboardLayout({
@@ -16,9 +16,9 @@ export default function DashboardLayout({
       enableSystem
       disableTransitionOnChange
     >
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen relative">
         {/* Desktop Sidebar - fixed position */}
-        <div className="hidden md:block md:w-64 fixed h-screen">
+        <div className="hidden md:block md:w-64 fixed h-screen top-0 left-0 z-50 bg-white">
           <AppSidebar />
         </div>
         
@@ -27,7 +27,9 @@ export default function DashboardLayout({
           {/* Topbar */}
           <div className="flex items-center justify-between p-4 border-b">
             <div className="md:hidden block">
-              <MobileSidebar />
+              <button className="p-2 rounded-md border">
+                Mobile Menu (Hidden in this test)
+              </button>
             </div>
             <div className="ml-auto">
               <TopbarActions />

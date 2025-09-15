@@ -56,6 +56,7 @@ export const useUser = () => {
           // If no session, we should still complete loading
           setUser(null);
           setProfile(null);
+          console.log('No active session found');
         }
       } catch (error) {
         console.error('Error checking session:', error);
@@ -68,6 +69,7 @@ export const useUser = () => {
     };
 
     checkSession();
+    console.log('Auth listener set up');
 
     // Cleanup subscription on unmount
     return () => {

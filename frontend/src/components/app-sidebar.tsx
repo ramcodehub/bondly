@@ -198,6 +198,7 @@ const AppSidebar = React.memo(function AppSidebar({ className, isOpen = true, on
     } else {
       root.style.setProperty('--sidebar-width', '16rem'); // 256px
     }
+    console.log('Sidebar width updated:', isCollapsed ? 'collapsed' : 'expanded');
   }, [isCollapsed]);
 
   const toggleSidebar = () => {
@@ -225,7 +226,9 @@ const AppSidebar = React.memo(function AppSidebar({ className, isOpen = true, on
     }
   }, [pathname])
 
-  // Filter navigation based on user roles
+  // Filter navigation based on user roles - temporarily disabled for debugging
+  const filteredNavigation = navigation; // Always show all items for debugging
+  /*
   const filteredNavigation = navigation.filter(item => {
     // If no roles specified, show to everyone
     if (!item.roles || item.roles.length === 0) return true;
@@ -248,6 +251,7 @@ const AppSidebar = React.memo(function AppSidebar({ className, isOpen = true, on
     }
     return item;
   });
+  */
 
   // Debug logging to help identify issues
   React.useEffect(() => {
@@ -263,10 +267,15 @@ const AppSidebar = React.memo(function AppSidebar({ className, isOpen = true, on
       filteredNavigation: filteredNavigation.length,
       totalNavigation: navigation.length
     })
+    
+    // Additional debugging - log all roles
+    if (myRoles && Array.isArray(myRoles)) {
+      console.log('User roles:', myRoles.map(role => role.name));
+    }
   }, [user, profile, loading, myRoles, rolesLoading, isAdmin, isMarketingManager, isSalesManager, filteredNavigation.length])
 
   const sidebarClasses = cn(
-    "h-screen border-r transition-all duration-300 ease-in-out z-50 flex flex-col",
+    "h-screen border-r transition-all duration-300 ease-in-out z-50 flex flex-col bg-white",
     isCollapsed ? "w-16" : "w-64",
     className
   )
@@ -307,6 +316,7 @@ const AppSidebar = React.memo(function AppSidebar({ className, isOpen = true, on
     );
   }
 
+  // Always render the sidebar with a visible indicator for debugging
   return (
     <div className={sidebarClasses}>
       <div className="flex h-16 items-center border-b px-4 flex-shrink-0">
