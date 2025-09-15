@@ -146,7 +146,7 @@ export function Overview() {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-medium">Revenue Overview</h3>
         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <Icons.lineChart className="h-4 w-4" />
+          <Icons.barChart3 className="h-4 w-4" />
           <span>Last 7 months</span>
         </div>
       </div>

@@ -324,6 +324,11 @@
   dependencies:
     "tslib" "^2.0.0"
 
+"@epic-web/invariant@^1.0.0":
+  "integrity" "sha512-lrTPqgvfFQtR/eY/qkIzp98OGdNJu0m5ji3q/nJI8v3SXkRKEnWiOxMmbvcSoAIzv/cGiuvRy57k4suKQSAdwA=="
+  "resolved" "https://registry.npmjs.org/@epic-web/invariant/-/invariant-1.0.0.tgz"
+  "version" "1.0.0"
+
 "@eslint-community/eslint-utils@^4.2.0":
   "integrity" "sha512-dyybb3AcajC7uha6CvhdVRJqaKyn7w2YKqKyAN37NKYgZT36w+iRb0Dymmc5qEJ549c/S31cMMSFd75bteCpCw=="
   "resolved" "https://registry.npmjs.org/@eslint-community/eslint-utils/-/eslint-utils-4.7.0.tgz"
@@ -697,6 +702,11 @@
   dependencies:
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
+
+"@kurkle/color@^0.3.0":
+  "integrity" "sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w=="
+  "resolved" "https://registry.npmjs.org/@kurkle/color/-/color-0.3.4.tgz"
+  "version" "0.3.4"
 
 "@netlify/plugin-nextjs@^5.1.0":
   "integrity" "sha512-sOhMUITRmcQDFf+ppAhZwecCE2kDCV8nVWe3fwTkNThpKoXBcpKVECL07IkBv5fJLxp/kODy346OaCk6FI9MAg=="
@@ -1383,6 +1393,14 @@
   "version" "2.0.1"
   dependencies:
     "@radix-ui/react-slot" "1.1.1"
+
+"@radix-ui/react-progress@^1.1.7":
+  "integrity" "sha512-vPdg/tF6YC/ynuBIJlk1mm7Le0VgW6ub6J2UWnTQ7/D23KXcPI1qy+0vBkgKgd38RCMJavBXpB83HPNFMTb0Fg=="
+  "resolved" "https://registry.npmjs.org/@radix-ui/react-progress/-/react-progress-1.1.7.tgz"
+  "version" "1.1.7"
+  dependencies:
+    "@radix-ui/react-context" "1.1.2"
+    "@radix-ui/react-primitive" "2.1.3"
 
 "@radix-ui/react-roving-focus@1.1.0":
   "integrity" "sha512-EA6AMGeq9AEeQDeSH0aZgG198qkfHSbvWTf1HvoDmOB5bBG/qTxjYMWUKMnYiV6J/iP/J8MEFSuB2zRU2n7ODA=="
@@ -2247,7 +2265,7 @@
   "version" "2.0.6"
 
 "acorn-globals@^7.0.0":
-  "integrity" "sha512-umOSDSDrfHbTNPuNpC2NSnnA3LUrqpevPb4T9jRx4MagXNS0rs+gwiTcAvqBondlysD6utzsrzNt+ebm00SNWiC3Q=="
+  "integrity" "sha512-umOSDSDrfHbTNPuNpC2NSnnA3LUrqpevPb4T9jRx4MagXNS0rs+gwiTcAvqCRmsD6utzsrzNt+ebm00SNWiC3Q=="
   "resolved" "https://registry.npmjs.org/acorn-globals/-/acorn-globals-7.0.1.tgz"
   "version" "7.0.1"
   dependencies:
@@ -2267,7 +2285,7 @@
     "acorn" "^8.11.0"
 
 "acorn@^6.0.0 || ^7.0.0 || ^8.0.0", "acorn@^8.1.0", "acorn@^8.11.0", "acorn@^8.8.1", "acorn@^8.9.0":
-  "integrity" "sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieBondlyNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg=="
+  "integrity" "sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg=="
   "resolved" "https://registry.npmjs.org/acorn/-/acorn-8.15.0.tgz"
   "version" "8.15.0"
 
@@ -2734,6 +2752,13 @@
   "resolved" "https://registry.npmjs.org/character-reference-invalid/-/character-reference-invalid-2.0.1.tgz"
   "version" "2.0.1"
 
+"chart.js@^4.1.1", "chart.js@^4.5.0":
+  "integrity" "sha512-aYeC/jDgSEx8SHWZvANYMioYMZ2KX02W6f6uVfyteuCGcadDLcYVHdfdygsTQkQ4TKn5lghoojAsPj5pu0SnvQ=="
+  "resolved" "https://registry.npmjs.org/chart.js/-/chart.js-4.5.0.tgz"
+  "version" "4.5.0"
+  dependencies:
+    "@kurkle/color" "^0.3.0"
+
 "chokidar@^3.5.3":
   "integrity" "sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw=="
   "resolved" "https://registry.npmjs.org/chokidar/-/chokidar-3.6.0.tgz"
@@ -2871,6 +2896,14 @@
     "jest-config" "^29.7.0"
     "jest-util" "^29.7.0"
     "prompts" "^2.0.1"
+
+"cross-env@^10.0.0":
+  "integrity" "sha512-aU8qlEK/nHYtVuN4p7UQgAwVljzMg8hB4YK5ThRqD2l/ziSnryncPNn7bMLt5cFYsKVKBh8HqLqyCoTupEUu7Q=="
+  "resolved" "https://registry.npmjs.org/cross-env/-/cross-env-10.0.0.tgz"
+  "version" "10.0.0"
+  dependencies:
+    "@epic-web/invariant" "^1.0.0"
+    "cross-spawn" "^7.0.6"
 
 "cross-spawn@^7.0.2", "cross-spawn@^7.0.3", "cross-spawn@^7.0.6":
   "integrity" "sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA=="
@@ -5219,7 +5252,7 @@
   "version" "1.1.0"
 
 "mdast-util-from-markdown@^2.0.0":
-  "integrity" "sha512-uZhTV/8NBuw0WHkPTrCqDOl0zVe1BIng5ZtHoDk49ME1qqcjYmmLmOf0gELgBondlyxN4w2iuIeVso5/6QymSrgmA=="
+  "integrity" "sha512-uZhTV/8NBuw0WHkPTrCqDOl0zVe1BIng5ZtHoDk49ME1qqcjYmmLmOf0gELgcRMxN4w2iuIeVso5/6QymSrgmA=="
   "resolved" "https://registry.npmjs.org/mdast-util-from-markdown/-/mdast-util-from-markdown-2.0.2.tgz"
   "version" "2.0.2"
   dependencies:
@@ -6096,6 +6129,11 @@
   "resolved" "https://registry.npmjs.org/quick-lru/-/quick-lru-5.1.1.tgz"
   "version" "5.1.1"
 
+"react-chartjs-2@^5.3.0":
+  "integrity" "sha512-UfZZFnDsERI3c3CZGxzvNJd02SHjaSJ8kgW1djn65H1KK8rehwTjyrRKOG3VTMG8wtHZ5rgAO5oTHtHi9GCCmw=="
+  "resolved" "https://registry.npmjs.org/react-chartjs-2/-/react-chartjs-2-5.3.0.tgz"
+  "version" "5.3.0"
+
 "react-day-picker@^9.9.0":
   "integrity" "sha512-NtkJbuX6cl/VaGNb3sVVhmMA6LSMnL5G3xNL+61IyoZj0mUZFWTg4hmj7PHjIQ8MXN9dHWhUHFoJWG6y60DKSg=="
   "resolved" "https://registry.npmjs.org/react-day-picker/-/react-day-picker-9.9.0.tgz"
@@ -6516,7 +6554,7 @@
   "version" "3.0.0"
 
 "side-channel-list@^1.0.0":
-  "integrity" "sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KBondlyrTA=="
+  "integrity" "sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KCrMrTA=="
   "resolved" "https://registry.npmjs.org/side-channel-list/-/side-channel-list-1.0.0.tgz"
   "version" "1.0.0"
   dependencies:

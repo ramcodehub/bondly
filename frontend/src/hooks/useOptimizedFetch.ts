@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { cachedFetch } from './api-cache'
+import { cachedFetch } from '@/lib/api-cache'
 
 // Loading states
 export type LoadingState = 'idle' | 'loading' | 'success' | 'error'
@@ -57,7 +57,7 @@ export function useOptimizedFetch<T>(
         cache,
         ttl,
         forceRefresh
-      })
+      } as any)
 
       if (!abortControllerRef.current.signal.aborted) {
         setData(result)

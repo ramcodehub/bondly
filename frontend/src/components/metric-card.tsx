@@ -19,8 +19,8 @@ export function MetricCard({
   className,
   ...props
 }: MetricCardProps) {
-  const Icon = Icons[icon] || Icons.arrowRight
-  const TrendIcon = trend === "up" ? Icons.trendingUp : trend === "down" ? Icons.trendingDown : Icons.minus
+  const Icon = Icons[icon] || Icons.layoutDashboard
+  const TrendIcon = trend === "up" ? Icons.barChart3 : trend === "down" ? Icons.barChart3 : Icons.moreHorizontal
   
   return (
     <div

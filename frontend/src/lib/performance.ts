@@ -2,6 +2,10 @@
 
 // Performance monitoring utilities
 export class PerformanceMonitor {
+  private metrics: Map<string, { value: number; timestamp: number }[]>;
+  private observers: Map<string, PerformanceObserver>;
+  private thresholds: Record<string, number>;
+
   constructor() {
     this.metrics = new Map()
     this.observers = new Map()
@@ -57,7 +61,7 @@ export class PerformanceMonitor {
 
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries()
-      entries.forEach((entry) => {
+      entries.forEach((entry: any) => {
         this.recordMetric('FID', entry.processingStart - entry.startTime)
         
         if (entry.processingStart - entry.startTime > this.thresholds.FID) {
@@ -75,23 +79,23 @@ export class PerformanceMonitor {
     if (!('PerformanceObserver' in window)) return
 
     let clsValue = 0
-    let clsEntries = []
+    let clsEntries: any[] = []
     let sessionValue = 0
-    let sessionEntries = []
+    let sessionEntries: any[] = []
 
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        if (!entry.hadRecentInput) {
+        if (!(entry as any).hadRecentInput) {
           const firstSessionEntry = sessionEntries[0]
           const lastSessionEntry = sessionEntries[sessionEntries.length - 1]
 
           if (sessionValue &&
               entry.startTime - lastSessionEntry.startTime < 1000 &&
               entry.startTime - firstSessionEntry.startTime < 5000) {
-            sessionValue += entry.value
+            sessionValue += (entry as any).value
             sessionEntries.push(entry)
           } else {
-            sessionValue = entry.value
+            sessionValue = (entry as any).value
             sessionEntries = [entry]
           }
 
@@ -140,7 +144,7 @@ export class PerformanceMonitor {
 
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries()
-      entries.forEach((entry) => {
+      entries.forEach((entry: any) => {
         if (entry.entryType === 'navigation') {
           const ttfb = entry.responseStart - entry.requestStart
           this.recordMetric('TTFB', ttfb)
@@ -217,7 +221,7 @@ export class PerformanceMonitor {
         const duration = endTime - startTime
         
         this.recordMetric(`API_ERROR:${url}`, duration)
-        this.reportError('API Error', error, { url, duration })
+        this.reportError('API Error', error as Error, { url, duration })
         
         throw error
       }
@@ -229,7 +233,7 @@ export class PerformanceMonitor {
     if (!('memory' in performance)) return
 
     setInterval(() => {
-      const memory = performance.memory
+      const memory = (performance as any).memory
       
       this.recordMetric('memory.used', memory.usedJSHeapSize)
       this.recordMetric('memory.total', memory.totalJSHeapSize)
@@ -244,13 +248,13 @@ export class PerformanceMonitor {
   }
 
   // Start/end timers for custom metrics
-  startTimer(name) {
+  startTimer(name: string) {
     if (typeof window.performance?.mark !== 'function') return
     
     performance.mark(`${name}-start`)
   }
 
-  endTimer(name) {
+  endTimer(name: string) {
     if (typeof window.performance?.mark !== 'function') return
     
     performance.mark(`${name}-end`)
@@ -272,25 +276,27 @@ export class PerformanceMonitor {
   }
 
   // Record metric
-  recordMetric(name, value) {
+  recordMetric(name: string, value: number) {
     if (!this.metrics.has(name)) {
       this.metrics.set(name, [])
     }
     
-    this.metrics.get(name).push({
-      value,
-      timestamp: Date.now()
-    })
-    
-    // Keep only last 100 entries per metric
-    const entries = this.metrics.get(name)
-    if (entries.length > 100) {
-      entries.splice(0, entries.length - 100)
+    const metricArray = this.metrics.get(name);
+    if (metricArray) {
+      metricArray.push({
+        value,
+        timestamp: Date.now()
+      })
+      
+      // Keep only last 100 entries per metric
+      if (metricArray.length > 100) {
+        metricArray.splice(0, metricArray.length - 100)
+      }
     }
   }
 
   // Report slow metrics
-  reportSlowMetric(name, value) {
+  reportSlowMetric(name: string, value: number) {
     if (process.env.NODE_ENV === 'development') {
       console.warn(`Slow ${name}:`, value, 'ms')
     }
@@ -306,7 +312,7 @@ export class PerformanceMonitor {
   }
 
   // Report errors
-  reportError(type, error, metadata = {}) {
+  reportError(type: string, error: Error, metadata = {}) {
     if (process.env.NODE_ENV === 'development') {
       console.error(`${type}:`, error, metadata)
     }
@@ -322,7 +328,7 @@ export class PerformanceMonitor {
   }
 
   // Send data to monitoring service
-  sendToMonitoring(type, data) {
+  sendToMonitoring(type: string, data: any) {
     // In a real app, send to monitoring service like DataDog, New Relic, etc.
     if (process.env.NODE_ENV === 'production') {
       // Example: analytics.track(type, data)
@@ -339,9 +345,12 @@ export class PerformanceMonitor {
 
   // Report all metrics
   reportMetrics() {
-    const summary = {}
+    const summary: Record<string, any> = {}
     
-    for (const [name, entries] of this.metrics.entries()) {
+    // Convert to array to avoid iteration issues
+    const entriesArray = Array.from(this.metrics.entries());
+    for (let i = 0; i < entriesArray.length; i++) {
+      const [name, entries] = entriesArray[i];
       if (entries.length === 0) continue
       
       const values = entries.map(e => e.value)
@@ -362,7 +371,7 @@ export class PerformanceMonitor {
   }
 
   // Calculate percentile
-  percentile(arr, p) {
+  percentile(arr: number[], p: number) {
     const sorted = arr.slice().sort((a, b) => a - b)
     const index = (p / 100) * (sorted.length - 1)
     
@@ -384,7 +393,10 @@ export class PerformanceMonitor {
 
   // Clean up observers
   cleanup() {
-    for (const observer of this.observers.values()) {
+    // Convert to array to avoid iteration issues
+    const observersArray = Array.from(this.observers.values());
+    for (let i = 0; i < observersArray.length; i++) {
+      const observer = observersArray[i];
       observer.disconnect()
     }
     this.observers.clear()

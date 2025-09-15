@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import * as React from "react"
 import Link from "next/link"
@@ -19,6 +19,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Icons } from "@/components/icons"
 import { ChevronLeft, ChevronDown, Menu, Users, LineChart, Map, Calendar, Megaphone, PieChart, Book, Settings } from "lucide-react"
 import { useUser } from "@/hooks/useUser"
+import { useRoles } from "@/hooks/useRoles"
+import { UserRoleBadge } from "@/app/dashboard/settings/roles/UserRoleBadge"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 interface NavItem {
@@ -27,6 +29,7 @@ interface NavItem {
   icon?: keyof typeof Icons | React.ComponentType<any>
   label?: string
   items?: NavItem[]
+  roles?: string[] // Roles that can see this item
 }
 
 const navigation: NavItem[] = [
@@ -34,30 +37,37 @@ const navigation: NavItem[] = [
     title: "Contacts",
     href: "/dashboard/contacts",
     icon: Users,
+    roles: ["Admin", "Marketing Manager", "Sales Manager", "Marketing Agent", "Sales Representative"],
     items: [
       {
         title: "Contact Dashboard",
         href: "/dashboard/contacts/dashboard",
+        roles: ["Admin", "Marketing Manager", "Sales Manager"]
       },
       {
         title: "View Contacts",
         href: "/dashboard/contacts",
+        roles: ["Admin", "Marketing Manager", "Sales Manager", "Marketing Agent", "Sales Representative"]
       },
       {
         title: "Lists",
         href: "/dashboard/contacts/lists",
+        roles: ["Admin", "Marketing Manager"]
       },
       {
         title: "Segments",
         href: "/dashboard/contacts/segments",
+        roles: ["Admin", "Marketing Manager"]
       },
       {
         title: "Topics",
         href: "/dashboard/contacts/topics",
+        roles: ["Admin", "Marketing Manager"]
       },
       {
         title: "Lead Qualification",
         href: "/dashboard/contacts/qualification",
+        roles: ["Admin", "Marketing Manager", "Sales Manager"]
       },
     ],
   },
@@ -65,14 +75,17 @@ const navigation: NavItem[] = [
     title: "Lead Generation",
     href: "/dashboard/leads",
     icon: LineChart,
+    roles: ["Admin", "Sales Manager", "Sales Representative"],
     items: [
       {
         title: "Leads",
         href: "/dashboard/leads",
+        roles: ["Admin", "Sales Manager", "Sales Representative"]
       },
       {
         title: "Deals",
         href: "/dashboard/deals",
+        roles: ["Admin", "Sales Manager", "Sales Representative"]
       },
     ],
   },
@@ -80,19 +93,23 @@ const navigation: NavItem[] = [
     title: "Journeys",
     href: "/dashboard/journeys",
     icon: Map,
+    roles: ["Admin", "Marketing Manager"]
   },
   {
     title: "Marketing Planner",
     href: "/dashboard/planner",
     icon: Calendar,
+    roles: ["Admin", "Marketing Manager"],
     items: [
       {
         title: "Tasks",
         href: "/dashboard/tasks",
+        roles: ["Admin", "Marketing Manager", "Sales Manager", "Marketing Agent", "Sales Representative"]
       },
       {
         title: "Calendar",
         href: "/dashboard/planner",
+        roles: ["Admin", "Marketing Manager"]
       },
     ],
   },
@@ -100,14 +117,17 @@ const navigation: NavItem[] = [
     title: "Marketing Campaigns",
     href: "/dashboard/campaigns",
     icon: Megaphone,
+    roles: ["Admin", "Marketing Manager", "Marketing Agent"],
     items: [
       {
         title: "Campaign Dashboard",
         href: "/dashboard/campaigns",
+        roles: ["Admin", "Marketing Manager"]
       },
       {
         title: "Campaign Reports",
         href: "/dashboard/campaigns/reports",
+        roles: ["Admin", "Marketing Manager"]
       },
     ],
   },
@@ -115,23 +135,28 @@ const navigation: NavItem[] = [
     title: "Website Analytics",
     href: "/dashboard/analytics",
     icon: PieChart,
+    roles: ["Admin", "Marketing Manager"]
   },
   {
     title: "Library",
     href: "/dashboard/library",
     icon: Book,
+    roles: ["Admin", "Marketing Manager", "Sales Manager"],
     items: [
       {
         title: "Templates",
         href: "/dashboard/library/templates",
+        roles: ["Admin", "Marketing Manager"]
       },
       {
         title: "Chat Review",
         href: "/dashboard/chat/review",
+        roles: ["Admin", "Marketing Manager", "Sales Manager"]
       },
       {
         title: "Resources",
         href: "/dashboard/library/resources",
+        roles: ["Admin", "Marketing Manager", "Sales Manager"]
       },
     ],
   },
@@ -139,6 +164,7 @@ const navigation: NavItem[] = [
     title: "Settings",
     href: "/dashboard/settings",
     icon: Settings,
+    roles: ["Admin", "Marketing Manager", "Sales Manager", "Marketing Agent", "Sales Representative"]
   },
 ]
 
@@ -147,11 +173,12 @@ interface AppSidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   onClose?: () => void
 }
 
-export const AppSidebar = React.memo(function AppSidebar({ className, isOpen = true, onClose }: AppSidebarProps) {
+const AppSidebar = React.memo(function AppSidebar({ className, isOpen = true, onClose }: AppSidebarProps) {
   const pathname = usePathname()
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>({})
   const { user, profile, loading } = useUser()
+  const { myRoles, isAdmin, isMarketingManager, isSalesManager, hasRole, loading: rolesLoading } = useRoles()
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -198,6 +225,46 @@ export const AppSidebar = React.memo(function AppSidebar({ className, isOpen = t
     }
   }, [pathname])
 
+  // Filter navigation based on user roles
+  const filteredNavigation = navigation.filter(item => {
+    // If no roles specified, show to everyone
+    if (!item.roles || item.roles.length === 0) return true;
+    
+    // Check if user has any of the required roles
+    return item.roles.some(role => hasRole(role));
+  }).map(item => {
+    // Also filter child items
+    if (item.items) {
+      return {
+        ...item,
+        items: item.items.filter(child => {
+          // If no roles specified, show to everyone
+          if (!child.roles || child.roles.length === 0) return true;
+          
+          // Check if user has any of the required roles
+          return child.roles.some(role => hasRole(role));
+        })
+      };
+    }
+    return item;
+  });
+
+  // Debug logging to help identify issues
+  React.useEffect(() => {
+    console.log('Sidebar debug info:', { 
+      user, 
+      profile, 
+      loading,
+      myRoles,
+      rolesLoading,
+      isAdmin,
+      isMarketingManager,
+      isSalesManager,
+      filteredNavigation: filteredNavigation.length,
+      totalNavigation: navigation.length
+    })
+  }, [user, profile, loading, myRoles, rolesLoading, isAdmin, isMarketingManager, isSalesManager, filteredNavigation.length])
+
   const sidebarClasses = cn(
     "h-screen border-r transition-all duration-300 ease-in-out z-50 flex flex-col",
     isCollapsed ? "w-16" : "w-64",
@@ -208,10 +275,37 @@ export const AppSidebar = React.memo(function AppSidebar({ className, isOpen = t
   const userDisplayName = profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
   const userEmail = user?.email || ''
 
-  // Debug logging to help identify issues
-  React.useEffect(() => {
-    console.log('Sidebar user data:', { user, profile, loading })
-  }, [user, profile, loading])
+  // Show loading state
+  if (loading || rolesLoading) {
+    return (
+      <div className={sidebarClasses}>
+        <div className="flex h-16 items-center border-b px-4">
+          <div className="h-6 w-6 bg-gray-200 rounded animate-pulse" />
+          {!isCollapsed && <div className="ml-2 h-4 w-16 bg-gray-200 rounded animate-pulse" />}
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if user is not available
+  if (!user) {
+    return (
+      <div className={sidebarClasses}>
+        <div className="flex h-16 items-center border-b px-4">
+          <div className="h-6 w-6 bg-gray-200 rounded" />
+          {!isCollapsed && <span className="ml-2 font-bold">Bondly</span>}
+        </div>
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center">
+            <p className="text-sm text-gray-500">Not authenticated</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={sidebarClasses}>
@@ -234,7 +328,7 @@ export const AppSidebar = React.memo(function AppSidebar({ className, isOpen = t
       <div className="flex-1 overflow-hidden flex flex-col">
         <nav className="flex-1 overflow-y-auto py-2 px-2">
           <div className="space-y-1">
-            {navigation.map((item) => {
+            {filteredNavigation.map((item) => {
               const Icon = item.icon ? (typeof item.icon === 'string' ? Icons[item.icon as keyof typeof Icons] : item.icon) : null;
               const isActive = pathname === item.href
               const hasChildren = item.items && item.items.length > 0
@@ -350,11 +444,12 @@ export const AppSidebar = React.memo(function AppSidebar({ className, isOpen = t
   )
 })
 
-export const MobileSidebar = React.memo(function MobileSidebar() {
+const MobileSidebar = React.memo(function MobileSidebar() {
   const [open, setOpen] = React.useState(false)
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>({})
   const pathname = usePathname()
   const { user, profile, loading } = useUser()
+  const { myRoles, isAdmin, isMarketingManager, isSalesManager, hasRole, loading: rolesLoading } = useRoles()
 
   const toggleGroup = (title: string) => {
     setOpenGroups(prev => ({
@@ -377,14 +472,71 @@ export const MobileSidebar = React.memo(function MobileSidebar() {
     }
   }, [pathname])
 
+  // Filter navigation based on user roles
+  const filteredNavigation = navigation.filter(item => {
+    // If no roles specified, show to everyone
+    if (!item.roles || item.roles.length === 0) return true;
+    
+    // Check if user has any of the required roles
+    return item.roles.some(role => hasRole(role));
+  }).map(item => {
+    // Also filter child items
+    if (item.items) {
+      return {
+        ...item,
+        items: item.items.filter(child => {
+          // If no roles specified, show to everyone
+          if (!child.roles || child.roles.length === 0) return true;
+          
+          // Check if user has any of the required roles
+          return child.roles.some(role => hasRole(role));
+        })
+      };
+    }
+    return item;
+  });
+
+  // Debug logging to help identify issues
+  React.useEffect(() => {
+    console.log('Mobile sidebar debug info:', { 
+      user, 
+      profile, 
+      loading,
+      myRoles,
+      rolesLoading,
+      isAdmin,
+      isMarketingManager,
+      isSalesManager,
+      filteredNavigation: filteredNavigation.length,
+      totalNavigation: navigation.length
+    })
+  }, [user, profile, loading, myRoles, rolesLoading, isAdmin, isMarketingManager, isSalesManager, filteredNavigation.length])
+
   // Get user display name and email
   const userDisplayName = profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
   const userEmail = user?.email || ''
 
-  // Debug logging to help identify issues
-  React.useEffect(() => {
-    console.log('Mobile sidebar user data:', { user, profile, loading })
-  }, [user, profile, loading])
+  // Show loading state
+  if (loading || rolesLoading) {
+    return (
+      <div className="md:hidden">
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <div className="h-6 w-6 bg-gray-200 rounded animate-pulse" />
+        </Button>
+      </div>
+    );
+  }
+
+  // Show error state if user is not available
+  if (!user) {
+    return (
+      <div className="md:hidden">
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-6 w-6" />
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -404,7 +556,7 @@ export const MobileSidebar = React.memo(function MobileSidebar() {
           </div>
           <ScrollArea className="h-[calc(100vh-4rem)]">
             <nav className="space-y-1 p-2">
-              {navigation.map((item) => {
+              {filteredNavigation.map((item) => {
                 const Icon = item.icon ? (typeof item.icon === 'string' ? Icons[item.icon as keyof typeof Icons] : item.icon) : null;
                 const isActive = pathname === item.href
                 const hasChildren = item.items && item.items.length > 0
@@ -487,6 +639,16 @@ export const MobileSidebar = React.memo(function MobileSidebar() {
                       {userEmail && (
                         <p className="truncate text-xs text-muted-foreground">{userEmail}</p>
                       )}
+                      {/* Role badges for mobile */}
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {myRoles && myRoles.length > 0 ? (
+                          myRoles.map((role) => (
+                            <UserRoleBadge key={role.id} role={role.name} />
+                          ))
+                        ) : (
+                          <span className="text-xs text-muted-foreground">No roles</span>
+                        )}
+                      </div>
                     </div>
                   </button>
                 </DropdownMenuTrigger>
@@ -507,3 +669,6 @@ export const MobileSidebar = React.memo(function MobileSidebar() {
     </Sheet>
   )
 })
+
+// Export both components
+export { AppSidebar, MobileSidebar }

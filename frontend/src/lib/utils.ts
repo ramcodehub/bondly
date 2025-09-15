@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import * as LucideIcons from "lucide-react"
-import { ComponentType, SVGProps } from "react"
+import React from "react"
 
 // Type utilities
 export type Prettify<T> = {
@@ -260,7 +260,7 @@ export function dynamicIcon(name: string, props: React.SVGProps<SVGSVGElement> =
     return null;
   }
   
-  return <IconComponent {...props} />;
+  return React.createElement(IconComponent, props);
 }
 
 // Icons component

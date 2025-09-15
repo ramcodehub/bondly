@@ -30,6 +30,7 @@ import extendedContactsRoutes from './routes/extended/contacts.js';
 import extendedAccountsRoutes from './routes/extended/accounts.js';
 import extendedServiceRoutes from './routes/extended/service.js';
 import extendedCampaignsRoutes from './routes/extended/campaigns.js';
+import extendedRolesRoutes from './routes/extended/roles.js';
 
 // Import Supabase client
 import supabase from './config/supabase.js';
@@ -39,8 +40,8 @@ dotenv.config();
 
 // Initialize Express app
 const app = express();
-// Use PORT from environment variable, default to 10000 to match Render config
-const PORT = process.env.PORT || 10000;
+// Use PORT from environment variable, default to 10002 to avoid conflicts
+const PORT = process.env.PORT || 10002;
 
 // Middleware
 // Security middleware
@@ -233,6 +234,7 @@ app.use('/api/extended/contacts', extendedContactsRoutes);
 app.use('/api/extended/accounts', extendedAccountsRoutes);
 app.use('/api/extended/service', extendedServiceRoutes);
 app.use('/api/extended/campaigns', extendedCampaignsRoutes);
+app.use('/api/extended/roles', extendedRolesRoutes);
 
 // 404 handler for unmatched API routes
 app.use('/api/*', notFoundHandler);

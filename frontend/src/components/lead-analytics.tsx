@@ -17,6 +17,66 @@ import {
   Filter
 } from 'lucide-react'
 
+// Define types for our data structures
+interface Lead {
+  id: string
+  name: string
+  email: string
+  company: string
+  status: string
+  lead_source?: string
+  industry?: string
+  location?: string
+  company_size?: string
+  email_opens?: number
+  website_visits?: number
+  downloads?: number
+  social_engagement?: boolean
+  avg_session_duration?: number
+  pages_per_session?: number
+  form_submissions?: number
+  product_page_views?: number
+  annual_revenue?: number
+  employee_count?: number
+  uses_compatible_tech?: boolean
+  last_activity?: string
+  created_at: string
+  requested_demo?: boolean
+  contacted_sales?: boolean
+  pricing_page_views?: number
+  competitor_research?: boolean
+  deal_value?: number
+  demo_requested?: boolean // Add this missing property
+}
+
+interface SourceStats {
+  count: number
+  totalScore: number
+  converted: number
+  revenue: number
+}
+
+interface SourcePerformance {
+  source: string
+  count: number
+  avgScore: number
+  conversionRate: number
+  revenue: number
+  roi: number
+}
+
+interface FunnelStats {
+  total: number
+  qualified: number
+  warm: number
+  hot: number
+  converted: number
+  qualificationRate: number
+  warmRate: number
+  hotRate: number
+  conversionRate: number
+}
+
 // Lead scoring algorithm
 export class LeadScoring {
   // Scoring weights (total should equal 100)
@@ -29,7 +89,7 @@ export class LeadScoring {
   }
 
   // Calculate lead score (0-100)
-  static calculateScore(lead: any): number {
+  static calculateScore(lead: Lead): number {
     const scores = {
       demographics: this.calculateDemographicsScore(lead),
       engagement: this.calculateEngagementScore(lead),
@@ -46,12 +106,12 @@ export class LeadScoring {
     )
   }
 
-  private static calculateDemographicsScore(lead: any): number {
+  private static calculateDemographicsScore(lead: Lead): number {
     let score = 0
     
     // Industry scoring
     const highValueIndustries = ['technology', 'finance', 'healthcare', 'manufacturing']
-    if (highValueIndustries.includes(lead.industry?.toLowerCase())) {
+    if (lead.industry && highValueIndustries.includes(lead.industry.toLowerCase())) {
       score += 40
     } else if (lead.industry) {
       score += 20
@@ -72,23 +132,23 @@ export class LeadScoring {
     return Math.min(score, 100)
   }
 
-  private static calculateEngagementScore(lead: any): number {
+  private static calculateEngagementScore(lead: Lead): number {
     let score = 0
     
     // Email engagement
-    if (lead.email_opens > 5) score += 30
-    else if (lead.email_opens > 2) score += 20
-    else if (lead.email_opens > 0) score += 10
+    if (lead.email_opens && lead.email_opens > 5) score += 30
+    else if (lead.email_opens && lead.email_opens > 2) score += 20
+    else if (lead.email_opens && lead.email_opens > 0) score += 10
 
     // Website visits
-    if (lead.website_visits > 10) score += 25
-    else if (lead.website_visits > 5) score += 15
-    else if (lead.website_visits > 0) score += 5
+    if (lead.website_visits && lead.website_visits > 10) score += 25
+    else if (lead.website_visits && lead.website_visits > 5) score += 15
+    else if (lead.website_visits && lead.website_visits > 0) score += 5
 
     // Content downloads
-    if (lead.downloads > 3) score += 25
-    else if (lead.downloads > 1) score += 15
-    else if (lead.downloads > 0) score += 10
+    if (lead.downloads && lead.downloads > 3) score += 25
+    else if (lead.downloads && lead.downloads > 1) score += 15
+    else if (lead.downloads && lead.downloads > 0) score += 10
 
     // Social media engagement
     if (lead.social_engagement) score += 20
@@ -96,45 +156,45 @@ export class LeadScoring {
     return Math.min(score, 100)
   }
 
-  private static calculateBehavioralScore(lead: any): number {
+  private static calculateBehavioralScore(lead: Lead): number {
     let score = 0
     
     // Time on site
-    if (lead.avg_session_duration > 300) score += 25 // 5+ minutes
-    else if (lead.avg_session_duration > 120) score += 15 // 2+ minutes
-    else if (lead.avg_session_duration > 60) score += 10 // 1+ minute
+    if (lead.avg_session_duration && lead.avg_session_duration > 300) score += 25 // 5+ minutes
+    else if (lead.avg_session_duration && lead.avg_session_duration > 120) score += 15 // 2+ minutes
+    else if (lead.avg_session_duration && lead.avg_session_duration > 60) score += 10 // 1+ minute
 
     // Pages per session
-    if (lead.pages_per_session > 5) score += 25
-    else if (lead.pages_per_session > 3) score += 15
-    else if (lead.pages_per_session > 1) score += 10
+    if (lead.pages_per_session && lead.pages_per_session > 5) score += 25
+    else if (lead.pages_per_session && lead.pages_per_session > 3) score += 15
+    else if (lead.pages_per_session && lead.pages_per_session > 1) score += 10
 
     // Form submissions
-    if (lead.form_submissions > 2) score += 30
-    else if (lead.form_submissions > 0) score += 20
+    if (lead.form_submissions && lead.form_submissions > 2) score += 30
+    else if (lead.form_submissions && lead.form_submissions > 0) score += 20
 
     // Product page views
-    if (lead.product_page_views > 3) score += 20
-    else if (lead.product_page_views > 0) score += 10
+    if (lead.product_page_views && lead.product_page_views > 3) score += 20
+    else if (lead.product_page_views && lead.product_page_views > 0) score += 10
 
     return Math.min(score, 100)
   }
 
-  private static calculateFirmographicsScore(lead: any): number {
+  private static calculateFirmographicsScore(lead: Lead): number {
     let score = 0
     
     // Annual revenue
-    if (lead.annual_revenue > 10000000) score += 40 // $10M+
-    else if (lead.annual_revenue > 1000000) score += 30 // $1M+
-    else if (lead.annual_revenue > 100000) score += 20 // $100K+
-    else if (lead.annual_revenue > 0) score += 10
+    if (lead.annual_revenue && lead.annual_revenue > 10000000) score += 40 // $10M+
+    else if (lead.annual_revenue && lead.annual_revenue > 1000000) score += 30 // $1M+
+    else if (lead.annual_revenue && lead.annual_revenue > 100000) score += 20 // $100K+
+    else if (lead.annual_revenue && lead.annual_revenue > 0) score += 10
 
     // Employee count
-    if (lead.employee_count > 1000) score += 30
-    else if (lead.employee_count > 100) score += 25
-    else if (lead.employee_count > 50) score += 20
-    else if (lead.employee_count > 10) score += 15
-    else if (lead.employee_count > 0) score += 10
+    if (lead.employee_count && lead.employee_count > 1000) score += 30
+    else if (lead.employee_count && lead.employee_count > 100) score += 25
+    else if (lead.employee_count && lead.employee_count > 50) score += 20
+    else if (lead.employee_count && lead.employee_count > 10) score += 15
+    else if (lead.employee_count && lead.employee_count > 0) score += 10
 
     // Technology stack compatibility
     if (lead.uses_compatible_tech) score += 30
@@ -142,7 +202,7 @@ export class LeadScoring {
     return Math.min(score, 100)
   }
 
-  private static calculateIntentScore(lead: any): number {
+  private static calculateIntentScore(lead: Lead): number {
     let score = 0
     const now = new Date()
     const lastActivity = new Date(lead.last_activity || lead.created_at)
@@ -157,7 +217,7 @@ export class LeadScoring {
     // Urgency indicators
     if (lead.requested_demo) score += 30
     if (lead.contacted_sales) score += 25
-    if (lead.pricing_page_views > 0) score += 20
+    if (lead.pricing_page_views && lead.pricing_page_views > 0) score += 20
     if (lead.competitor_research) score += 15
 
     return Math.min(score, 100)
@@ -176,7 +236,7 @@ export class LeadScoring {
   }
 
   // Get recommendations for improving lead score
-  static getRecommendations(lead: any): string[] {
+  static getRecommendations(lead: Lead): string[] {
     const recommendations: string[] = []
     const score = this.calculateScore(lead)
     
@@ -208,7 +268,7 @@ export class LeadScoring {
 
 // Analytics calculations
 export class LeadAnalytics {
-  static calculateConversionFunnel(leads: any[]) {
+  static calculateConversionFunnel(leads: Lead[]): FunnelStats {
     const total = leads.length
     const qualified = leads.filter(l => LeadScoring.calculateScore(l) >= 40).length
     const warm = leads.filter(l => LeadScoring.calculateScore(l) >= 60).length
@@ -228,7 +288,7 @@ export class LeadAnalytics {
     }
   }
 
-  static calculateSourcePerformance(leads: any[]) {
+  static calculateSourcePerformance(leads: Lead[]): SourcePerformance[] {
     const sourceStats = leads.reduce((acc, lead) => {
       const source = lead.lead_source || 'Unknown'
       const score = LeadScoring.calculateScore(lead)
@@ -250,7 +310,7 @@ export class LeadAnalytics {
       }
       
       return acc
-    }, {} as Record<string, any>)
+    }, {} as Record<string, SourceStats>)
 
     return Object.entries(sourceStats).map(([source, stats]) => ({
       source,
@@ -262,15 +322,15 @@ export class LeadAnalytics {
     }))
   }
 
-  static calculateTrendAnalysis(leads: any[], days = 30) {
-    const cutoffDate = new Date()
-    cutoffDate.setDate(cutoffDate.getDate() - days)
+  static calculateTrendAnalysis(leads: Lead[], days: number) {
+    const recentLeads = leads.filter(lead => {
+      const leadDate = new Date(lead.created_at)
+      const cutoffDate = new Date()
+      cutoffDate.setDate(cutoffDate.getDate() - days)
+      return leadDate >= cutoffDate
+    })
     
-    const recentLeads = leads.filter(lead => 
-      new Date(lead.created_at) >= cutoffDate
-    )
-    
-    const dailyStats = {}
+    const dailyStats: Record<string, { count: number; avgScore: number; hotLeads: number }> = {}
     
     for (let i = 0; i < days; i++) {
       const date = new Date()
@@ -295,7 +355,7 @@ export class LeadAnalytics {
 }
 
 // Lead Analytics Dashboard Component
-export default function LeadAnalyticsDashboard({ leads = [] }: { leads: any[] }) {
+export default function LeadAnalyticsDashboard({ leads = [] }: { leads: Lead[] }) {
   const [timeRange, setTimeRange] = useState('30d')
   const [selectedSource, setSelectedSource] = useState('all')
 

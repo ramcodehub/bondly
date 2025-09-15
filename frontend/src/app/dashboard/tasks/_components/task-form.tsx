@@ -38,11 +38,13 @@ interface FormData {
   tags: string
 }
 
-interface Deal {
+// Renamed from Deal to TaskFormDeal to avoid type conflicts
+interface TaskFormDeal {
   id: string
   name: string
   amount: number
   stage: string
+  probability: number
 }
 
 interface Lead {
@@ -89,7 +91,7 @@ export function TaskForm({ task, isOpen, onClose, onSubmit }: TaskFormProps) {
   })
 
   const [loading, setLoading] = useState(false)
-  const [deals, setDeals] = useState<Deal[]>([])
+  const [deals, setDeals] = useState<TaskFormDeal[]>([])
   const [leads, setLeads] = useState<Lead[]>([])
   const [contacts, setContacts] = useState<Contact[]>([])
   const [companies, setCompanies] = useState<Company[]>([])
@@ -145,7 +147,7 @@ export function TaskForm({ task, isOpen, onClose, onSubmit }: TaskFormProps) {
     setLoadingData(true)
     try {
       const [dealsResponse, leadsResponse, contactsResponse, companiesResponse] = await Promise.all([
-        supabase.from('deals').select('id, name, amount, stage').limit(100),
+        supabase.from('deals').select('id, name, amount, stage, probability').limit(100),
         supabase.from('leads').select('id, first_name, last_name, email, company').limit(100),
         supabase.from('contacts').select('id, name, email').limit(100),
         supabase.from('companies').select('id, name, industry').limit(100),

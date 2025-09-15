@@ -4,6 +4,7 @@ import * as React from "react"
 import dynamic from "next/dynamic"
 import { Bell, User, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,11 +13,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useUser } from "@/hooks/useUser"
+import { useRoles } from "@/hooks/useRoles"
+import { UserRoleBadge } from "@/app/dashboard/settings/roles/UserRoleBadge"
 
 const NotificationsList = dynamic(() => import("./topbar-notifications").then(m => m.NotificationsList).catch(() => ({ default: () => null })), { ssr: false })
 const CommandPalette = dynamic(() => import("./command-palette").then(m => m.CommandPalette).catch(() => ({ default: () => null })), { ssr: false, loading: () => null })
 
 export default function TopbarActions() {
+  const { user, profile } = useUser()
+  const { myRoles } = useRoles()
+  
+  // Get user display name
+  const userDisplayName = profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
+
   return (
     <div className="flex items-center gap-1 sm:gap-2">
       {/* Command Palette trigger */}
@@ -59,8 +69,25 @@ export default function TopbarActions() {
             <User className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuContent align="end" className="w-64">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <div className="px-2 py-1.5 text-sm font-medium">
+            {userDisplayName}
+          </div>
+          <div className="px-2 py-1.5 text-xs text-muted-foreground">
+            {user?.email}
+          </div>
+          {/* Role badges */}
+          <div className="px-2 py-1.5 flex flex-wrap gap-1">
+            {myRoles && myRoles.length > 0 ? (
+              myRoles.map((role) => (
+                <UserRoleBadge key={role.id} role={role.name} />
+              ))
+            ) : (
+              <span className="text-xs text-muted-foreground">No roles assigned</span>
+            )}
+          </div>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => (window.location.href = "/dashboard/settings/profile")}>Profile</DropdownMenuItem>
           <DropdownMenuItem onClick={() => (window.location.href = "/dashboard/settings/notifications")}>Notifications</DropdownMenuItem>

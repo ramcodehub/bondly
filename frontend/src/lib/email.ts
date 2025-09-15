@@ -154,12 +154,13 @@ export class EmailService {
           subject: params.subject,
           status: 'sent',
           sentAt: new Date(),
-          trackingId
+          trackingId,
+          metadata: {}
         })
       }
 
       return result
-    } catch (error) {
+    } catch (error: any) {
       console.error('Email sending failed:', error)
       return { success: false, error: error.message }
     }

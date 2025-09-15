@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { useRoles } from '@/hooks/useRoles'
 
 export default function SettingsLayout({
   children,
@@ -10,6 +11,7 @@ export default function SettingsLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const { isAdmin } = useRoles()
   
   const settingsNav = [
     {
@@ -34,6 +36,17 @@ export default function SettingsLayout({
     },
   ]
 
+  // Only show Roles tab to Admin users
+  const adminNav = [
+    {
+      name: 'Roles',
+      href: '/dashboard/settings/roles',
+      icon: 'shield',
+    },
+  ]
+
+  const allNavItems = isAdmin ? [...settingsNav, ...adminNav] : settingsNav
+
   return (
     <div className="space-y-6">
       <div>
@@ -46,7 +59,7 @@ export default function SettingsLayout({
       <div className="space-y-6">
         <div className="border-b">
           <nav className="-mb-px flex space-x-8">
-            {settingsNav.map((item) => {
+            {allNavItems.map((item) => {
               const isActive = pathname === item.href
               return (
                 <Link

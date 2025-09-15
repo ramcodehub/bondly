@@ -7,10 +7,13 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useUser } from "@/hooks/useUser"
+import { useRoles } from "@/hooks/useRoles"
+import { UserRoleBadge } from "@/app/dashboard/settings/roles/UserRoleBadge"
 import { toast } from "sonner"
 
 export default function ProfilePage() {
   const { user, profile, loading: userLoading } = useUser()
+  const { myRoles, loading: rolesLoading } = useRoles()
   const [profileData, setProfileData] = useState({
     full_name: '',
     email: '',
@@ -125,7 +128,7 @@ export default function ProfilePage() {
     toast.info('Account deletion functionality would be implemented here')
   }
 
-  if (loading || userLoading) {
+  if (loading || userLoading || rolesLoading) {
     return <div className="p-8">Loading profile...</div>
   }
 
@@ -155,6 +158,16 @@ export default function ProfilePage() {
             <div>
               <h3 className="text-xl font-semibold">{profileData.full_name || 'No name provided'}</h3>
               <p className="text-muted-foreground">{profileData.email || 'No email provided'}</p>
+              {/* Role badges */}
+              <div className="flex flex-wrap gap-2 mt-2">
+                {myRoles && myRoles.length > 0 ? (
+                  myRoles.map((role) => (
+                    <UserRoleBadge key={role.id} role={role.name} />
+                  ))
+                ) : (
+                  <span className="text-sm text-muted-foreground">No roles assigned</span>
+                )}
+              </div>
             </div>
           </div>
         </CardContent>

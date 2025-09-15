@@ -5,22 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DealsStageChart } from "../components/deals-stage-chart"
 import { TasksPriorityChart } from "../components/tasks-priority-chart"
 import { ContactsGrowthChart } from "../components/contacts-growth-chart"
-
-interface Deal {
-  id: string
-  name: string
-  amount: number
-  stage: string
-  company: string
-}
-
-interface Task {
-  id: string
-  title: string
-  priority: string
-  status: string
-  createdAt: string
-}
+import { Deal } from "../deals/types"
+import { Task } from "../tasks/types"
 
 interface Contact {
   id: string
@@ -63,18 +49,102 @@ export default function ChartTestPage() {
   useEffect(() => {
     // Create mock data for testing
     const mockDeals: Deal[] = [
-      { id: '1', name: 'Deal 1', amount: 10000, stage: 'lead', company: 'Company A' },
-      { id: '2', name: 'Deal 2', amount: 25000, stage: 'qualified', company: 'Company B' },
-      { id: '3', name: 'Deal 3', amount: 50000, stage: 'proposal', company: 'Company C' },
-      { id: '4', name: 'Deal 4', amount: 75000, stage: 'negotiation', company: 'Company D' },
-      { id: '5', name: 'Deal 5', amount: 100000, stage: 'closed_won', company: 'Company E' }
+      { 
+        id: '1', 
+        name: 'Deal 1', 
+        amount: 10000, 
+        stage: 'lead', 
+        company: 'Company A', 
+        probability: 10,
+        closeDate: '2023-12-31'
+      },
+      { 
+        id: '2', 
+        name: 'Deal 2', 
+        amount: 25000, 
+        stage: 'qualified', 
+        company: 'Company B', 
+        probability: 30,
+        closeDate: '2023-12-31'
+      },
+      { 
+        id: '3', 
+        name: 'Deal 3', 
+        amount: 50000, 
+        stage: 'proposal', 
+        company: 'Company C', 
+        probability: 50,
+        closeDate: '2023-12-31'
+      },
+      { 
+        id: '4', 
+        name: 'Deal 4', 
+        amount: 75000, 
+        stage: 'negotiation', 
+        company: 'Company D', 
+        probability: 80,
+        closeDate: '2023-12-31'
+      },
+      { 
+        id: '5', 
+        name: 'Deal 5', 
+        amount: 100000, 
+        stage: 'closed_won', 
+        company: 'Company E', 
+        probability: 100,
+        closeDate: '2023-12-31'
+      }
     ]
 
     const mockTasks: Task[] = [
-      { id: '1', title: 'Task 1', priority: 'low', status: 'todo', createdAt: '2023-01-01' },
-      { id: '2', title: 'Task 2', priority: 'medium', status: 'in_progress', createdAt: '2023-02-01' },
-      { id: '3', title: 'Task 3', priority: 'high', status: 'done', createdAt: '2023-03-01' },
-      { id: '4', title: 'Task 4', priority: 'urgent', status: 'todo', createdAt: '2023-04-01' }
+      { 
+        id: '1', 
+        title: 'Task 1', 
+        description: 'Description for task 1',
+        dueDate: '2023-12-31',
+        priority: 'low', 
+        status: 'todo', 
+        createdAt: '2023-01-01',
+        updatedAt: '2023-01-01',
+        labels: [],
+        assignedTo: []
+      },
+      { 
+        id: '2', 
+        title: 'Task 2', 
+        description: 'Description for task 2',
+        dueDate: '2023-12-31',
+        priority: 'medium', 
+        status: 'in_progress', 
+        createdAt: '2023-02-01',
+        updatedAt: '2023-02-01',
+        labels: [],
+        assignedTo: []
+      },
+      { 
+        id: '3', 
+        title: 'Task 3', 
+        description: 'Description for task 3',
+        dueDate: '2023-12-31',
+        priority: 'high', 
+        status: 'done', 
+        createdAt: '2023-03-01',
+        updatedAt: '2023-03-01',
+        labels: [],
+        assignedTo: []
+      },
+      { 
+        id: '4', 
+        title: 'Task 4', 
+        description: 'Description for task 4',
+        dueDate: '2023-12-31',
+        priority: 'urgent', 
+        status: 'todo', 
+        createdAt: '2023-04-01',
+        updatedAt: '2023-04-01',
+        labels: [],
+        assignedTo: []
+      }
     ]
 
     const mockContacts: Contact[] = [

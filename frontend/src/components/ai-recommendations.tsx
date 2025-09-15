@@ -181,7 +181,7 @@ export class AIRecommendationEngine {
   }
 
   private static calculateSuccessRateByAttribute(leads: any[], attribute: string) {
-    const attributeStats = leads.reduce((acc, lead) => {
+    const attributeStats: Record<string, { total: number; converted: number }> = leads.reduce((acc, lead) => {
       const value = lead[attribute] || 'Unknown'
       if (!acc[value]) {
         acc[value] = { total: 0, converted: 0 }
@@ -191,7 +191,7 @@ export class AIRecommendationEngine {
         acc[value].converted++
       }
       return acc
-    }, {} as Record<string, any>)
+    }, {} as Record<string, { total: number; converted: number }>)
 
     return Object.entries(attributeStats)
       .map(([value, stats]) => ({
@@ -244,7 +244,7 @@ export class AIRecommendationEngine {
     }
 
     // Industry-specific recommendations
-    if (patterns.highValueIndicators.find(p => p.type === 'industry' && lead.industry === p.value)) {
+    if (patterns.highValueIndicators.find((p: any) => p.type === 'industry' && lead.industry === p.value)) {
       recommendations.push({
         type: 'prioritize',
         priority: 'high',
@@ -285,7 +285,7 @@ export class AIRecommendationEngine {
     }
 
     return recommendations.sort((a, b) => {
-      const priorityOrder = { high: 3, medium: 2, low: 1 }
+      const priorityOrder: Record<string, number> = { high: 3, medium: 2, low: 1 }
       return priorityOrder[b.priority] - priorityOrder[a.priority]
     })
   }
@@ -317,7 +317,7 @@ export class AIRecommendationEngine {
 
     // Channel optimization
     if (patterns.highValueIndicators.length > 0) {
-      const topChannel = patterns.highValueIndicators.find(p => p.type === 'lead_source')
+      const topChannel = patterns.highValueIndicators.find((p: any) => p.type === 'lead_source')
       if (topChannel) {
         recommendations.push({
           type: 'strategy',

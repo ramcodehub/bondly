@@ -3,7 +3,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Settings, Bell, User, CreditCard, Globe, Lock, Mail } from "lucide-react"
+import { Settings, Bell, User, CreditCard, Globe, Lock, Mail, Users } from "lucide-react"
+import Link from "next/link"
 
 export default function SettingsPage() {
   return (
@@ -198,6 +199,40 @@ export default function SettingsPage() {
               <Button className="w-full" variant="outline">
                 Manage Accounts
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Role Management Card - Only visible to Admins */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Role Management
+            </CardTitle>
+            <CardDescription>
+              Manage user roles and permissions
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span>Total Roles</span>
+                <span className="font-medium">5</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Active Users</span>
+                <span className="font-medium">12</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Role Assignments</span>
+                <span className="font-medium">15</span>
+              </div>
+              <Link href="/dashboard/settings/roles">
+                <Button className="w-full">
+                  Manage Roles
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
