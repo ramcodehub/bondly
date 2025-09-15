@@ -37,7 +37,9 @@ export async function middleware(request: NextRequest) {
     '/reports': '/dashboard/reports',
     '/settings': '/dashboard/settings',
   }
-  if (request.nextUrl.pathname in shortcuts) {
+  
+  // Only redirect if the pathname is in shortcuts and not the root path
+  if (request.nextUrl.pathname !== '/' && request.nextUrl.pathname in shortcuts) {
     return NextResponse.redirect(new URL(shortcuts[request.nextUrl.pathname], request.url))
   }
 
