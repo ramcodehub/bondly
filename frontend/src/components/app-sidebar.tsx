@@ -275,7 +275,7 @@ const AppSidebar = React.memo(function AppSidebar({ className, isOpen = true, on
   }, [user, profile, loading, myRoles, rolesLoading, isAdmin, isMarketingManager, isSalesManager, filteredNavigation.length])
 
   const sidebarClasses = cn(
-    "h-screen border-r transition-all duration-300 ease-in-out z-50 flex flex-col bg-white",
+    "h-screen border-r transition-all duration-300 ease-in-out z-50 flex flex-col bg-background",
     isCollapsed ? "w-16" : "w-64",
     className
   )
@@ -556,7 +556,7 @@ const MobileSidebar = React.memo(function MobileSidebar() {
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-64 px-0">
+      <SheetContent side="left" className="w-64 px-0 bg-background">
         <div className="h-full">
           <div className="flex h-16 items-center border-b px-4">
             <Link href="/dashboard" className="flex items-center space-x-2">

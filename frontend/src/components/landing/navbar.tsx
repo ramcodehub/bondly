@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface NavbarProps {
   isMenuOpen: boolean;
@@ -43,6 +44,9 @@ export default function Navbar({ isMenuOpen, setIsMenuOpen }: NavbarProps) {
         </nav>
 
         <div className="flex items-center gap-2">
+          {/* Theme Toggle */}
+          <ThemeToggle />
+          
           <Button variant="outline" className="hidden md:flex group hover:scale-105 transition-transform duration-300" asChild>
             <Link href="/login">Login</Link>
           </Button>

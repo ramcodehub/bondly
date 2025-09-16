@@ -16,6 +16,7 @@ import {
 import { useUser } from "@/hooks/useUser"
 import { useRoles } from "@/hooks/useRoles"
 import { UserRoleBadge } from "@/app/dashboard/settings/roles/UserRoleBadge"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 const NotificationsList = dynamic(() => import("./topbar-notifications").then(m => m.NotificationsList).catch(() => ({ default: () => null })), { ssr: false })
 const CommandPalette = dynamic(() => import("./command-palette").then(m => m.CommandPalette).catch(() => ({ default: () => null })), { ssr: false, loading: () => null })
@@ -61,6 +62,9 @@ export default function TopbarActions() {
           </div>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Theme Toggle */}
+      <ThemeToggle />
 
       {/* Profile */}
       <DropdownMenu>
