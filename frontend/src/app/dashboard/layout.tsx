@@ -1,6 +1,6 @@
 "use client"
 
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar, MobileSidebar } from "@/components/app-sidebar"
 import TopbarActions from "@/components/topbar-actions"
 
 export default function DashboardLayout({
@@ -20,9 +20,7 @@ export default function DashboardLayout({
         {/* Topbar */}
         <div className="flex items-center justify-between p-4 border-b">
           <div className="md:hidden block">
-            <button className="p-2 rounded-md border">
-              Mobile Menu (Hidden in this test)
-            </button>
+            <MobileSidebar />
           </div>
           <div className="ml-auto">
             <TopbarActions />

@@ -482,45 +482,8 @@ const MobileSidebar = React.memo(function MobileSidebar() {
     }
   }, [pathname])
 
-  // Filter navigation based on user roles
-  const filteredNavigation = navigation.filter(item => {
-    // If no roles specified, show to everyone
-    if (!item.roles || item.roles.length === 0) return true;
-    
-    // Check if user has any of the required roles
-    return item.roles.some(role => hasRole(role));
-  }).map(item => {
-    // Also filter child items
-    if (item.items) {
-      return {
-        ...item,
-        items: item.items.filter(child => {
-          // If no roles specified, show to everyone
-          if (!child.roles || child.roles.length === 0) return true;
-          
-          // Check if user has any of the required roles
-          return child.roles.some(role => hasRole(role));
-        })
-      };
-    }
-    return item;
-  });
-
-  // Debug logging to help identify issues
-  React.useEffect(() => {
-    console.log('Mobile sidebar debug info:', { 
-      user, 
-      profile, 
-      loading,
-      myRoles,
-      rolesLoading,
-      isAdmin,
-      isMarketingManager,
-      isSalesManager,
-      filteredNavigation: filteredNavigation.length,
-      totalNavigation: navigation.length
-    })
-  }, [user, profile, loading, myRoles, rolesLoading, isAdmin, isMarketingManager, isSalesManager, filteredNavigation.length])
+  // Show all navigation items for debugging (remove role filtering)
+  const filteredNavigation = navigation;
 
   // Get user display name and email
   const userDisplayName = profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
@@ -548,23 +511,28 @@ const MobileSidebar = React.memo(function MobileSidebar() {
     );
   }
 
+  // Close sidebar function
+  const closeSidebar = () => {
+    setOpen(false)
+  }
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-6 w-6" />
+          <Icons.logo className="h-6 w-6" />
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-64 px-0 bg-background">
-        <div className="h-full">
+        <div className="h-full flex flex-col">
           <div className="flex h-16 items-center border-b px-4">
-            <Link href="/dashboard" className="flex items-center space-x-2">
+            <Link href="/dashboard" className="flex items-center space-x-2" onClick={closeSidebar}>
               <Icons.logo className="h-6 w-6" />
               <span className="font-bold">Bondly</span>
             </Link>
           </div>
-          <ScrollArea className="h-[calc(100vh-4rem)]">
+          <div className="flex-1 overflow-y-auto">
             <nav className="space-y-1 p-2">
               {filteredNavigation.map((item) => {
                 const Icon = item.icon ? (typeof item.icon === 'string' ? Icons[item.icon as keyof typeof Icons] : item.icon) : null;
@@ -573,45 +541,46 @@ const MobileSidebar = React.memo(function MobileSidebar() {
                 
                 if (hasChildren) {
                   return (
-                    <Collapsible
-                      key={item.title}
-                      open={openGroups[item.title] || false}
-                      onOpenChange={() => toggleGroup(item.title)}
-                    >
-                      <CollapsibleTrigger className={cn(
-                        "flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                        isActive
-                          ? "bg-accent text-accent-foreground"
-                          : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground",
-                        "justify-between"
-                      )}>
-                        <div className="flex items-center">
-                          {Icon && <Icon className="h-5 w-5" />}
-                          <span className={Icon ? "ml-2" : ""}>{item.title}</span>
-                        </div>
-                        <div />
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="space-y-1 pl-4">
-                        {item.items?.map((child) => {
-                          const isChildActive = pathname === child.href
-                          return (
-                            <Link
-                              key={child.href}
-                              href={child.href}
-                              className={cn(
-                                "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                                isChildActive
-                                  ? "bg-accent text-accent-foreground"
-                                  : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
-                              )}
-                              onClick={() => setOpen(false)}
-                            >
-                              <span>{child.title}</span>
-                            </Link>
-                          )
-                        })}
-                      </CollapsibleContent>
-                    </Collapsible>
+                    <div key={item.title}>
+                      <Collapsible
+                        open={openGroups[item.title] || false}
+                        onOpenChange={() => toggleGroup(item.title)}
+                      >
+                        <CollapsibleTrigger className={cn(
+                          "flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                          isActive
+                            ? "bg-accent text-accent-foreground"
+                            : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground",
+                          "justify-between"
+                        )}>
+                          <div className="flex items-center">
+                            {Icon && <Icon className="h-5 w-5" />}
+                            <span className={Icon ? "ml-2" : ""}>{item.title}</span>
+                          </div>
+                          <div />
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="space-y-1 pl-4">
+                          {item.items?.map((child) => {
+                            const isChildActive = pathname === child.href
+                            return (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                className={cn(
+                                  "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                                  isChildActive
+                                    ? "bg-accent text-accent-foreground"
+                                    : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
+                                )}
+                                onClick={closeSidebar}
+                              >
+                                <span>{child.title}</span>
+                              </Link>
+                            )
+                          })}
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </div>
                   )
                 }
                 
@@ -625,7 +594,7 @@ const MobileSidebar = React.memo(function MobileSidebar() {
                         ? "bg-accent text-accent-foreground"
                         : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
                     )}
-                    onClick={() => setOpen(false)}
+                    onClick={closeSidebar}
                   >
                     {Icon && <Icon className="h-5 w-5" />}
                     <span className={Icon ? "ml-2" : ""}>{item.title}</span>
@@ -636,44 +605,56 @@ const MobileSidebar = React.memo(function MobileSidebar() {
                 )
               })}
             </nav>
-            {/* Profile footer for mobile */}
-            <div className="mt-auto border-t p-3">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left hover:bg-accent/50">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback>{userDisplayName.charAt(0).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">{userDisplayName}</p>
-                      {userEmail && (
-                        <p className="truncate text-xs text-muted-foreground">{userEmail}</p>
+          </div>
+          {/* Profile footer for mobile */}
+          <div className="border-t p-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left hover:bg-accent/50">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback>{userDisplayName.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{userDisplayName}</p>
+                    {userEmail && (
+                      <p className="truncate text-xs text-muted-foreground">{userEmail}</p>
+                    )}
+                    {/* Role badges for mobile */}
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {myRoles && myRoles.length > 0 ? (
+                        myRoles.map((role) => (
+                          <UserRoleBadge key={role.id} role={role.name} />
+                        ))
+                      ) : (
+                        <span className="text-xs text-muted-foreground">No roles</span>
                       )}
-                      {/* Role badges for mobile */}
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {myRoles && myRoles.length > 0 ? (
-                          myRoles.map((role) => (
-                            <UserRoleBadge key={role.id} role={role.name} />
-                          ))
-                        ) : (
-                          <span className="text-xs text-muted-foreground">No roles</span>
-                        )}
-                      </div>
                     </div>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => (window.location.href = "/dashboard/settings/profile")}>Profile</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => (window.location.href = "/dashboard/settings/notifications")}>Notifications</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => (window.location.href = "/dashboard/settings/account")}>Account settings</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => (window.location.href = "/login")}>Sign out</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </ScrollArea>
+                  </div>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => {
+                  closeSidebar()
+                  window.location.href = "/dashboard/settings/profile"
+                }}>Profile</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  closeSidebar()
+                  window.location.href = "/dashboard/settings/notifications"
+                }}>Notifications</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  closeSidebar()
+                  window.location.href = "/dashboard/settings/account"
+                }}>Account settings</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => {
+                  closeSidebar()
+                  window.location.href = "/login"
+                }}>Sign out</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
