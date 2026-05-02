@@ -40,7 +40,7 @@ export default async function LeadDetailPage({
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold">
-                {lead.first_name} {lead.last_name}
+{lead.name}
               </h1>
               <p className="text-muted-foreground">{lead.email}</p>
             </div>
@@ -62,7 +62,7 @@ export default async function LeadDetailPage({
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Edit Lead: {lead.first_name} {lead.last_name}
+                  Edit Lead: {lead.name}
                 </CardTitle>
               </CardHeader>
               <CardContent>

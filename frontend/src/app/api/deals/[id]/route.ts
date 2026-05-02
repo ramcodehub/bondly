@@ -17,9 +17,9 @@ export async function GET(
       .from('deals')
       .select(`
         *,
-        leads(name, email, phone, company),
-        contacts(name, email, phone),
-        accounts(name, industry),
+        leads(name, email, phone),
+        contacts(first_name, last_name, email, phone),
+        companies(name, industry),
         tasks(id, title, status, priority, due_date)
       `)
       .eq('id', id)
@@ -83,7 +83,7 @@ export async function PUT(
     if (dealData.description !== undefined) updateData.description = dealData.description?.trim() || null;
     if (dealData.lead_id !== undefined) updateData.lead_id = dealData.lead_id || null;
     if (dealData.contact_id !== undefined) updateData.contact_id = dealData.contact_id || null;
-    if (dealData.account_id !== undefined) updateData.account_id = dealData.account_id || null;
+    if (dealData.company_id !== undefined) updateData.company_id = dealData.company_id || null;
     if (dealData.owner_id !== undefined) updateData.owner_id = dealData.owner_id || null;
     if (dealData.deal_source !== undefined) updateData.deal_source = dealData.deal_source?.trim() || null;
     if (dealData.competitors !== undefined) updateData.competitors = dealData.competitors;

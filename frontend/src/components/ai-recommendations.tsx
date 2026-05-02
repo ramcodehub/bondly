@@ -48,17 +48,6 @@ export class AIRecommendationEngine {
       })
     }
 
-    // Company size patterns
-    const sizeSuccess = this.calculateSuccessRateByAttribute(leads, 'company_size')
-    if (sizeSuccess.length > 0) {
-      patterns.push({
-        type: 'company_size',
-        insight: `${sizeSuccess[0].value} companies convert ${sizeSuccess[0].rate.toFixed(1)}% better`,
-        confidence: 0.78,
-        action: `Focus on ${sizeSuccess[0].value} company segment`
-      })
-    }
-
     // Source patterns
     const sourceSuccess = this.calculateSuccessRateByAttribute(leads, 'lead_source')
     if (sourceSuccess.length > 0) {

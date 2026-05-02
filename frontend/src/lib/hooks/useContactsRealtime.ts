@@ -7,20 +7,20 @@ import { notifications } from '@/lib/notifications'
 import type { Contact as ContactType } from '@/lib/stores/types'
 
 interface Contact {
-  id: string
-  name: string
-  role?: string
-  email: string
-  phone?: string
-  image_url?: string
-  company_name?: string
-  created_at?: string
-  updated_at?: string
-  lastContact?: string
-  status: "active" | "inactive" | "pending"
-  company_id?: string
+  id: string;
+  name?: string;
+  role?: string;
+  email: string;
+  phone?: string;
+  image_url?: string;
+  company_name?: string;
+  created_at?: string;
+  updated_at?: string;
+  lastContact?: string;
+  status: "active" | "inactive" | "pending";
+  company_id?: string;
   // Computed fields
-  full_name?: string
+  full_name?: string;
 }
 
 interface ContactsRealtimeState {

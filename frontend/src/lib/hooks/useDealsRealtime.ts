@@ -40,14 +40,18 @@ export function useDealsRealtime() {
 
   // Transform Supabase data to Deal interface
   const transformDeal = useCallback((dealData: any): Deal => {
+    // Create full name from first_name and last_name
+    const leadName = dealData.leads ? 
+      `${dealData.leads.first_name || ''} ${dealData.leads.last_name || ''}`.trim() : '';
+    const contactName = dealData.contacts ? 
+      `${dealData.contacts.first_name || ''} ${dealData.contacts.last_name || ''}`.trim() : '';
+    
     return {
       id: dealData.id,
       name: dealData.name,
       amount: dealData.amount || 0,
-      company: dealData.leads?.company || dealData.companies?.name || 'Unknown Company',
-      contact: dealData.contacts?.name || 
-               (dealData.leads ? `${dealData.leads.first_name || ''} ${dealData.leads.last_name || ''}`.trim() : '') || 
-               'Unknown Contact',
+      company: dealData.companies?.name || 'Unknown Company',
+      contact: contactName || leadName || 'Unknown Contact',
       stage: dealData.stage,
       probability: dealData.probability || 0,
       closeDate: dealData.close_date || '',
@@ -58,7 +62,7 @@ export function useDealsRealtime() {
       contactPhone: dealData.contacts?.phone || dealData.leads?.phone || '',
       lead_id: dealData.lead_id,
       contact_id: dealData.contact_id,
-      account_id: dealData.company_id,
+      company_id: dealData.company_id,
       owner_id: dealData.owner_id,
       deal_source: dealData.deal_source,
       competitors: dealData.competitors,
@@ -106,8 +110,8 @@ export function useDealsRealtime() {
         .from('deals')
         .select(`
           *,
-          leads(first_name, last_name, email, phone, company),
-          contacts(name, email, phone),
+          leads(first_name, last_name, email, phone),
+          contacts(first_name, last_name, email, phone),
           companies(name, industry)
         `)
         .order('created_at', { ascending: false })
@@ -175,7 +179,7 @@ export function useDealsRealtime() {
           description: dealData.description || null,
           lead_id: dealData.lead_id || null,
           contact_id: dealData.contact_id || null,
-          account_id: dealData.account_id || null,
+          company_id: dealData.company_id || null,
           owner_id: dealData.owner_id || null,
           deal_source: dealData.deal_source || null,
           competitors: dealData.competitors || null,

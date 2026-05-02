@@ -16,7 +16,7 @@ export interface Deal {
   contactPhone?: string
   lead_id?: string
   contact_id?: string
-  account_id?: string
+  company_id?: string
   owner_id?: string
   deal_source?: string
   competitors?: string[]

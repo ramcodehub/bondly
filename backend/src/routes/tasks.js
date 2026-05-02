@@ -42,8 +42,8 @@ router.get('/', asyncHandler(async (req, res) => {
     .select(`
       *,
       deals(name, amount, stage),
-      leads(first_name, last_name, email, company),
-      contacts(name, email, phone),
+      leads(name, email, phone),
+      contacts(first_name, last_name, email, phone),
       companies(name, industry)
     `)
     .order('created_at', { ascending: false });
@@ -98,8 +98,8 @@ router.get('/:id', asyncHandler(async (req, res) => {
     .select(`
       *,
       deals(name, amount, stage),
-      leads(first_name, last_name, email, company),
-      contacts(name, email, phone),
+      leads(name, email, phone),
+      contacts(first_name, last_name, email, phone),
       companies(name, industry)
     `)
     .eq('id', id)
@@ -333,8 +333,8 @@ router.get('/overdue', asyncHandler(async (req, res) => {
     .select(`
       *,
       deals(name, amount, stage),
-      leads(name, email, company),
-      contacts(name, email, phone)
+      leads(name, email),
+      contacts(first_name, last_name, email, phone)
     `)
     .lt('due_date', today)
     .neq('status', 'done')

@@ -1,45 +1,82 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '../../../utils/supabase/server'
+import { supabaseServer, supabaseFallback } from '../../../lib/supabase-server'
+import { User } from '@supabase/supabase-js'
 
 export const dynamic = "force-dynamic"
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    console.log('GET /api/test-auth called')
+    // Use the server client with service role key when available, otherwise use SSR client
+    let user: User | null = null;
+    let userError: any = null;
     
-    const supabase = await createClient()
+    if (supabaseServer) {
+      // With service role key, we can verify the token from the Authorization header
+      const authHeader = request.headers.get('Authorization');
+      if (authHeader?.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        const { data, error } = await supabaseServer.auth.getUser(token);
+        user = data?.user || null;
+        userError = error;
+      }
+    }
     
-    // Get the user session
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    console.log('User data in test route:', user?.id)
-
+    // If we couldn't get user from service role key, try SSR client
     if (!user) {
-      console.log('No user found in test route')
+      // Create the Supabase client using the SSR package
+      const supabase = await createClient()
+      
+      // Get the user session
+      const { data, error } = await supabase.auth.getUser()
+      user = data?.user || null;
+      userError = error;
+    }
+    
+    if (userError) {
       return NextResponse.json(
         { 
-          error: 'No user found',
-          hasUser: false,
-          cookies: typeof cookies === 'function' ? 'function available' : 'not available'
+          success: false, 
+          message: 'Authentication failed', 
+          error: userError.message,
+          user: null
         },
         { status: 401 }
       )
     }
-
+    
+    if (!user) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Unauthorized - No active session',
+          user: null
+        },
+        { status: 401 }
+      )
+    }
+    
     return NextResponse.json({ 
-      message: 'User found',
-      hasUser: true,
-      userId: user.id,
-      userEmail: user.email
+      success: true, 
+      message: 'User authenticated',
+      user: {
+        id: user.id,
+        email: user.email
+      }
     })
   } catch (error: unknown) {
-    console.error('Error in test auth route:', error)
-    return NextResponse.json(
-      { error: 'Server error occurred' },
-      { status: 500 }
-    )
+    console.error('Error in test-auth:', error)
+    // Type guard to ensure error is an Error instance
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { success: false, message: `Server error: ${error.message}`, error: error.message },
+        { status: 500 }
+      )
+    } else {
+      return NextResponse.json(
+        { success: false, message: 'Unknown server error occurred' },
+        { status: 500 }
+      )
+    }
   }
 }

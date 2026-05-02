@@ -1,26 +1,18 @@
 import { NextResponse } from 'next/server'
-import { supabaseServer, supabaseFallback } from '@/lib/supabase-server'
+import { supabase } from '@/lib/supabase-client'
 import { cookies } from 'next/headers'
-import { createClient } from '@/utils/supabase/server'
 
 export const dynamic = "force-dynamic"
 
 export async function PUT(request: Request) {
   try {
     console.log('PUT /api/profile called')
-    console.log('Using Supabase client type:', supabaseServer ? 'Server (Service Role)' : 'Fallback (Anon Key)')
     
-    // With the service role key now available, we can use the server client for authentication as well
-    const supabase = supabaseServer || supabaseFallback
-    
-    // Create the new Supabase client using the SSR package
-    const supabaseSSR = await createClient()
-    
-    // Get the user session
-    const { data: { user }, error: userError } = await supabaseSSR.auth.getUser()
+    // Get user from the client (client-side authentication)
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
     
     if (userError || !user) {
-      console.log('No user found from SSR client')
+      console.log('No user found from client')
       return NextResponse.json(
         { error: 'Unauthorized - No active session' },
         { status: 401 }
@@ -28,12 +20,12 @@ export async function PUT(request: Request) {
     }
     
     const userId = user.id
-    console.log('Got user ID from SSR client:', userId)
+    console.log('Got user ID from client:', userId)
 
     const formData = await request.json()
     console.log('Updating profile for user:', userId, 'with data:', formData)
     
-    // Update the user's profile using the server client
+    // Update the user's profile
     const { data, error } = await supabase
       .from('profiles')
       .update({
@@ -78,19 +70,12 @@ export async function PUT(request: Request) {
 export async function GET() {
   try {
     console.log('GET /api/profile called')
-    console.log('Using Supabase client type:', supabaseServer ? 'Server (Service Role)' : 'Fallback (Anon Key)')
     
-    // With the service role key now available, we can use the server client for authentication as well
-    const supabase = supabaseServer || supabaseFallback
-    
-    // Create the new Supabase client using the SSR package
-    const supabaseSSR = await createClient()
-    
-    // Get the user session
-    const { data: { user }, error: userError } = await supabaseSSR.auth.getUser()
+    // Get user from the client (client-side authentication)
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
     
     if (userError || !user) {
-      console.log('No user found from SSR client')
+      console.log('No user found from client')
       return NextResponse.json(
         { error: 'Unauthorized - No active session' },
         { status: 401 }
@@ -98,11 +83,11 @@ export async function GET() {
     }
     
     const userId = user.id
-    console.log('Got user ID from SSR client:', userId)
+    console.log('Got user ID from client:', userId)
 
     console.log('Fetching profile for user:', userId)
     
-    // Get the user's profile using the server client
+    // Get the user's profile
     const { data, error } = await supabase
       .from('profiles')
       .select('*')

@@ -1,139 +1,143 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { useUser } from "@/hooks/useUser"
-import { supabase } from "@/lib/supabase-client"
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase-client'
+import { useRouter } from 'next/navigation'
 
 export default function TestAuthPage() {
-  const { user, profile, loading: userLoading } = useUser()
-  const [authInfo, setAuthInfo] = useState<any>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-
-  const testAuth = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const results: any = {}
-      
-      // Test 1: Check user session from hook
-      results.hookUser = {
-        hasUser: !!user,
-        userId: user?.id,
-        userEmail: user?.email
-      }
-      
-      // Test 2: Check profile from hook
-      results.hookProfile = profile
-      
-      // Test 3: Check session directly from Supabase
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-      results.directSession = {
-        hasSession: !!session,
-        sessionId: session?.user?.id,
-        sessionEmail: session?.user?.email,
-        error: sessionError?.message
-      }
-      
-      // Test 4: Check if we can access cookies (this is just for debugging)
-      // Note: We can't directly access cookies in the browser for security reasons
-      // But we can check if the Supabase client has them
-      
-      setAuthInfo(results)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred')
-      console.error('Auth Test Error:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const testApiCall = async () => {
-    setLoading(true)
-    try {
-      const response = await fetch('/api/profile', {
-        method: 'GET',
-        credentials: 'include' // This ensures cookies are sent with the request
-      })
-      
-      const data = await response.json()
-      
-      // Convert headers to a plain object for logging
-      const headersObj: Record<string, string> = {}
-      response.headers.forEach((value, key) => {
-        headersObj[key] = value
-      })
-      
-      setAuthInfo((prev: any) => ({
-        ...prev,
-        apiTest: {
-          status: response.status,
-          data: data,
-          headers: headersObj
-        }
-      }))
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred')
-    } finally {
-      setLoading(false)
-    }
-  }
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [message, setMessage] = useState('')
+  const router = useRouter()
 
   useEffect(() => {
-    if (user && !userLoading) {
-      testAuth()
+    const checkUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
+      } catch (error) {
+        console.error('Error checking user:', error)
+      } finally {
+        setLoading(false)
+      }
     }
-  }, [user, userLoading])
 
-  if (userLoading) {
-    return <div className="p-8">Loading user...</div>
+    checkUser()
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('Auth state changed:', event, session)
+        setUser(session?.user || null)
+      }
+    )
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setMessage('')
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+      
+      if (error) throw error
+      
+      setMessage('Login successful!')
+      setUser(data.user)
+      router.push('/dashboard')
+    } catch (error: any) {
+      setMessage(`Error: ${error.message}`)
+    }
   }
 
-  if (!user) {
-    return <div className="p-8">Please log in to test authentication</div>
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut()
+      setUser(null)
+      setMessage('Logged out successfully!')
+    } catch (error: any) {
+      setMessage(`Error: ${error.message}`)
+    }
+  }
+
+  if (loading) {
+    return <div className="p-4">Loading...</div>
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Authentication Test Page</h1>
+    <div className="max-w-md mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Authentication Test</h1>
       
-      <div className="mb-6 flex gap-4">
-        <button
-          onClick={testAuth}
-          disabled={loading}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-        >
-          {loading ? 'Testing...' : 'Test Authentication'}
-        </button>
-        
-        <button
-          onClick={testApiCall}
-          disabled={loading}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
-        >
-          Test API Call
-        </button>
+      {message && (
+        <div className="mb-4 p-2 bg-blue-100 text-blue-800 rounded">
+          {message}
+        </div>
+      )}
+      
+      {user ? (
+        <div>
+          <p className="mb-4">Logged in as: {user.email}</p>
+          <button 
+            onClick={handleLogout}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            Logout
+          </button>
+          <button 
+            onClick={() => router.push('/dashboard')}
+            className="ml-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Go to Dashboard
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block mb-1">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 border rounded"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block mb-1">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border rounded"
+              required
+            />
+          </div>
+          <button 
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Login
+          </button>
+        </form>
+      )}
+      
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-2">Debug Info</h2>
+        <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto">
+          {JSON.stringify(user, null, 2)}
+        </pre>
       </div>
-
-      {error && (
-        <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          <h3 className="font-bold mb-2">Error:</h3>
-          <p>{error}</p>
-        </div>
-      )}
-
-      {authInfo && (
-        <div className="space-y-6">
-          {Object.entries(authInfo).map(([key, value]) => (
-            <div key={key} className="p-4 bg-white border rounded">
-              <h3 className="font-bold mb-2">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</h3>
-              <pre className="whitespace-pre-wrap bg-gray-100 p-4 rounded text-sm">
-                {JSON.stringify(value, null, 2)}
-              </pre>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   )
 }

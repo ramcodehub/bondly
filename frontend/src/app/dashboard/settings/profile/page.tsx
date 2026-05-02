@@ -12,7 +12,7 @@ import { UserRoleBadge } from "@/app/dashboard/settings/roles/UserRoleBadge"
 import { toast } from "sonner"
 
 export default function ProfilePage() {
-  const { user, profile, loading: userLoading } = useUser()
+  const { user, profile, loading: userLoading, updateProfile, uploadAvatar } = useUser()
   const { myRoles, loading: rolesLoading } = useRoles()
   const [profileData, setProfileData] = useState({
     full_name: '',
@@ -24,6 +24,24 @@ export default function ProfilePage() {
   })
   const [loading, setLoading] = useState<boolean>(true)
   const [saving, setSaving] = useState<boolean>(false)
+  const [uploading, setUploading] = useState<boolean>(false)
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const result = await uploadAvatar(file)
+      if (result.success && result.url) {
+        setProfileData(prev => ({ ...prev, avatar_url: result.url! }))
+      }
+    } catch (error) {
+      console.error('Avatar upload failed:', error)
+    } finally {
+      setUploading(false)
+    }
+  }
 
   useEffect(() => {
     if (userLoading) return
@@ -59,60 +77,23 @@ export default function ProfilePage() {
     
     setSaving(true)
     try {
-      console.log('Sending profile update request with data:', profileData)
-      
-      const response = await fetch('/api/profile-v3', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profileData),
-        credentials: 'include' // Ensure cookies are sent
-      })
+      // Use the newly created updateProfile function from useUser hook
+      const { full_name, phone, location, bio } = profileData;
+      const result = await updateProfile({
+        full_name,
+        phone,
+        location,
+        bio
+      });
 
-      console.log('Profile update response status:', response.status)
-      
-      // Convert headers to a plain object for logging
-      const headersObj: Record<string, string> = {}
-      response.headers.forEach((value, key) => {
-        headersObj[key] = value
-      })
-      console.log('Profile update response headers:', headersObj)
-      
-      // First check if the response is OK
-      if (!response.ok) {
-        // Try to get the error text
-        const errorText = await response.text()
-        console.log('Profile update error response text:', errorText)
-        
-        // Try to parse as JSON, but handle if it's not JSON
-        let errorData
-        try {
-          errorData = JSON.parse(errorText)
-        } catch (parseError) {
-          // If it's not JSON, use the text as the error message
-          errorData = { error: errorText || `HTTP error! status: ${response.status}` }
-        }
-        
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+      if (!result.success) {
+        throw new Error(result.error);
       }
-      
-      // Try to parse the response as JSON
-      let responseData
-      try {
-        responseData = await response.json()
-      } catch (parseError) {
-        console.error('Failed to parse response as JSON:', parseError)
-        throw new Error('Invalid response format from server')
-      }
-      
-      console.log('Profile update response data:', responseData)
       
       toast.success('Profile updated successfully')
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Error updating profile:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update profile'
-      toast.error(`Error: ${errorMessage}`)
+      toast.error(error.message || 'Failed to update profile')
     } finally {
       setSaving(false)
     }
@@ -151,10 +132,31 @@ export default function ProfilePage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center space-x-6">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={profileData.avatar_url || '/avatars/01.png'} alt={profileData.full_name} />
-              <AvatarFallback>{profileData.full_name ? profileData.full_name.split(' ').map(n => n[0]).join('') : 'U'}</AvatarFallback>
-            </Avatar>
+            <div className="relative group cursor-pointer" onClick={() => document.getElementById('avatar-upload')?.click()}>
+              <Avatar className={`h-20 w-20 border-2 border-primary/10 group-hover:border-primary/50 transition-all ${uploading ? 'opacity-50' : ''}`}>
+                <AvatarImage 
+                  src={profileData.avatar_url || '/default-avatar.png'} 
+                  alt={profileData.full_name} 
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/default-avatar.png'
+                  }}
+                />
+                <AvatarFallback>
+                  <img src="/default-avatar.png" alt="Fallback Avatar" className="rounded-full h-full w-full object-cover" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-[10px] text-white font-bold tracking-wider">{uploading ? '...' : 'CHANGE'}</span>
+              </div>
+              <input 
+                id="avatar-upload" 
+                type="file" 
+                accept="image/*" 
+                className="hidden" 
+                onChange={handleAvatarChange}
+                disabled={uploading}
+              />
+            </div>
             <div>
               <h3 className="text-xl font-semibold">{profileData.full_name || 'No name provided'}</h3>
               <p className="text-muted-foreground">{profileData.email || 'No email provided'}</p>

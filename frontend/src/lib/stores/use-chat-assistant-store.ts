@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { ChatMessage, ChatConversation } from '@/types/chat';
-import chatConversations from '../data/chat-conversations.json';
 
 interface ChatAssistantState {
   messages: ChatMessage[];
@@ -12,6 +11,7 @@ interface ChatAssistantState {
   setMinimized: (isMinimized: boolean) => void;
   clearMessages: () => void;
   findMatchingConversation: (query: string) => ChatConversation | null;
+  fetchConversations: () => Promise<void>;
 }
 
 export const useChatAssistantStore = create<ChatAssistantState>((set, get) => ({
@@ -25,7 +25,7 @@ export const useChatAssistantStore = create<ChatAssistantState>((set, get) => ({
   ],
   isOpen: false,
   isMinimized: false,
-  conversations: chatConversations,
+  conversations: [],
 
   addMessage: (message) => set((state) => ({
     messages: [
@@ -69,5 +69,24 @@ export const useChatAssistantStore = create<ChatAssistantState>((set, get) => ({
     );
     
     return partialMatch || null;
+  },
+
+  fetchConversations: async () => {
+    try {
+      const response = await fetch('/api/chat/conversations');
+      const result = await response.json();
+      
+      if (result.success) {
+        set({ conversations: result.data });
+      } else {
+        console.error('Failed to fetch conversations:', result.message);
+        // Set empty array if API fails
+        set({ conversations: [] });
+      }
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+      // Set empty array if API fails
+      set({ conversations: [] });
+    }
   }
 }));

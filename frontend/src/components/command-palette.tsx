@@ -2,12 +2,40 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { Search, User, Briefcase, FileText, Settings, Calendar, Plus } from "lucide-react"
+import { Search, User, Briefcase, FileText, Settings, Calendar, Plus, Sun, Moon } from "lucide-react"
 import { useTheme } from "next-themes"
-import { Moon, Sun } from "lucide-react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Command as CommandPrimitive } from "cmdk"
 import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react"
+
+// Define types
+interface NavigationItem {
+  id: string
+  name: string
+  icon: string
+  path: string
+  shortcut?: string
+}
+
+interface GroupedNavigationItems {
+  pages: NavigationItem[]
+  actions: NavigationItem[]
+  preferences: NavigationItem[]
+}
+
+// Map icon names to actual components
+const iconMap = {
+  Search: Search,
+  User: User,
+  Briefcase: Briefcase,
+  FileText: FileText,
+  Settings: Settings,
+  Calendar: Calendar,
+  Plus: Plus,
+  Sun: Sun,
+  Moon: Moon
+}
 
 const Command = CommandPrimitive
 
@@ -104,17 +132,43 @@ const CommandShortcut = ({
 }
 CommandShortcut.displayName = "CommandShortcut"
 
-type Page = {
-  name: string
-  icon: React.ReactNode
-  shortcut?: string
-  onSelect: () => void
-}
-
 export function CommandPalette() {
   const [open, setOpen] = React.useState(false)
   const router = useRouter()
   const { setTheme, theme } = useTheme()
+  const [navigationItems, setNavigationItems] = useState<GroupedNavigationItems>({
+    pages: [],
+    actions: [],
+    preferences: []
+  })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Fetch navigation items from backend
+  useEffect(() => {
+    const fetchNavigationItems = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        const response = await fetch('/api/navigation/items')
+        const result = await response.json()
+        
+        if (result.success) {
+          setNavigationItems(result.data)
+        } else {
+          throw new Error(result.message || 'Failed to fetch navigation items')
+        }
+      } catch (error) {
+        console.error('Error fetching navigation items:', error)
+        setError(error instanceof Error ? error.message : 'Failed to load navigation items')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchNavigationItems()
+  }, [])
 
   // Toggle the menu when ⌘K is pressed
   React.useEffect(() => {
@@ -129,78 +183,18 @@ export function CommandPalette() {
     return () => document.removeEventListener("keydown", down)
   }, [])
 
-  const pages: Page[] = [
-    {
-      name: "Dashboard",
-      icon: <Search className="mr-2 h-4 w-4" />,
-      shortcut: "⌘1",
-      onSelect: () => router.push("/dashboard"),
-    },
-    {
-      name: "Contacts",
-      icon: <User className="mr-2 h-4 w-4" />,
-      shortcut: "⌘2",
-      onSelect: () => router.push("/contacts"),
-    },
-    {
-      name: "Companies",
-      icon: <Briefcase className="mr-2 h-4 w-4" />,
-      shortcut: "⌘3",
-      onSelect: () => router.push("/companies"),
-    },
-    {
-      name: "Deals",
-      icon: <FileText className="mr-2 h-4 w-4" />,
-      shortcut: "⌘4",
-      onSelect: () => router.push("/deals"),
-    },
-    {
-      name: "Tasks",
-      icon: <Calendar className="mr-2 h-4 w-4" />,
-      shortcut: "⌘5",
-      onSelect: () => router.push("/tasks"),
-    },
-    {
-      name: "Settings",
-      icon: <Settings className="mr-2 h-4 w-4" />,
-      shortcut: "⌘,",
-      onSelect: () => router.push("/settings"),
-    },
-  ]
+  const handleSelect = (path: string) => {
+    router.push(path)
+    setOpen(false)
+  }
 
-  const actions = [
-    {
-      name: "New Contact",
-      icon: <Plus className="mr-2 h-4 w-4" />,
-      shortcut: "⌘N C",
-      onSelect: () => router.push("/contacts/new"),
-    },
-    {
-      name: "New Company",
-      icon: <Plus className="mr-2 h-4 w-4" />,
-      shortcut: "⌘N B",
-      onSelect: () => router.push("/companies/new"),
-    },
-    {
-      name: "New Task",
-      icon: <Plus className="mr-2 h-4 w-4" />,
-      shortcut: "⌘N T",
-      onSelect: () => router.push("/tasks/new"),
-    },
-  ]
+  if (loading) {
+    return null // Don't show anything while loading
+  }
 
-  const themeActions = [
-    {
-      name: "Toggle Theme",
-      icon: theme === "dark" ? (
-        <Sun className="mr-2 h-4 w-4" />
-      ) : (
-        <Moon className="mr-2 h-4 w-4" />
-      ),
-      shortcut: "⌘J",
-      onSelect: () => setTheme(theme === "dark" ? "light" : "dark"),
-    },
-  ]
+  if (error) {
+    return null // Don't show anything if there's an error
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -210,35 +204,71 @@ export function CommandPalette() {
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
 
-            <CommandGroup heading="Pages">
-              {pages.map((page) => (
-                <CommandItem key={page.name} onSelect={page.onSelect}>
-                  {page.icon}
-                  <span>{page.name}</span>
-                  <CommandShortcut>{page.shortcut}</CommandShortcut>
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {navigationItems.pages.length > 0 && (
+              <CommandGroup heading="Pages">
+                {navigationItems.pages.map((page) => {
+                  const IconComponent = iconMap[page.icon as keyof typeof iconMap] || Search
+                  return (
+                    <CommandItem key={page.id} onSelect={() => handleSelect(page.path)}>
+                      <IconComponent className="mr-2 h-4 w-4" />
+                      <span>{page.name}</span>
+                      {page.shortcut && <CommandShortcut>{page.shortcut}</CommandShortcut>}
+                    </CommandItem>
+                  )
+                })}
+              </CommandGroup>
+            )}
 
-            <CommandGroup heading="Actions">
-              {actions.map((action) => (
-                <CommandItem key={action.name} onSelect={action.onSelect}>
-                  {action.icon}
-                  <span>{action.name}</span>
-                  <CommandShortcut>{action.shortcut}</CommandShortcut>
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {navigationItems.actions.length > 0 && (
+              <CommandGroup heading="Actions">
+                {navigationItems.actions.map((action) => {
+                  const IconComponent = iconMap[action.icon as keyof typeof iconMap] || Plus
+                  return (
+                    <CommandItem key={action.id} onSelect={() => handleSelect(action.path)}>
+                      <IconComponent className="mr-2 h-4 w-4" />
+                      <span>{action.name}</span>
+                      {action.shortcut && <CommandShortcut>{action.shortcut}</CommandShortcut>}
+                    </CommandItem>
+                  )
+                })}
+              </CommandGroup>
+            )}
 
-            <CommandGroup heading="Preferences">
-              {themeActions.map((action) => (
-                <CommandItem key={action.name} onSelect={action.onSelect}>
-                  {action.icon}
-                  <span>{action.name}</span>
-                  <CommandShortcut>{action.shortcut}</CommandShortcut>
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {navigationItems.preferences.length > 0 && (
+              <CommandGroup heading="Preferences">
+                {navigationItems.preferences.map((preference) => {
+                  // Special handling for theme toggle
+                  if (preference.name === "Toggle Theme") {
+                    return (
+                      <CommandItem 
+                        key={preference.id} 
+                        onSelect={() => {
+                          setTheme(theme === "dark" ? "light" : "dark")
+                          setOpen(false)
+                        }}
+                      >
+                        {theme === "dark" ? (
+                          <Sun className="mr-2 h-4 w-4" />
+                        ) : (
+                          <Moon className="mr-2 h-4 w-4" />
+                        )}
+                        <span>{preference.name}</span>
+                        {preference.shortcut && <CommandShortcut>{preference.shortcut}</CommandShortcut>}
+                      </CommandItem>
+                    )
+                  }
+                  
+                  const IconComponent = iconMap[preference.icon as keyof typeof iconMap] || Settings
+                  return (
+                    <CommandItem key={preference.id} onSelect={() => handleSelect(preference.path)}>
+                      <IconComponent className="mr-2 h-4 w-4" />
+                      <span>{preference.name}</span>
+                      {preference.shortcut && <CommandShortcut>{preference.shortcut}</CommandShortcut>}
+                    </CommandItem>
+                  )
+                })}
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </DialogContent>

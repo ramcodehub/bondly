@@ -6,15 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/icons';
-import { supabase } from '@/lib/supabase-client';
-import { toast } from 'sonner';
 import Navbar from '@/components/landing/navbar';
 import Footer from '@/components/landing/footer';
-import { useState as useReactState } from 'react';
+import { useUser } from '@/hooks/useUser';
 
 export default function SignupPage() {
   const router = useRouter();
-  const [isMenuOpen, setIsMenuOpen] = useReactState(false);
+  const { signUp } = useUser();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -26,19 +25,18 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate passwords match
+    if (isLoading) return; // Prevent multiple calls
+    
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
     
-    // Validate password strength
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
     }
     
-    // Validate required fields
     if (!firstName || !lastName || !email || !password) {
       setError('All fields are required');
       return;
@@ -47,33 +45,16 @@ export default function SignupPage() {
     setIsLoading(true);
     setError('');
 
-    try {
-      const fullName = `${firstName} ${lastName}`;
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-            full_name: fullName,
-          },
-        },
-      });
-
-      if (error) throw error;
-      
-      toast.success('Account created! Please check your email for confirmation.');
-      
-      // Redirect to login page after successful signup
+    const fullName = `${firstName} ${lastName}`;
+    const result = await signUp(email, password, fullName);
+    
+    if (result.success) {
       router.push('/login');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create account');
-      console.error('Signup error:', err);
-    } finally {
-      setIsLoading(false);
+    } else {
+      setError(result.error as string);
     }
+    
+    setIsLoading(false);
   };
 
   return (

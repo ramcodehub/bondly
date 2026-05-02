@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRoleStore } from '@/lib/stores/roleStore';
+import { useRoleStore } from '../lib/stores/roleStore';
 
 interface Role {
   id: number;
@@ -16,7 +16,38 @@ export const useRoles = () => {
   const [isSalesManager, setIsSalesManager] = useState(false);
 
   useEffect(() => {
-    fetchMyRoles();
+    const assignDefaultRoleIfNeeded = async () => {
+      // First fetch roles
+      await fetchMyRoles();
+      
+      // Check if user has roles, if not, assign default role
+      setTimeout(async () => {
+        const currentRoles = useRoleStore.getState().myRoles;
+        if (!currentRoles || currentRoles.length === 0) {
+          console.log('User has no roles, attempting to assign default role');
+          try {
+            const response = await fetch('/api/assign-default-role', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+            
+            const result = await response.json();
+            console.log('Default role assignment result:', result);
+            
+            // Refetch roles after assignment
+            if (result.success) {
+              await fetchMyRoles();
+            }
+          } catch (error) {
+            console.error('Error assigning default role:', error);
+          }
+        }
+      }, 100);
+    };
+
+    assignDefaultRoleIfNeeded();
   }, [fetchMyRoles]);
 
   useEffect(() => {
@@ -47,7 +78,10 @@ export const useRoles = () => {
 
   // Function to check if user has any of the specified roles
   const hasAnyRole = (roleNames: string[]) => {
-    return roleNames.some(roleName => hasRole(roleName));
+    // Handle case where myRoles might be undefined or null
+    const roles = Array.isArray(myRoles) ? myRoles : [];
+    const userRoleNames = roles.map(role => role.name);
+    return roleNames.some(role => userRoleNames.includes(role));
   };
 
   return {

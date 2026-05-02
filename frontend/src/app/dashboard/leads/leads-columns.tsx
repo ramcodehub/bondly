@@ -24,13 +24,13 @@ const statusVariantMap: Record<string, string> = {
 
 export const leadColumns: ColumnDef<Lead>[] = [
   {
-    accessorKey: 'first_name',
+    accessorKey: 'name',
     header: 'Name',
     cell: ({ row }: { row: { original: Lead } }) => {
       const lead = row.original;
       return (
         <div className="font-medium">
-          {lead.first_name} {lead.last_name}
+          {lead.name}
         </div>
       );
     },

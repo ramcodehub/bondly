@@ -22,8 +22,8 @@ export async function GET(request: NextRequest) {
       .from('tasks')
       .select(`
         *,
-        leads(first_name, last_name, email, company),
-        contacts(name, email, phone),
+        leads(first_name, last_name, email, phone),
+        contacts(first_name, last_name, email, phone),
         companies(name, industry)
       `)
       .order('created_at', { ascending: false });

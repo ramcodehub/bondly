@@ -7,6 +7,17 @@ export const dynamic = "force-dynamic";
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
+    
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    
     const contactData = await request.json();
 
     // Validate required fields
@@ -62,6 +73,16 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
+    
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
     
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '100');
@@ -134,6 +155,17 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const supabase = await createClient();
+    
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    
     const contactData = await request.json();
     const { id } = params;
 
@@ -185,6 +217,17 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const supabase = await createClient();
+    
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    
     const { id } = params;
 
     const { data, error } = await supabase

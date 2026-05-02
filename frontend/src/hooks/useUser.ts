@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase-client';
+import { useRoleStore } from '@/lib/stores/roleStore';
 
 type UserProfile = {
   id: string;
@@ -23,64 +24,36 @@ export const useUser = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { myRoles, fetchMyRoles, loading: rolesLoading } = useRoleStore();
 
-  // Check active sessions and set the user
-  useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id);
-        setLoading(true);
-        const currentUser = session?.user || null;
-        setUser(currentUser);
+  // Unified loading state
+  const isInitialLoading = loading || rolesLoading;
 
-        if (currentUser) {
-          // Fetch user profile
-          await fetchUserProfile(currentUser.id);
-        } else {
-          setProfile(null);
-        }
-        setLoading(false);
-      }
-    );
-
-    // Initial check for existing session
-    const checkSession = async () => {
-      setLoading(true);
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log('Initial session check:', session?.user?.id);
-        if (session?.user) {
-          setUser(session.user);
-          await fetchUserProfile(session.user.id);
-        } else {
-          // If no session, we should still complete loading
-          setUser(null);
-          setProfile(null);
-          console.log('No active session found');
-        }
-      } catch (error) {
-        console.error('Error checking session:', error);
-        // Even if there's an error, we should complete loading
-        setUser(null);
-        setProfile(null);
-      } finally {
-        setLoading(false);
-      }
+  // 🔍 PHASE 6: UI CONSUMPTION (NORMALIZED)
+  const rbac = useMemo(() => {
+    // Access flat names from normalized store: myRoles is Array<{ id, name }>
+    const roles = Array.isArray(myRoles) 
+      ? myRoles.map(r => r?.name?.toLowerCase() || '') 
+      : [];
+    
+    console.log("🔍 PHASE 6: UI user roles:", roles);
+    
+    const hasAnyRole = roles.length > 0;
+    
+    const result = {
+      isAdmin: roles.some(r => r.includes('admin')),
+      isManager: roles.some(r => r.includes('manager')),
+      isSales: roles.some(r => r.includes('sales')) || (!hasAnyRole && !!user),
+      roles: roles
     };
+    
+    console.log("🔍 PHASE 7: CALCULATED RBAC:", result);
+    return result;
+  }, [myRoles, user]);
 
-    checkSession();
-    console.log('Auth listener set up');
-
-    // Cleanup subscription on unmount
-    return () => {
-      authListener?.subscription.unsubscribe();
-    };
-  }, []);
-
-  // Fetch user profile from the database
-  const fetchUserProfile = async (userId: string) => {
+  const fetchUserProfile = useCallback(async (userId: string) => {
+    if (!userId) return;
     try {
-      console.log('Fetching profile for user:', userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -88,239 +61,275 @@ export const useUser = () => {
         .single();
 
       if (error) {
-        console.error('Error fetching user profile:', error);
-        throw error;
+        if (error.code !== 'PGRST116') console.error('Profile fetch error:', error);
+        return;
       }
-      
-      console.log('Profile fetched successfully:', data);
       setProfile(data);
-    } catch (error: unknown) {
-      console.error('Error in fetchUserProfile:', error);
-      // If profile doesn't exist, create one
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user && user.id === userId) {
-          await createUserProfile(user);
+    } catch (error) {
+      // Silent fail for profile
+    }
+  }, []);
+
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+
+        if (currentUser && session) {
+          // Task 6: Explicit profile fetch
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', currentUser.id)
+            .single();
+          
+          setProfile(profileData);
+          
+          // Task 3: Timing Fix
+          await fetchMyRoles();
+        } else {
+          setProfile(null);
         }
-      } catch (authError) {
-        console.error('Error getting user for profile creation:', authError);
+        setLoading(false);
       }
+    );
+
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+        
+        if (currentUser && session) {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', currentUser.id)
+            .single();
+          
+          setProfile(profileData);
+          await fetchMyRoles();
+        }
+      } catch (error) {
+        console.error('Session check failed:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
+
+    // 🚀 Task 4: Subscribe to profiles table updates
+    let profileSubscription: any = null;
+
+    if (user?.id) {
+      profileSubscription = supabase
+        .channel(`profile-updates-${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'profiles',
+            filter: `id=eq.${user.id}`,
+          },
+          (payload) => {
+            console.log('🔄 Realtime profile update received:', payload.new);
+            setProfile(payload.new as UserProfile);
+          }
+        )
+        .subscribe();
     }
-  };
 
-  // Create a new user profile
-  const createUserProfile = async (user: User) => {
-    try {
-      console.log('Creating profile for user:', user.id);
-      // First check if profile already exists
-      const { data: existingProfile, error: fetchError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      
-      // If profile exists, use it
-      if (existingProfile && !fetchError) {
-        console.log('Profile already exists:', existingProfile);
-        setProfile(existingProfile);
-        return existingProfile;
+    return () => {
+      authListener?.subscription?.unsubscribe();
+      // 🚀 Task 5: Cleanup subscription on unmount
+      if (profileSubscription) {
+        supabase.removeChannel(profileSubscription);
       }
-      
-      // Otherwise create a new profile
-      const profileData = {
-        id: user.id,
-        email: user.email || '',
-        full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
-        avatar_url: user.user_metadata?.avatar_url || '',
-        role: 'user',
-        status: 'active',
-        bio: '',
-        phone: '',
-        location: ''
-      };
-      
-      console.log('Inserting new profile:', profileData);
-      
-      const { data, error } = await supabase
-        .from('profiles')
-        .insert([profileData])
-        .select()
-        .single();
+    };
+  }, [user?.id, fetchMyRoles]);
 
-      if (error) {
-        console.error('Error inserting profile:', error);
-        throw error;
-      }
-      
-      console.log('Profile created successfully:', data);
-      setProfile(data);
-      return data;
-    } catch (error: unknown) {
-      console.error('Error creating user profile:', error);
-      // Even if profile creation fails, we can still proceed with basic user info
-      const basicProfile: UserProfile = {
-        id: user.id,
-        email: user.email || '',
-        full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
-        role: 'user',
-        status: 'active',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        avatar_url: user.user_metadata?.avatar_url || '',
-        bio: '',
-        phone: '',
-        location: ''
-      };
-      setProfile(basicProfile);
-      return basicProfile;
-    }
-  };
-
-  // Sign in with email and password
   const signIn = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
-      toast.success('Successfully signed in!');
+      
+      if (data?.user) {
+        // Task 5: Redirect instead of reload
+        router.push('/dashboard');
+        toast.success('Welcome back!');
+      }
+      
       return { success: true };
-    } catch (error: unknown) {
-      console.error('Error signing in:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to sign in');
-      return { success: false, error };
+    } catch (error: any) {
+      const message = error?.message || 'Invalid email or password';
+      toast.error(message);
+      return { success: false, error: message };
     } finally {
       setLoading(false);
     }
   };
 
-  // Sign up with email and password
   const signUp = async (email: string, password: string, fullName: string) => {
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: {
-            full_name: fullName,
-          },
-        },
+        options: { data: { full_name: fullName } },
       });
 
       if (error) throw error;
       
-      toast.success('Account created! Please check your email for confirmation.');
-      return { success: true, user: data.user };
-    } catch (error: unknown) {
-      console.error('Error signing up:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to create account');
-      return { success: false, error };
+      if (data?.user) {
+        // Task 5: Redirect instead of reload
+        router.push('/dashboard');
+      }
+
+      toast.success('Account created! Please verify your email.');
+      return { success: true, user: data?.user };
+    } catch (error: any) {
+      const message = error?.message || 'Failed to create account';
+      toast.error(message);
+      return { success: false, error: message };
     } finally {
       setLoading(false);
     }
   };
 
-  // Sign out
-  const signOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      setUser(null);
-      setProfile(null);
-      router.push('/login');
-    } catch (error) {
-      console.error('Error signing out:', error);
+  const assignRole = async (userId: string, roleId: number) => {
+    if (!rbac.isAdmin) {
+      toast.error('Permission denied: Admin only');
+      return { success: false };
     }
-  };
-
-  // Update user profile
-  const updateProfile = async (updates: Partial<UserProfile>) => {
-    if (!user) {
-      console.log('Not authenticated');
-      return { success: false, error: 'Not authenticated' };
-    }
-
+    
     try {
-      console.log('Updating profile for user:', user.id, 'with updates:', updates);
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id)
-        .select()
-        .single();
-
+      const { error } = await supabase
+        .from('user_roles')
+        .insert({ user_id: userId, role_id: roleId });
+      
       if (error) {
-        console.error('Error updating profile:', error);
+        if (error.code === '23505') {
+          toast.info('User already has this role');
+          return { success: true };
+        }
         throw error;
       }
       
-      console.log('Profile updated successfully:', data);
-      setProfile(data);
+      toast.success('Role updated successfully');
+      return { success: true };
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to assign role');
+      return { success: false };
+    }
+  };
+
+  const updateProfile = async (updates: Partial<UserProfile>) => {
+    if (!user) return { success: false, error: 'No user authenticated' };
+    
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      
+      // Update local state
+      setProfile(prev => prev ? { ...prev, ...updates } : null);
       toast.success('Profile updated successfully');
-      return { success: true, data };
-    } catch (error: unknown) {
-      console.error('Error in updateProfile:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update profile';
-      toast.error(errorMessage);
-      return { success: false, error: errorMessage };
+      return { success: true };
+    } catch (error: any) {
+      const message = error?.message || 'Failed to update profile';
+      toast.error(message);
+      return { success: false, error: message };
+    } finally {
+      setLoading(false);
     }
   };
-
-  // Send password reset email
-  const resetPassword = async (email: string) => {
+  const uploadAvatar = async (file: File) => {
+    if (!user) return { success: false, error: 'No user authenticated' };
+    
+    setLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}.${fileExt}`;
+      const filePath = fileName;
 
-      if (error) throw error;
+      // Upload file with upsert: true to replace existing
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { 
+          upsert: true,
+          cacheControl: '3600'
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Append timestamp to URL to bypass browser cache
+      const publicUrlWithTimestamp = `${publicUrl}?t=${new Date().getTime()}`;
+
+      // Update profiles.avatar_url
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          avatar_url: publicUrlWithTimestamp,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
       
-      toast.success('Password reset email sent! Please check your inbox.');
-      return { success: true };
-    } catch (error: unknown) {
-      console.error('Error sending password reset email:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to send password reset email');
-      return { success: false, error };
-    }
-  };
-
-  // Update password
-  const updatePassword = async (newPassword: string) => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (error) throw error;
+      // Update local state instantly
+      setProfile(prev => prev ? { ...prev, avatar_url: publicUrlWithTimestamp } : null);
       
-      toast.success('Password updated successfully');
-      return { success: true };
-    } catch (error: unknown) {
-      console.error('Error updating password:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to update password');
-      return { success: false, error };
+      toast.success('Avatar updated successfully');
+      return { success: true, url: publicUrlWithTimestamp };
+    } catch (error: any) {
+      const message = error?.message || 'Failed to upload avatar';
+      toast.error(message);
+      return { success: false, error: message };
+    } finally {
+      setLoading(false);
     }
   };
 
   return {
     user,
     profile,
-    loading,
+    loading: isInitialLoading,
     signIn,
     signUp,
-    signOut,
+    signOut: async () => {
+      await supabase.auth.signOut();
+      setUser(null);
+      setProfile(null);
+      router.push('/login');
+    },
+    ...rbac,
+    assignRole,
     updateProfile,
-    resetPassword,
-    updatePassword,
+    uploadAvatar,
     isAuthenticated: !!user,
-    isAdmin: user?.user_metadata?.role === 'admin',
   };
 };
 
-export default useUser;
+export default useUser;

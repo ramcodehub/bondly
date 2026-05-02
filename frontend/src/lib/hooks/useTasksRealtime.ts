@@ -69,7 +69,7 @@ export function useTasksRealtime() {
       deal_id: taskData.deal_id,
       lead_id: taskData.lead_id,
       contact_id: taskData.contact_id,
-      account_id: taskData.account_id,
+      company_id: taskData.company_id,
       created_by: taskData.created_by,
       estimated_hours: taskData.estimated_hours,
       actual_hours: taskData.actual_hours,
@@ -129,8 +129,8 @@ export function useTasksRealtime() {
         .select(`
           *,
           deals(name, amount, stage),
-          leads(first_name, last_name, email, company),
-          contacts(name, email, phone),
+          leads(name, email, phone),
+          contacts(first_name, last_name, email, phone),
           companies(name, industry)
         `)
         .order('created_at', { ascending: false })
@@ -201,7 +201,7 @@ export function useTasksRealtime() {
           deal_id: taskData.deal_id || null,
           lead_id: taskData.lead_id || null,
           contact_id: taskData.contact_id || null,
-          account_id: taskData.account_id || null,
+          company_id: taskData.company_id || null,
           assigned_to: taskData.assignedTo?.[0]?.id || null,
           estimated_hours: taskData.estimated_hours || null,
           tags: taskData.labels || null,
@@ -274,7 +274,7 @@ export function useTasksRealtime() {
           deal_id: updates.deal_id,
           lead_id: updates.lead_id,
           contact_id: updates.contact_id,
-          account_id: updates.account_id,
+          company_id: updates.company_id,
           assigned_to: updates.assignedTo?.[0]?.id,
           estimated_hours: updates.estimated_hours,
           actual_hours: updates.actual_hours,

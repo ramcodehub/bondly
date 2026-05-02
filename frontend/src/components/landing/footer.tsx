@@ -11,28 +11,62 @@ import {
   Phone,
   MapPin
 } from "lucide-react";
+import { useState, useEffect } from "react";
+
+// Define the link type
+interface NavLink {
+  name: string;
+  href: string;
+}
+
+interface Navigation {
+  product: NavLink[];
+  resources: NavLink[];
+  company: NavLink[];
+}
 
 export default function Footer() {
-  const navigation = {
-    product: [
-      { name: "Features", href: "/crm#services" },
-      { name: "Bondly", href: "/crm" },
-      { name: "Pricing", href: "#" },
-      { name: "Demo", href: "#" },
-    ],
-    resources: [
-      { name: "Documentation", href: "#" },
-      { name: "Guides", href: "#" },
-      { name: "Blog", href: "#" },
-      { name: "Support", href: "#" },
-    ],
-    company: [
-      { name: "About", href: "/crm#about" },
-      { name: "Careers", href: "#" },
-      { name: "Partners", href: "#" },
-      { name: "Contact", href: "/crm#contact" },
-    ],
-  };
+  const [navigation, setNavigation] = useState<Navigation>({
+    product: [],
+    resources: [],
+    company: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchFooterLinks = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/landing/footer-links');
+        const result = await response.json();
+        
+        if (result.success) {
+          // SAFE FALLBACK: Ensure nested arrays exist even if API returns partial data
+          setNavigation({
+            product: result.data?.product || [],
+            resources: result.data?.resources || [],
+            company: result.data?.company || []
+          });
+        } else {
+          throw new Error(result.message || 'Failed to fetch footer links');
+        }
+      } catch (error) {
+        console.error('Error fetching footer links:', error);
+        setError('Failed to load footer links');
+        // Set empty arrays if API fails
+        setNavigation({
+          product: [],
+          resources: [],
+          company: []
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFooterLinks();
+  }, []);
 
   return (
     <footer className="border-t bg-background">
@@ -72,7 +106,7 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider">Product</h3>
             <ul className="mt-4 space-y-3">
-              {navigation.product.map((item) => (
+              {navigation?.product?.length > 0 && navigation.product.map((item) => (
                 <li key={item.name}>
                   <Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
                     {item.name}
@@ -85,7 +119,7 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider">Resources</h3>
             <ul className="mt-4 space-y-3">
-              {navigation.resources.map((item) => (
+              {navigation?.resources?.length > 0 && navigation.resources.map((item) => (
                 <li key={item.name}>
                   <Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
                     {item.name}
@@ -98,7 +132,7 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider">Company</h3>
             <ul className="mt-4 space-y-3">
-              {navigation.company.map((item) => (
+              {navigation?.company?.length > 0 && navigation.company.map((item) => (
                 <li key={item.name}>
                   <Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
                     {item.name}
@@ -128,4 +162,4 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
+}

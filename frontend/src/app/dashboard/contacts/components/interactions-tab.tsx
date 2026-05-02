@@ -15,16 +15,17 @@ import {
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Calendar, Phone, Mail, MessageSquare, User } from "lucide-react";
+import { Plus, Calendar, Phone, Mail, MessageSquare, User, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import supabase from '@/lib/supabase-client';
 
 interface Interaction {
   id: string;
-  contact_id: number;
+  contact_id: string;
   type: string;
   description: string;
   created_at: string;
-  created_by: string;
+  created_by?: string;
 }
 
 interface InteractionsTabProps {
@@ -44,12 +45,17 @@ export function InteractionsTab({ contactId }: InteractionsTabProps) {
   const fetchInteractions = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/extended/contacts/${contactId}/interactions`);
-      const data = await response.json();
-      
-      if (data.success) {
-        setInteractions(data.data);
+      const { data, error } = await supabase
+        .from('interactions')
+        .select('*')
+        .eq('contact_id', contactId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
       }
+
+      setInteractions(data || []);
     } catch (error) {
       console.error("Error fetching interactions:", error);
     } finally {
@@ -57,28 +63,59 @@ export function InteractionsTab({ contactId }: InteractionsTabProps) {
     }
   };
 
+  // Set up real-time subscription for interactions
   useEffect(() => {
-    if (contactId) {
-      fetchInteractions();
-    }
+    if (!contactId) return;
+
+    // Fetch initial data
+    fetchInteractions();
+
+    // Subscribe to real-time changes
+    const channel = supabase
+      .channel('interactions-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'interactions',
+          filter: `contact_id=eq.${contactId}`
+        },
+        (payload) => {
+          console.log('Interaction change received:', payload);
+          fetchInteractions(); // Refetch to get updated data
+        }
+      )
+      .subscribe();
+
+    // Clean up subscription
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [contactId]);
 
   const handleCreateInteraction = async () => {
     try {
-      const response = await fetch(`/api/extended/contacts/${contactId}/interactions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newInteraction),
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
+      const { data, error } = await supabase
+        .from('interactions')
+        .insert([
+          {
+            contact_id: contactId,
+            type: newInteraction.type,
+            description: newInteraction.description,
+            created_at: new Date().toISOString()
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      if (data) {
         setIsDialogOpen(false);
         setNewInteraction({ type: "", description: "" });
-        fetchInteractions();
       }
     } catch (error) {
       console.error("Error creating interaction:", error);
@@ -118,7 +155,7 @@ export function InteractionsTab({ contactId }: InteractionsTabProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }

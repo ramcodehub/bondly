@@ -6,8 +6,8 @@ const __dirname = dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Explicitly set the project root
-  outputFileTracingRoot: resolve(__dirname),
+  // Explicitly set the project root - removed invalid option
+  // outputFileTracingRoot: resolve(__dirname),
   reactStrictMode: true,
   // Configure for static export
   output: 'export',
@@ -17,17 +17,18 @@ const nextConfig = {
     domains: ['avatars.githubusercontent.com', 'lh3.googleusercontent.com'],
     disableStaticImages: false,
   },
-  serverExternalPackages: [
-    '@radix-ui/react-select',
-    '@radix-ui/react-dialog',
-    '@radix-ui/react-avatar'
-  ],
+  // Removed invalid option
+  // serverExternalPackages: [
+  //   '@radix-ui/react-select',
+  //   '@radix-ui/react-dialog',
+  //   '@radix-ui/react-avatar'
+  // ],
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
-        stream: require.resolve('stream-browserify'),
-        buffer: require.resolve('buffer/')
+        stream: false, // Changed from require.resolve to false for ES modules
+        buffer: false  // Changed from require.resolve to false for ES modules
       };
     }
     

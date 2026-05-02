@@ -18,8 +18,8 @@ export async function GET(
       .select(`
         *,
         deals(name, amount, stage),
-        leads(name, email, company),
-        contacts(name, email, phone),
+        leads(name, email, phone),
+        contacts(first_name, last_name, email, phone),
         companies(name, industry)
       `)
       .eq('id', id)
@@ -83,7 +83,7 @@ export async function PUT(
     if (taskData.deal_id !== undefined) updateData.deal_id = taskData.deal_id || null;
     if (taskData.lead_id !== undefined) updateData.lead_id = taskData.lead_id || null;
     if (taskData.contact_id !== undefined) updateData.contact_id = taskData.contact_id || null;
-    if (taskData.account_id !== undefined) updateData.account_id = taskData.account_id || null;
+    if (taskData.company_id !== undefined) updateData.company_id = taskData.company_id || null;
     if (taskData.assigned_to !== undefined) updateData.assigned_to = taskData.assigned_to || null;
     if (taskData.estimated_hours !== undefined) updateData.estimated_hours = taskData.estimated_hours || null;
     if (taskData.actual_hours !== undefined) updateData.actual_hours = taskData.actual_hours || null;

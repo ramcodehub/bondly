@@ -17,8 +17,7 @@ export interface LeadNurturingAction {
 
 export interface Lead {
   id: string; // UUID
-  first_name: string;
-  last_name: string;
+  name: string;
   email: string;
   phone?: string;
   company?: string;
@@ -37,8 +36,7 @@ export interface Lead {
 }
 
 export interface LeadFormValues {
-  first_name: string;
-  last_name: string;
+  name: string;
   email: string;
   phone?: string;
   company?: string;

@@ -25,7 +25,7 @@ export interface Task {
   deal_id?: string
   lead_id?: string
   contact_id?: string
-  account_id?: string
+  company_id?: string
   created_by?: string
   estimated_hours?: number
   actual_hours?: number

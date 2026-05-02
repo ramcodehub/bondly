@@ -15,26 +15,159 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Icons } from "@/components/icons"
 import { useRouter } from "next/navigation"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useState, useEffect } from "react"
+import { supabase } from '@/lib/supabase-client'
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
+
+// Define types
+interface User {
+  id: string
+  name: string
+  email: string
+  avatar_url: string
+  initials: string
+}
+
+interface Notification {
+  id: string
+  title: string
+  description: string
+  time: string
+  read: boolean
+}
 
 export function Topbar() {
   const router = useRouter()
-  
-  // Mock user data - in a real app, this would come from your auth provider
-  const user = {
-    name: "John Doe",
-    email: "john@example.com",
-    avatar: "/avatars/01.png",
-    initials: "JD"
+  const [user, setUser] = useState<User | null>(null)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Fetch user data and notifications
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        // Fetch user profile
+        const userResponse = await fetch('/api/user/profile')
+        const userResult = await userResponse.json()
+        
+        if (userResult.success) {
+          setUser(userResult.data)
+        } else {
+          throw new Error(userResult.message || 'Failed to fetch user profile')
+        }
+        
+        // Fetch notifications
+        const notificationsResponse = await fetch('/api/user/notifications')
+        const notificationsResult = await notificationsResponse.json()
+        
+        if (notificationsResult.success) {
+          setNotifications(notificationsResult.data)
+        } else {
+          throw new Error(notificationsResult.message || 'Failed to fetch notifications')
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        setError(error instanceof Error ? error.message : 'Failed to load data')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  // Set up real-time subscription for notifications
+  useEffect(() => {
+    const channel = supabase
+      .channel('notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+        },
+        (payload: RealtimePostgresChangesPayload<{ [key: string]: any }>) => {
+          // Add new notification to the list
+          const newNotification = payload.new as Notification
+          setNotifications((prev) => [newNotification, ...prev])
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'notifications',
+        },
+        (payload: RealtimePostgresChangesPayload<{ [key: string]: any }>) => {
+          // Update existing notification
+          const updatedNotification = payload.new as Notification
+          setNotifications((prev) =>
+            prev.map((notification) =>
+              notification.id === updatedNotification.id
+                ? updatedNotification
+                : notification
+            )
+          )
+        }
+      )
+      .subscribe()
+
+    // Clean up subscription
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
+
+  const unreadCount = notifications.filter(n => !n.read).length
+
+  // Handle marking notification as read
+  const markAsRead = async (id: string) => {
+    try {
+      const response = await fetch(`/api/user/notifications/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ read: true }),
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        setNotifications(notifications.map(n => 
+          n.id === id ? { ...n, read: true } : n
+        ))
+      } else {
+        console.error('Failed to mark notification as read:', result.message)
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error)
+    }
   }
 
-  // Mock notifications
-  const notifications = [
-    { id: 1, title: "New message from Sarah", description: "Let's schedule a meeting", time: "2m ago", read: false },
-    { id: 2, title: "Deal updated", description: "Acme Corp deal moved to Negotiation", time: "1h ago", read: true },
-    { id: 3, title: "Task due soon", description: "Follow up with design team", time: "3h ago", read: true },
-  ]
-  
-  const unreadCount = notifications.filter(n => !n.read).length
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2">
+        <div className="h-8 w-8 rounded-full bg-muted animate-pulse"></div>
+        <div className="h-8 w-8 rounded-full bg-muted animate-pulse"></div>
+        <div className="h-8 w-8 rounded-full bg-muted animate-pulse"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center gap-2 text-red-500">
+        Error loading data
+      </div>
+    )
+  }
 
   return (
     <div className="flex items-center gap-2">
@@ -67,7 +200,7 @@ export function Topbar() {
                 <React.Fragment key={notification.id}>
                   <DropdownMenuItem 
                     className={`py-2 ${!notification.read ? 'bg-accent' : ''}`}
-                    onClick={() => {}}
+                    onClick={() => markAsRead(notification.id)}
                   >
                     <div className="flex w-full flex-col gap-1">
                       <div className="flex items-center justify-between">
@@ -102,17 +235,25 @@ export function Topbar() {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback>{user.initials}</AvatarFallback>
+              <AvatarImage 
+                src={user?.avatar_url || '/default-avatar.png'} 
+                alt={user?.name} 
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/default-avatar.png'
+                }}
+              />
+              <AvatarFallback>
+                <img src="/default-avatar.png" alt="Fallback" className="rounded-full h-full w-full object-cover" />
+              </AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{user.name}</p>
+              <p className="text-sm font-medium leading-none">{user?.name}</p>
               <p className="text-xs leading-none text-muted-foreground">
-                {user.email}
+                {user?.email}
               </p>
             </div>
           </DropdownMenuLabel>

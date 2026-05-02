@@ -2,10 +2,43 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Plus, Users, Filter, Search, MoreHorizontal } from "lucide-react"
+import { Plus, Users, Filter, Search, Loader2 } from "lucide-react"
+import { useContactsRealtime } from "@/lib/hooks/useContactsRealtime"
+import { useState } from "react"
+import { ContactList } from "@/components/contact-list"
+import { RecentContacts } from "@/components/recent-contacts"
+import { ContactModal } from "@/app/dashboard/components/contact-modal"
 
 export default function ContactsPage() {
+  const { contacts, loading, error, fetchContacts } = useContactsRealtime()
+  const [searchTerm, setSearchTerm] = useState("")
+
+  // Filter contacts based on search term
+  const filteredContacts = contacts.filter(contact => 
+    (contact.name && contact.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (contact.email && contact.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (contact.company_name && contact.company_name.toLowerCase().includes(searchTerm.toLowerCase()))
+  )
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+          <h3 className="font-medium text-destructive">Error loading contacts</h3>
+          <p className="text-sm text-destructive/80">{error}</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -15,10 +48,7 @@ export default function ContactsPage() {
             Manage your contact database
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Contact
-        </Button>
+        <ContactModal onCreateContact={fetchContacts} />
       </div>
 
       <div className="flex items-center space-x-2">
@@ -27,6 +57,8 @@ export default function ContactsPage() {
           <input
             placeholder="Search contacts..."
             className="w-full rounded-lg bg-background pl-8 py-2 text-sm border"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <Button variant="outline">
@@ -35,103 +67,29 @@ export default function ContactsPage() {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Contact List</CardTitle>
-          <CardDescription>
-            Your complete contact database
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 border rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
-                  AJ
-                </div>
-                <div>
-                  <h3 className="font-medium">Alex Johnson</h3>
-                  <p className="text-sm text-muted-foreground">alex@techcorp.com</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">VIP</Badge>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <div className="flex items-center justify-between p-3 border rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
-                  SW
-                </div>
-                <div>
-                  <h3 className="font-medium">Sarah Williams</h3>
-                  <p className="text-sm text-muted-foreground">sarah@startupxyz.com</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline">Lead</Badge>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <div className="flex items-center justify-between p-3 border rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
-                  MC
-                </div>
-                <div>
-                  <h3 className="font-medium">Michael Chen</h3>
-                  <p className="text-sm text-muted-foreground">michael@innovateco.com</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">Customer</Badge>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <div className="flex items-center justify-between p-3 border rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
-                  ED
-                </div>
-                <div>
-                  <h3 className="font-medium">Emma Davis</h3>
-                  <p className="text-sm text-muted-foreground">emma@globalinc.com</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline">Prospect</Badge>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <div className="flex items-center justify-between p-3 border rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
-                  RJ
-                </div>
-                <div>
-                  <h3 className="font-medium">Robert Johnson</h3>
-                  <p className="text-sm text-muted-foreground">robert@megacorp.com</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">VIP</Badge>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Contact List</CardTitle>
+              <CardDescription>
+                Your complete contact database
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ContactList 
+                contacts={filteredContacts} 
+                onContactSelect={(contact) => console.log("Selected contact:", contact)}
+                onContactEdit={(contact) => console.log("Edit contact:", contact)}
+              />
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div>
+          <RecentContacts />
+        </div>
+      </div>
     </div>
   )
 }

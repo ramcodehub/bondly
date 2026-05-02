@@ -43,9 +43,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(shortcuts[request.nextUrl.pathname], request.url))
   }
 
-  // For now, we'll handle dashboard authentication in the dashboard component itself
-  // rather than in middleware to avoid server-side auth complexity
+  // Apply session update middleware to all routes except login/signup
+  // This will handle authentication state without blocking unauthenticated users
+  // from accessing public pages like login
+  if (
+    !request.nextUrl.pathname.startsWith('/login') &&
+    !request.nextUrl.pathname.startsWith('/signup')
+  ) {
+    return await updateSession(request)
+  }
 
+  // For login/signup pages, we still want to check if user is already logged in
+  // to potentially redirect them to dashboard
   return await updateSession(request)
 }
 

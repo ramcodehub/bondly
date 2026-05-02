@@ -2,16 +2,161 @@
 
 import { useState, useEffect } from "react";
 import { Users, TrendingUp, CheckCircle, Globe } from "lucide-react";
+import supabase from '@/lib/supabase-client';
 
 export default function StatsCounter() {
   const [counters, setCounters] = useState([
-    { id: 1, icon: <Users className="h-8 w-8" />, label: "Active Users", end: 10000, current: 0 },
-    { id: 2, icon: <TrendingUp className="h-8 w-8" />, label: "Business Growth", end: 250, current: 0, suffix: "%" },
-    { id: 3, icon: <CheckCircle className="h-8 w-8" />, label: "Tasks Completed", end: 50000, current: 0 },
-    { id: 4, icon: <Globe className="h-8 w-8" />, label: "Global Clients", end: 75, current: 0, suffix: "+" }
+    { id: 1, icon: <Users className="h-8 w-8" />, label: "Active Users", end: 0, current: 0 },
+    { id: 2, icon: <TrendingUp className="h-8 w-8" />, label: "Business Growth", end: 0, current: 0, suffix: "%" },
+    { id: 3, icon: <CheckCircle className="h-8 w-8" />, label: "Tasks Completed", end: 0, current: 0 },
+    { id: 4, icon: <Globe className="h-8 w-8" />, label: "Global Clients", end: 0, current: 0, suffix: "+" }
   ]);
 
   const [isVisible, setIsVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch initial data from Supabase
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch counts for various entities
+        const [companiesResult, contactsResult, leadsResult, tasksResult] = await Promise.all([
+          supabase.from('companies').select('*', { count: 'exact', head: true }),
+          supabase.from('contacts').select('*', { count: 'exact', head: true }),
+          supabase.from('leads').select('*', { count: 'exact', head: true }),
+          supabase.from('tasks').select('*', { count: 'exact', head: true })
+        ]);
+
+        // Update counters with real data
+        setCounters(prev => prev.map(counter => {
+          switch(counter.id) {
+            case 1: // Active Users (using contacts count)
+              return { ...counter, end: contactsResult.count || 0 };
+            case 2: // Business Growth (using companies count as percentage)
+              return { ...counter, end: Math.min(companiesResult.count || 0, 100) };
+            case 3: // Tasks Completed (using completed tasks count)
+              return { ...counter, end: tasksResult.count || 0 };
+            case 4: // Global Clients (using companies count)
+              return { ...counter, end: companiesResult.count || 0 };
+            default:
+              return counter;
+          }
+        }));
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  // Set up real-time subscriptions
+  useEffect(() => {
+    // Subscribe to companies changes
+    const companiesSubscription = supabase
+      .channel('companies-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'companies',
+        },
+        (payload) => {
+          // Refetch companies count when there's a change
+          supabase.from('companies').select('*', { count: 'exact', head: true }).then(result => {
+            if (!result.error) {
+              setCounters(prev => prev.map(counter => 
+                counter.id === 4 ? { ...counter, end: result.count || 0 } : counter
+              ));
+            }
+          });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to contacts changes
+    const contactsSubscription = supabase
+      .channel('contacts-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'contacts',
+        },
+        (payload) => {
+          // Refetch contacts count when there's a change
+          supabase.from('contacts').select('*', { count: 'exact', head: true }).then(result => {
+            if (!result.error) {
+              setCounters(prev => prev.map(counter => 
+                counter.id === 1 ? { ...counter, end: result.count || 0 } : counter
+              ));
+            }
+          });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to leads changes
+    const leadsSubscription = supabase
+      .channel('leads-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'leads',
+        },
+        (payload) => {
+          // Refetch leads count when there's a change
+          supabase.from('leads').select('*', { count: 'exact', head: true }).then(result => {
+            if (!result.error) {
+              // Update business growth percentage (using companies count as proxy)
+              setCounters(prev => prev.map(counter => 
+                counter.id === 2 ? { ...counter, end: Math.min(result.count || 0, 100) } : counter
+              ));
+            }
+          });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to tasks changes
+    const tasksSubscription = supabase
+      .channel('tasks-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks',
+        },
+        (payload) => {
+          // Refetch tasks count when there's a change
+          supabase.from('tasks').select('*', { count: 'exact', head: true }).then(result => {
+            if (!result.error) {
+              setCounters(prev => prev.map(counter => 
+                counter.id === 3 ? { ...counter, end: result.count || 0 } : counter
+              ));
+            }
+          });
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscriptions on unmount
+    return () => {
+      supabase.removeChannel(companiesSubscription);
+      supabase.removeChannel(contactsSubscription);
+      supabase.removeChannel(leadsSubscription);
+      supabase.removeChannel(tasksSubscription);
+    };
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -36,7 +181,7 @@ export default function StatsCounter() {
   }, []);
 
   useEffect(() => {
-    if (!isVisible) return;
+    if (!isVisible || loading) return;
 
     const interval = setInterval(() => {
       setCounters(prev => 
@@ -54,7 +199,7 @@ export default function StatsCounter() {
     }, 50);
 
     return () => clearInterval(interval);
-  }, [isVisible]);
+  }, [isVisible, loading]);
 
   return (
     <section id="stats-counter" className="py-16 bg-gradient-to-r from-primary/10 to-secondary/10">

@@ -28,8 +28,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Lead, LeadFormValues } from './types';
 
 const formSchema = z.object({
-  first_name: z.string().min(2, 'First name is required'),
-  last_name: z.string().min(2, 'Last name is required'),
+  name: z.string().min(2, 'Name is required'),
   email: z.string().email('Invalid email address'),
   phone: z.string().optional(),
   company: z.string().optional(),
@@ -53,8 +52,7 @@ export function LeadForm({ initialData, isEdit = false }: LeadFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
-      first_name: '',
-      last_name: '',
+      name: '',
       email: '',
       phone: '',
       company: '',
@@ -139,25 +137,12 @@ export function LeadForm({ initialData, isEdit = false }: LeadFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
-            name="first_name"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>First Name *</FormLabel>
+                <FormLabel>Name *</FormLabel>
                 <FormControl>
-                  <Input placeholder="John" {...field} disabled={isLoading} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="last_name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Doe" {...field} disabled={isLoading} />
+                  <Input placeholder="John Doe" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

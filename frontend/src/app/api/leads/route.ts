@@ -4,8 +4,7 @@ import { createClient } from '@/utils/supabase/server';
 export const dynamic = "force-dynamic";
 
 type Lead = {
-  first_name: string;
-  last_name: string;
+  name: string;
   email: string;
   phone?: string;
   company?: string;
@@ -23,17 +22,16 @@ export async function POST(request: NextRequest) {
     const leadData: Lead = await request.json();
     
     // Validate required fields
-    if (!leadData.first_name || !leadData.last_name || !leadData.email) {
+    if (!leadData.name || leadData.name.trim().length === 0 || !leadData.email) {
       return NextResponse.json(
-        { error: 'Missing required fields: first_name, last_name, email' },
+        { error: 'Missing required fields: name, email' },
         { status: 400 }
       );
     }
     
     // Set defaults
     const lead = {
-      first_name: leadData.first_name.trim(),
-      last_name: leadData.last_name.trim(),
+      name: leadData.name.trim(),
       email: leadData.email.trim(),
       phone: leadData.phone?.trim() || null,
       company: leadData.company?.trim() || null,

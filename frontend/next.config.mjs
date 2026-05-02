@@ -1,29 +1,25 @@
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { dirname, resolve } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  outputFileTracingRoot: __dirname,
+  // Set the correct workspace root
+  outputFileTracingRoot: resolve(__dirname),
   reactStrictMode: true,
   images: {
     domains: ['avatars.githubusercontent.com', 'lh3.googleusercontent.com'],
-    disableStaticImages: false,
     unoptimized: true,
   },
-  serverExternalPackages: [
-    '@radix-ui/react-select',
-    '@radix-ui/react-dialog',
-    '@radix-ui/react-avatar'
-  ],
   webpack: (config, { isServer }) => {
     if (!isServer) {
+      // Use false for ES modules instead of require
       config.resolve.fallback = {
         ...config.resolve.fallback,
-        stream: require.resolve('stream-browserify'),
-        buffer: require.resolve('buffer/')
+        stream: false,
+        buffer: false
       };
     }
     
@@ -62,17 +58,14 @@ const nextConfig = {
   // Disable static file caching in development
   poweredByHeader: false,
   generateEtags: false,
-  // Disable static file hashing in development
-  devIndicators: {
-    buildActivity: false,
-  },
   // Use default output instead of standalone for Netlify compatibility
   // output: 'standalone',
   // Disable static optimization for development
   // This will ensure all pages are server-rendered
   experimental: {
-    serverActions: true,
-    serverComponentsExternalPackages: ['@radix-ui/react-dialog'],
+    serverActions: {
+      bodySizeLimit: '1mb'
+    }
   },
 };
 

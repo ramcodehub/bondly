@@ -14,6 +14,7 @@ import {
   Filler,
 } from "chart.js"
 import { Icons } from "./icons"
+import supabase from '@/lib/supabase-client'
 
 // Register ChartJS components
 ChartJS.register(
@@ -27,34 +28,82 @@ ChartJS.register(
   Filler
 )
 
-const labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"]
-const revenueData = [6500, 5900, 8000, 8100, 8600, 10500, 12000]
-const dealsData = [12, 15, 18, 14, 20, 22, 25]
-
 export function Overview() {
-  const [chartData, setChartData] = React.useState({
-    labels,
-    datasets: [
-      {
-        label: 'Revenue ($)',
-        data: revenueData,
-        borderColor: 'hsl(221.2 83.2% 53.3%)',
-        backgroundColor: 'rgba(59, 130, 246, 0.05)',
-        tension: 0.3,
-        fill: true,
-        yAxisID: 'y',
-      },
-      {
-        label: 'Deals Closed',
-        data: dealsData,
-        borderColor: 'hsl(142.1 76.2% 36.3%)',
-        backgroundColor: 'rgba(16, 185, 129, 0.05)',
-        tension: 0.3,
-        borderDash: [5, 5],
-        yAxisID: 'y1',
-      },
-    ],
-  })
+  const [chartData, setChartData] = React.useState<any>(null)
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        setLoading(true)
+        
+        // Fetch deals data for the last 7 months
+        const { data: dealsData, error: dealsError } = await supabase
+          .from('deals')
+          .select('amount, created_at')
+          .gte('created_at', new Date(Date.now() - 7 * 30 * 24 * 60 * 60 * 1000).toISOString()) // Last 7 months
+          .order('created_at', { ascending: true })
+
+        if (dealsError) throw dealsError
+
+        // Group data by month
+        const monthlyData: Record<string, { revenue: number; deals: number }> = {}
+        
+        // Initialize all months
+        for (let i = 6; i >= 0; i--) {
+          const date = new Date()
+          date.setMonth(date.getMonth() - i)
+          const monthKey = date.toLocaleString('default', { month: 'short' })
+          monthlyData[monthKey] = { revenue: 0, deals: 0 }
+        }
+
+        // Process deals data
+        dealsData?.forEach(deal => {
+          const date = new Date(deal.created_at)
+          const monthKey = date.toLocaleString('default', { month: 'short' })
+          if (monthlyData[monthKey]) {
+            monthlyData[monthKey].revenue += deal.amount || 0
+            monthlyData[monthKey].deals += 1
+          }
+        })
+
+        // Convert to chart format
+        const labels = Object.keys(monthlyData)
+        const revenueData = Object.values(monthlyData).map(item => item.revenue)
+        const dealsDataArray = Object.values(monthlyData).map(item => item.deals)
+
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: 'Revenue ($)',
+              data: revenueData,
+              borderColor: 'hsl(221.2 83.2% 53.3%)',
+              backgroundColor: 'rgba(59, 130, 246, 0.05)',
+              tension: 0.3,
+              fill: true,
+              yAxisID: 'y',
+            },
+            {
+              label: 'Deals Closed',
+              data: dealsDataArray,
+              borderColor: 'hsl(142.1 76.2% 36.3%)',
+              backgroundColor: 'rgba(16, 185, 129, 0.05)',
+              tension: 0.3,
+              borderDash: [5, 5],
+              yAxisID: 'y1',
+            },
+          ],
+        })
+      } catch (error) {
+        console.error('Error fetching chart data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchChartData()
+  }, [])
 
   const options = {
     responsive: true,
@@ -141,6 +190,14 @@ export function Overview() {
     },
   }
 
+  if (loading) {
+    return (
+      <div className="h-[350px] w-full flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">Loading chart data...</div>
+      </div>
+    )
+  }
+
   return (
     <div className="h-[350px] w-full">
       <div className="flex items-center justify-between mb-4">
@@ -150,7 +207,7 @@ export function Overview() {
           <span>Last 7 months</span>
         </div>
       </div>
-      <Line options={options} data={chartData} />
+      {chartData && <Line options={options} data={chartData} />}
     </div>
   )
 }

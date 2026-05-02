@@ -1,42 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase-client';
 
 export const dynamic = "force-dynamic";
 
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase environment variables');
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
-
+// GET /api/contacts/[id] - Get contact by ID
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const { id } = params;
-    
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Contact ID is required' },
+        { status: 400 }
+      );
+    }
+
     const { data, error } = await supabase
       .from('contacts')
-      .select('*')
+      .select(`
+        *,
+        companies(name)
+      `)
       .eq('id', id)
       .single();
 
     if (error) {
       console.error('Error fetching contact:', error);
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Contact not found' },
+          { status: 404 }
+        );
+      }
       return NextResponse.json(
-        { error: error.message || 'Contact not found' },
-        { status: 404 }
+        { error: error.message || 'Failed to fetch contact' },
+        { status: 400 }
       );
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json({
+      success: true,
+      data
+    });
+
   } catch (error) {
-    console.error('Server error:', error);
+    console.error('Error in contacts GET by ID API:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -44,6 +55,7 @@ export async function GET(
   }
 }
 
+// PUT /api/contacts/[id] - Update contact by ID
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -51,25 +63,49 @@ export async function PUT(
   try {
     const { id } = params;
     const contactData = await request.json();
-    
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Contact ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Remove fields that shouldn't be updated
+    const { id: _, created_at: __, ...updateData } = contactData;
+
     const { data, error } = await supabase
       .from('contacts')
-      .update(contactData)
+      .update(updateData)
       .eq('id', id)
-      .select()
+      .select(`
+        *,
+        companies(name)
+      `)
       .single();
 
     if (error) {
       console.error('Error updating contact:', error);
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Contact not found' },
+          { status: 404 }
+        );
+      }
       return NextResponse.json(
         { error: error.message || 'Failed to update contact' },
         { status: 400 }
       );
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json({
+      success: true,
+      data,
+      message: 'Contact updated successfully'
+    });
+
   } catch (error) {
-    console.error('Server error:', error);
+    console.error('Error in contacts PUT API:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -77,29 +113,49 @@ export async function PUT(
   }
 }
 
+// DELETE /api/contacts/[id] - Delete contact by ID
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const { id } = params;
-    
-    const { error } = await supabase
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Contact ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await supabase
       .from('contacts')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .select()
+      .single();
 
     if (error) {
       console.error('Error deleting contact:', error);
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Contact not found' },
+          { status: 404 }
+        );
+      }
       return NextResponse.json(
         { error: error.message || 'Failed to delete contact' },
         { status: 400 }
       );
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      message: 'Contact deleted successfully'
+    });
+
   } catch (error) {
-    console.error('Server error:', error);
+    console.error('Error in contacts DELETE API:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

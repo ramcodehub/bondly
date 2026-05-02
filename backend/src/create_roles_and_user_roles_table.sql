@@ -22,5 +22,6 @@ VALUES
   ('Marketing Manager', 'Manage campaigns and marketing reports'),
   ('Marketing Agent', 'Execute marketing tasks and campaigns'),
   ('Sales Manager', 'Oversee sales team and pipelines'),
-  ('Sales Representative', 'Manage leads and deals')
+  ('Sales Representative', 'Manage leads and deals'),
+  ('user', 'Default role for all authenticated users')
 ON CONFLICT (name) DO NOTHING;

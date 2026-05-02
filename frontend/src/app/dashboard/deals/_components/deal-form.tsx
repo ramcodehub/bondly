@@ -38,15 +38,15 @@ interface FormData {
 
 interface Lead {
   id: string
-  first_name: string
-  last_name: string
+  name: string
   email: string
   company?: string
 }
 
 interface Contact {
   id: string
-  name: string
+  first_name: string
+  last_name: string
   email: string
   company_id?: string
 }
@@ -97,7 +97,7 @@ export function DealForm({ deal, isOpen, onClose, onSubmit }: DealFormProps) {
         description: deal.description || "",
         lead_id: deal.lead_id || "",
         contact_id: deal.contact_id || "",
-        company_id: deal.account_id || "",
+        company_id: deal.company_id || "",
         deal_source: deal.deal_source || "",
         next_step: deal.next_step || ""
       })
@@ -123,8 +123,8 @@ export function DealForm({ deal, isOpen, onClose, onSubmit }: DealFormProps) {
     setLoadingData(true)
     try {
       const [leadsResponse, contactsResponse, companiesResponse] = await Promise.all([
-        supabase.from('leads').select('id, first_name, last_name, email, company').limit(100),
-        supabase.from('contacts').select('id, name, email, company_id').limit(100),
+        supabase.from('leads').select('id, name, email').limit(100),
+        supabase.from('contacts').select('id, first_name, last_name, email, company_id').limit(100),
         supabase.from('companies').select('id, name, industry').limit(100)
       ])
 
@@ -157,7 +157,7 @@ export function DealForm({ deal, isOpen, onClose, onSubmit }: DealFormProps) {
         close_date: formData.close_date ? format(formData.close_date, 'yyyy-MM-dd') : null,
         description: formData.description.trim() || null,
         lead_id: formData.lead_id || null,
-        contact_id: formData.contact_id ? parseInt(formData.contact_id) : null,
+        contact_id: formData.contact_id || null,
         company_id: formData.company_id || null,
         deal_source: formData.deal_source.trim() || null,
         next_step: formData.next_step.trim() || null
@@ -345,7 +345,7 @@ export function DealForm({ deal, isOpen, onClose, onSubmit }: DealFormProps) {
                         <SelectItem value="none">No lead selected</SelectItem>
                         {leads.map((lead) => (
                           <SelectItem key={lead.id} value={lead.id}>
-                            {lead.first_name} {lead.last_name} - {lead.email}
+                            {lead.name} - {lead.email}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -363,7 +363,7 @@ export function DealForm({ deal, isOpen, onClose, onSubmit }: DealFormProps) {
                         <SelectItem value="none">No contact selected</SelectItem>
                         {contacts.map((contact) => (
                           <SelectItem key={contact.id} value={contact.id.toString()}>
-                            {contact.name} - {contact.email}
+                            {contact.first_name} {contact.last_name} - {contact.email}
                           </SelectItem>
                         ))}
                       </SelectContent>

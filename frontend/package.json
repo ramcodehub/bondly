@@ -21,6 +21,7 @@
     "test:coverage": "jest --coverage",
     "test:contact": "node test-contact-form.js",
     "test:db": "node test-profile-schema.js",
+    "verify:auth": "node verify-auth.js",
     "preinstall": "yarn cache clean --force"
   },
   "dependencies": {

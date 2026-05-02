@@ -16,6 +16,8 @@ frontend/.next/
 frontend/out/
 frontend/dist/
 backend/dist/
+.next/
+scratch/
 
 # Logs
 logs

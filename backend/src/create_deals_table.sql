@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS deals (
   
   -- Foreign key relationships (matching existing table schemas)
   lead_id UUID REFERENCES leads(id) ON DELETE SET NULL,
-  contact_id INTEGER REFERENCES contacts(id) ON DELETE SET NULL,
+  contact_id UUID REFERENCES contacts(id) ON DELETE SET NULL,
   company_id UUID REFERENCES companies(id) ON DELETE SET NULL,
   owner_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   

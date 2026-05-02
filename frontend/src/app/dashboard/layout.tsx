@@ -1,7 +1,7 @@
 "use client"
 
-import { AppSidebar, MobileSidebar } from "@/components/app-sidebar"
-import TopbarActions from "@/components/topbar-actions"
+import { AppSidebar, MobileSidebar } from "../../components/app-sidebar"
+import TopbarActions from "../../components/topbar-actions"
 
 export default function DashboardLayout({
   children,
@@ -9,9 +9,9 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex min-h-screen relative">
-      {/* Desktop Sidebar - fixed position */}
-      <div className="hidden md:block md:w-64 fixed h-screen top-0 left-0 z-50 bg-background">
+    <div className="flex min-h-screen w-full">
+      {/* Desktop Sidebar - always visible */}
+      <div className="hidden md:block fixed top-0 left-0 h-screen w-64 z-50 bg-background border-r">
         <AppSidebar />
       </div>
       

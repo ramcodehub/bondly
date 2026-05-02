@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { supabase } from '@/lib/supabase-client';
 
 interface Role {
-  id: number;
+  id: string;
   name: string;
   description: string;
   created_at: string;
@@ -11,28 +12,61 @@ interface Role {
 interface RoleState {
   roles: Role[];
   myRoles: Role[];
+  permissions: string[]; // 🛡️ NEW: Permission-based RBAC
   loading: boolean;
   error: string | null;
   
   // Role actions
   fetchRoles: () => Promise<void>;
   createRole: (role: Omit<Role, 'id' | 'created_at'>) => Promise<void>;
-  updateRole: (id: number, role: Partial<Role>) => Promise<void>;
-  deleteRole: (id: number) => Promise<void>;
+  updateRole: (id: string, role: Partial<Role>) => Promise<void>;
+  deleteRole: (id: string) => Promise<void>;
   
   // User role actions
   getUserRoles: (userId: string) => Promise<Role[]>;
-  assignRole: (userId: string, roleId: number) => Promise<void>;
-  removeRole: (userId: string, roleId: number) => Promise<void>;
+  assignRole: (userId: string, roleId: string) => Promise<void>;
+  removeRole: (userId: string, roleId: string) => Promise<void>;
   
-  // Current user roles
+  // Current user roles & permissions
   fetchMyRoles: () => Promise<void>;
+  fetchPermissions: () => Promise<void>; // 🛡️ NEW: Fetch permissions
+  initializeRealtime: () => () => void; // 🛡️ NEW: Realtime sync
+}
+
+// 🔍 DATA NORMALIZATION
+function normalizeRoles(data: any): Role[] {
+  if (!data) return [];
+  const raw = Array.isArray(data) ? data : [data];
+  
+  return raw.map(item => {
+    const roleObj = item?.roles || item?.role || item;
+    return {
+      id: roleObj?.id,
+      name: roleObj?.name || 'Unknown Role',
+      description: roleObj?.description || '',
+      created_at: roleObj?.created_at || new Date().toISOString()
+    };
+  }).filter(r => r.id);
+}
+
+// 🛡️ NORMALIZE PERMISSIONS
+function normalizePermissions(data: any): string[] {
+  if (!data) return [];
+  
+  const role = data?.role || data?.roles;
+  if (!role) return [];
+
+  const perms = role.role_permissions || [];
+  return perms
+    .map((rp: any) => rp.permission?.name)
+    .filter(Boolean);
 }
 
 export const useRoleStore = create<RoleState>()(
   devtools((set, get) => ({
     roles: [],
     myRoles: [],
+    permissions: [],
     loading: false,
     error: null,
     
@@ -48,8 +82,7 @@ export const useRoleStore = create<RoleState>()(
         }
       } catch (error: unknown) {
         console.error('Error fetching roles:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch roles';
-        set({ error: errorMessage, loading: false });
+        set({ error: (error as Error).message, loading: false });
       }
     },
     
@@ -61,18 +94,14 @@ export const useRoleStore = create<RoleState>()(
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(roleData)
         });
-        
         const data = await response.json();
         if (data.success) {
-          const newRole = data.data;
-          set(state => ({ roles: [...state.roles, newRole], loading: false }));
+          set(state => ({ roles: [...state.roles, data.data], loading: false }));
         } else {
           throw new Error(data.message || 'Failed to create role');
         }
       } catch (error: unknown) {
-        console.error('Error creating role:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to create role';
-        set({ error: errorMessage, loading: false });
+        set({ error: (error as Error).message, loading: false });
       }
     },
     
@@ -84,31 +113,24 @@ export const useRoleStore = create<RoleState>()(
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(roleData)
         });
-        
         const data = await response.json();
         if (data.success) {
-          const updatedRole = data.data;
           set(state => ({
-            roles: state.roles.map(role => role.id === id ? updatedRole : role),
+            roles: state.roles.map(role => role.id === id ? data.data : role),
             loading: false
           }));
         } else {
           throw new Error(data.message || 'Failed to update role');
         }
       } catch (error: unknown) {
-        console.error('Error updating role:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to update role';
-        set({ error: errorMessage, loading: false });
+        set({ error: (error as Error).message, loading: false });
       }
     },
     
     deleteRole: async (id) => {
       set({ loading: true, error: null });
       try {
-        const response = await fetch(`/api/extended/roles/${id}`, {
-          method: 'DELETE'
-        });
-        
+        const response = await fetch(`/api/extended/roles/${id}`, { method: 'DELETE' });
         const data = await response.json();
         if (data.success) {
           set(state => ({
@@ -119,9 +141,7 @@ export const useRoleStore = create<RoleState>()(
           throw new Error(data.message || 'Failed to delete role');
         }
       } catch (error: unknown) {
-        console.error('Error deleting role:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to delete role';
-        set({ error: errorMessage, loading: false });
+        set({ error: (error as Error).message, loading: false });
       }
     },
     
@@ -137,9 +157,7 @@ export const useRoleStore = create<RoleState>()(
           throw new Error(data.message || 'Failed to fetch user roles');
         }
       } catch (error: unknown) {
-        console.error('Error fetching user roles:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch user roles';
-        set({ error: errorMessage, loading: false });
+        set({ error: (error as Error).message, loading: false });
         return [];
       }
     },
@@ -152,60 +170,107 @@ export const useRoleStore = create<RoleState>()(
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ role_id: roleId })
         });
-        
         const data = await response.json();
-        if (data.success) {
-          set({ loading: false });
-        } else {
-          throw new Error(data.message || 'Failed to assign role');
-        }
+        if (data.success) set({ loading: false });
+        else throw new Error(data.message || 'Failed to assign role');
       } catch (error: unknown) {
-        console.error('Error assigning role:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to assign role';
-        set({ error: errorMessage, loading: false });
+        set({ error: (error as Error).message, loading: false });
       }
     },
     
     removeRole: async (userId, roleId) => {
       set({ loading: true, error: null });
       try {
-        const response = await fetch(`/api/extended/roles/users/${userId}/${roleId}`, {
-          method: 'DELETE'
-        });
-        
+        const response = await fetch(`/api/extended/roles/users/${userId}/${roleId}`, { method: 'DELETE' });
         const data = await response.json();
-        if (data.success) {
-          set({ loading: false });
-        } else {
-          throw new Error(data.message || 'Failed to remove role');
-        }
+        if (data.success) set({ loading: false });
+        else throw new Error(data.message || 'Failed to remove role');
       } catch (error: unknown) {
-        console.error('Error removing role:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to remove role';
-        set({ error: errorMessage, loading: false });
+        set({ error: (error as Error).message, loading: false });
       }
     },
     
     fetchMyRoles: async () => {
       set({ loading: true, error: null });
       try {
-        console.log('Fetching user roles from /api/extended/roles/me');
-        const response = await fetch('/api/extended/roles/me');
-        const data = await response.json();
-        console.log('Role API response:', data);
-        if (data.success) {
-          set({ myRoles: data.data, loading: false });
-          console.log('User roles set:', data.data);
-        } else {
-          // If there's an error fetching roles, we should still complete the loading
-          console.error('Error fetching my roles:', data.message);
-          set({ loading: false });
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          set({ loading: false, myRoles: [], permissions: [] });
+          return;
         }
-      } catch (error: unknown) {
-        console.error('Error fetching my roles:', error);
-        // Even if there's an error, we should complete the loading to prevent infinite loading state
-        set({ loading: false });
+
+        const { data, error } = await supabase
+          .from('profiles')
+          .select(`
+            role:roles!role_id (
+              id,
+              name,
+              description,
+              created_at,
+              role_permissions (
+                permission:permissions (
+                  name
+                )
+              )
+            )
+          `)
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          if (error.code === 'PGRST116') { 
+            set({ myRoles: [], permissions: [], loading: false });
+            return;
+          }
+          throw error;
+        }
+
+        const normalizedRoles = normalizeRoles(data);
+        const normalizedPerms = normalizePermissions(data);
+        
+        set({ 
+          myRoles: normalizedRoles, 
+          permissions: normalizedPerms,
+          loading: false 
+        });
+
+        console.log("🛡️ RBAC UPGRADE:", { roles: normalizedRoles.map(r => r.name), permissions: normalizedPerms });
+
+      } catch (error: any) {
+        console.error('❌ RBAC FETCH ERROR:', error);
+        set({ error: error?.message || 'Failed to fetch roles', loading: false, myRoles: [], permissions: [] });
       }
+    },
+
+    fetchPermissions: async () => {
+      return get().fetchMyRoles();
+    },
+
+    initializeRealtime: () => {
+      const { fetchMyRoles } = get();
+
+      const profileChannel = supabase
+        .channel('rbac-profiles')
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'profiles' },
+          () => fetchMyRoles()
+        )
+        .subscribe();
+
+      const permChannel = supabase
+        .channel('rbac-permissions')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'role_permissions' },
+          () => fetchMyRoles()
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(profileChannel);
+        supabase.removeChannel(permChannel);
+      };
     }
   }))
 );

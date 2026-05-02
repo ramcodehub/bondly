@@ -3,8 +3,8 @@
 import * as React from "react"
 import dynamic from "next/dynamic"
 import { Bell, User, Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "./ui/button"
+import { Badge } from "./ui/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,11 +12,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useUser } from "@/hooks/useUser"
-import { useRoles } from "@/hooks/useRoles"
-import { UserRoleBadge } from "@/app/dashboard/settings/roles/UserRoleBadge"
-import { ThemeToggle } from "@/components/theme-toggle"
+} from "./ui/dropdown-menu"
+import { useUser } from "../hooks/useUser"
+import { useRoles } from "../hooks/useRoles"
+import { UserRoleBadge } from "../app/dashboard/settings/roles/UserRoleBadge"
+import { ThemeToggle } from "./theme-toggle"
 
 const NotificationsList = dynamic(() => import("./topbar-notifications").then(m => m.NotificationsList).catch(() => ({ default: () => null })), { ssr: false })
 const CommandPalette = dynamic(() => import("./command-palette").then(m => m.CommandPalette).catch(() => ({ default: () => null })), { ssr: false, loading: () => null })

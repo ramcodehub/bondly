@@ -28,12 +28,15 @@ export const request = async (endpoint, options = {}) => {
       }
     });
 
+    console.log(`Response status: ${response.status}`);
+    
     // Handle 204 No Content responses
     if (response.status === 204) {
       return null;
     }
 
     const data = await response.json();
+    console.log(`Response data:`, data);
 
     if (!response.ok) {
       throw new Error(data.message || 'Something went wrong');

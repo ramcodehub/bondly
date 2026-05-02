@@ -11,46 +11,58 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 
-export default function Services() {
-  const services = [
-    {
-      icon: <Target className="h-8 w-8" />,
-      title: "Lead Management",
-      description: "Capture, track, and nurture leads through your sales pipeline with automated workflows."
-    },
-    {
-      icon: <DollarSign className="h-8 w-8" />,
-      title: "Deal Tracking",
-      description: "Monitor deals at every stage with forecasting tools and pipeline visibility."
-    },
-    {
-      icon: <CheckSquare className="h-8 w-8" />,
-      title: "Task Management",
-      description: "Assign, track, and complete tasks with priority levels and deadline reminders."
-    },
-    {
-      icon: <Users className="h-8 w-8" />,
-      title: "Contact Management",
-      description: "Store and organize all your customer information in one centralized location."
-    },
-    {
-      icon: <BarChart3 className="h-8 w-8" />,
-      title: "Analytics & Reporting",
-      description: "Gain insights with customizable dashboards and detailed performance reports."
-    },
-    {
-      icon: <Zap className="h-8 w-8" />,
-      title: "Automation",
-      description: "Streamline repetitive tasks with powerful automation and workflow features."
-    }
-  ];
+// Define the service type
+interface Service {
+  icon: string;
+  title: string;
+  description: string;
+}
 
+// Map icon names to actual components
+const iconMap = {
+  Users: Users,
+  Target: Target,
+  CheckSquare: CheckSquare,
+  DollarSign: DollarSign,
+  BarChart3: BarChart3,
+  Zap: Zap
+};
+
+export default function Services() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/landing/services');
+        const result = await response.json();
+        
+        if (result.success) {
+          setServices(result.data);
+        } else {
+          throw new Error(result.message || 'Failed to fetch services');
+        }
+      } catch (error) {
+        console.error('Error fetching services:', error);
+        setError('Failed to load services');
+        // Set empty array if API fails
+        setServices([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
   // Auto-rotate services
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!isAutoPlaying || services.length === 0) return;
     
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % services.length);
@@ -71,6 +83,43 @@ export default function Services() {
     services.slice(0, Math.max(0, (currentIndex + 3) - services.length))
   );
 
+  if (loading) {
+    return (
+      <section className="py-20" id="services">
+        <div className="container px-4 md:px-6">
+          <div className="text-center space-y-4 mb-16">
+            <div className="h-10 bg-muted animate-pulse rounded w-1/2 mx-auto"></div>
+            <div className="h-4 bg-muted animate-pulse rounded w-1/3 mx-auto"></div>
+          </div>
+          
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="h-48 animate-pulse bg-muted" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-20" id="services">
+        <div className="container px-4 md:px-6">
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold">Bondly Features</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Everything you need to manage customer relationships, streamline processes, and grow your business with Bondly.
+            </p>
+          </div>
+          <div className="text-center py-8 text-red-500">
+            {error}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-20" id="services">
       <div className="container px-4 md:px-6">
@@ -83,22 +132,25 @@ export default function Services() {
         
         {/* Enhanced services grid with carousel for mobile */}
         <div className="hidden md:grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((service, index) => (
-            <Card 
-              key={index} 
-              className="transition-all hover:shadow-lg hover:border-primary/20 transform hover:-translate-y-1 duration-300"
-            >
-              <CardHeader>
-                <div className="p-2 bg-primary/10 rounded-lg w-fit mb-4 transition-colors group-hover:bg-primary/20">
-                  {service.icon}
-                </div>
-                <CardTitle className="text-xl">{service.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">{service.description}</p>
-              </CardContent>
-            </Card>
-          ))}
+          {services.map((service, index) => {
+            const IconComponent = iconMap[service.icon as keyof typeof iconMap] || Target;
+            return (
+              <Card 
+                key={index} 
+                className="transition-all hover:shadow-lg hover:border-primary/20 transform hover:-translate-y-1 duration-300"
+              >
+                <CardHeader>
+                  <div className="p-2 bg-primary/10 rounded-lg w-fit mb-4 transition-colors group-hover:bg-primary/20">
+                    <IconComponent className="h-8 w-8" />
+                  </div>
+                  <CardTitle className="text-xl">{service.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">{service.description}</p>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
         
         {/* Carousel for mobile view */}
@@ -108,21 +160,24 @@ export default function Services() {
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
-              {services.map((service, index) => (
-                <div key={index} className="w-full flex-shrink-0 px-2">
-                  <Card className="transition-all hover:shadow-lg hover:border-primary/20">
-                    <CardHeader>
-                      <div className="p-2 bg-primary/10 rounded-lg w-fit mb-4">
-                        {service.icon}
-                      </div>
-                      <CardTitle className="text-xl">{service.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground">{service.description}</p>
-                    </CardContent>
-                  </Card>
-                </div>
-              ))}
+              {services.map((service, index) => {
+                const IconComponent = iconMap[service.icon as keyof typeof iconMap] || Target;
+                return (
+                  <div key={index} className="w-full flex-shrink-0 px-2">
+                    <Card className="transition-all hover:shadow-lg hover:border-primary/20">
+                      <CardHeader>
+                        <div className="p-2 bg-primary/10 rounded-lg w-fit mb-4">
+                          <IconComponent className="h-8 w-8" />
+                        </div>
+                        <CardTitle className="text-xl">{service.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground">{service.description}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                );
+              })}
             </div>
           </div>
           
@@ -182,7 +237,7 @@ export default function Services() {
                 viewBox="0 0 20 20" 
                 fill="currentColor"
               >
-                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
             </button>

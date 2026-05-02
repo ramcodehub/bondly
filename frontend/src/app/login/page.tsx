@@ -6,15 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/icons';
-import { supabase } from '@/lib/supabase-client';
-import { toast } from 'sonner';
 import Navbar from '@/components/landing/navbar';
 import Footer from '@/components/landing/footer';
-import { useState as useReactState } from 'react';
+import { useUser } from '@/hooks/useUser';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [isMenuOpen, setIsMenuOpen] = useReactState(false);
+  const { signIn } = useUser();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,24 +24,15 @@ export default function LoginPage() {
     setIsLoading(true);
     setError('');
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-      
-      toast.success('Successfully signed in!');
-      
-      // On successful login, redirect to dashboard
+    const result = await signIn(email, password);
+    
+    if (result.success) {
       router.push('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to log in. Please check your credentials.');
-      console.error('Login error:', err);
-    } finally {
-      setIsLoading(false);
+    } else {
+      setError(result.error as string);
     }
+    
+    setIsLoading(false);
   };
 
   return (

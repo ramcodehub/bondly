@@ -3,6 +3,8 @@ import supabase from '../config/supabase.js';
 import { asyncHandler, createValidationError, createNotFoundError } from '../middleware/errorHandler.js';
 import { sanitizeInput } from '../middleware/validation.js';
 import { optimizedQueries } from '../middleware/databaseOptimizer.js';
+import { requireAuth } from '../middleware/auth.js';
+import { requirePermission } from '../middleware/requirePermission.js';
 
 const router = express.Router();
 
@@ -30,15 +32,15 @@ const validateDeal = (req, res, next) => {
 };
 
 // GET /api/deals - Get all deals
-router.get('/', asyncHandler(async (req, res) => {
+router.get('/', requireAuth, requirePermission('deals.read'), asyncHandler(async (req, res) => {
   const { stage, owner_id, limit = 100, offset = 0 } = req.query;
   
   let query = supabase
     .from('deals')
     .select(`
       *,
-      leads(first_name, last_name, email, phone),
-      contacts(name, email, phone),
+      leads(name, email, phone),
+      contacts(first_name, last_name, email, phone),
       companies(name, industry)
     `)
     .order('created_at', { ascending: false });
@@ -73,15 +75,15 @@ router.get('/', asyncHandler(async (req, res) => {
 }));
 
 // GET /api/deals/:id - Get single deal
-router.get('/:id', asyncHandler(async (req, res) => {
+router.get('/:id', requireAuth, requirePermission('deals.read'), asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   const { data, error } = await supabase
     .from('deals')
     .select(`
       *,
-      leads(first_name, last_name, email, phone, company),
-      contacts(name, email, phone),
+      leads(name, email, phone),
+      contacts(first_name, last_name, email, phone),
       companies(name, industry),
       tasks(id, title, status, priority, due_date)
     `)
@@ -102,7 +104,7 @@ router.get('/:id', asyncHandler(async (req, res) => {
 }));
 
 // POST /api/deals - Create new deal
-router.post('/', sanitizeInput, validateDeal, asyncHandler(async (req, res) => {
+router.post('/', requireAuth, requirePermission('deals.create'), sanitizeInput, validateDeal, asyncHandler(async (req, res) => {
   const { 
     name, 
     amount, 
@@ -153,7 +155,7 @@ router.post('/', sanitizeInput, validateDeal, asyncHandler(async (req, res) => {
 }));
 
 // PUT /api/deals/:id - Update deal
-router.put('/:id', sanitizeInput, validateDeal, asyncHandler(async (req, res) => {
+router.put('/:id', requireAuth, requirePermission('deals.update'), sanitizeInput, validateDeal, asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { 
     name, 
@@ -216,7 +218,7 @@ router.put('/:id', sanitizeInput, validateDeal, asyncHandler(async (req, res) =>
 }));
 
 // DELETE /api/deals/:id - Delete deal
-router.delete('/:id', asyncHandler(async (req, res) => {
+router.delete('/:id', requireAuth, requirePermission('deals.delete'), asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   const { error } = await supabase

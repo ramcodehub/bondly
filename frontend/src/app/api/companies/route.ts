@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { supabase } from '@/lib/supabase-client';
 
 export const dynamic = "force-dynamic";
 
 // POST /api/companies - Create new company
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
     const companyData = await request.json();
     
     // Validate required fields
@@ -68,8 +67,6 @@ export async function POST(request: NextRequest) {
 // GET /api/companies - Get all companies
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const industry = searchParams.get('industry');

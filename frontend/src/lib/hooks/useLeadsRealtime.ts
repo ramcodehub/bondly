@@ -95,8 +95,7 @@ export function useLeadsRealtime() {
       const tempId = `temp-${Date.now()}`
       const optimisticLead: Lead = {
         id: tempId,
-        first_name: leadData.first_name || '',
-        last_name: leadData.last_name || '',
+        name: leadData.name || '',
         email: leadData.email || '',
         status: leadData.status || 'new',
         ...leadData
@@ -271,7 +270,7 @@ export function useLeadsRealtime() {
             }
           })
           notifications.info('New lead added', {
-            description: `${event.new.first_name} ${event.new.last_name}`
+            description: event.new.name
           })
         } else if (event.eventType === 'UPDATE') {
           setState(prev => {
@@ -285,7 +284,7 @@ export function useLeadsRealtime() {
             }
           })
           notifications.info('Lead updated', {
-            description: `${event.new.first_name} ${event.new.last_name}`
+            description: event.new.name
           })
         } else if (event.eventType === 'DELETE') {
           setState(prev => {
@@ -297,7 +296,7 @@ export function useLeadsRealtime() {
             }
           })
           notifications.info('Lead deleted', {
-            description: `${event.old.first_name} ${event.old.last_name}`
+            description: event.old.name
           })
         }
       }

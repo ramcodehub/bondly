@@ -3,56 +3,59 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
-import { useRoles } from '@/hooks/useRoles';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: string | string[]; // Role(s) required to access this route
+  requiredRole?: 'admin' | 'manager' | 'sales'; // Simplified role keys
 }
 
 export default function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
   const router = useRouter();
-  const { user, loading: userLoading } = useUser();
-  const { myRoles, loading: rolesLoading, hasRole } = useRoles();
+  const { user, loading, isAdmin, isManager, isSales } = useUser();
 
   useEffect(() => {
-    console.log('ProtectedRoute check:', { user, userLoading, rolesLoading, requiredRole });
-    
-    // If not loading and no user, redirect to login
-    if (!userLoading && !user) {
-      console.log('No user found, redirecting to login');
+    // 1. Unauthenticated users -> login
+    if (!loading && !user) {
       router.push('/login');
       return;
     }
 
-    // If user exists but doesn't have required role, redirect to dashboard
-    if (user && requiredRole && !rolesLoading) {
-      if (!hasRole(requiredRole)) {
-        console.log('User does not have required role, redirecting to dashboard');
+    // 2. Role-based guards
+    if (!loading && user && requiredRole) {
+      let hasAccess = false;
+      
+      if (requiredRole === 'admin' && isAdmin) hasAccess = true;
+      if (requiredRole === 'manager' && (isAdmin || isManager)) hasAccess = true;
+      if (requiredRole === 'sales' && (isAdmin || isManager || isSales)) hasAccess = true;
+
+      if (!hasAccess) {
         router.push('/dashboard');
       }
     }
-  }, [user, userLoading, rolesLoading, requiredRole, hasRole, router]);
+  }, [user, loading, requiredRole, isAdmin, isManager, isSales, router]);
 
-  // Show loading spinner while checking auth state or roles
-  if (userLoading || rolesLoading) {
-    console.log('Showing loading spinner');
+  // Loading state
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading...</span>
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground animate-pulse">Verifying access...</p>
+        </div>
       </div>
     );
   }
 
-  // If user is authenticated and has required role (if specified), render children
-  if (user && (!requiredRole || hasRole(requiredRole))) {
-    console.log('User authenticated, rendering children');
+  // Final check for rendering
+  const hasAccess = !requiredRole || 
+    (requiredRole === 'admin' && isAdmin) ||
+    (requiredRole === 'manager' && (isAdmin || isManager)) ||
+    (requiredRole === 'sales' && (isAdmin || isManager || isSales));
+
+  if (user && hasAccess) {
     return <>{children}</>;
   }
 
-  // If not authenticated or doesn't have required role, render nothing (will redirect)
-  console.log('Not authenticated or missing required role, rendering nothing');
   return null;
-}
+}

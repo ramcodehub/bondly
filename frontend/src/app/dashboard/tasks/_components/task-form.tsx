@@ -49,16 +49,15 @@ interface TaskFormDeal {
 
 interface Lead {
   id: string
-  first_name: string
-  last_name: string
+  name: string
   email: string
   company?: string
 }
 
 interface Contact {
-  id: string
-  name: string
-  email: string
+  id: string;
+  name?: string;
+  email: string;
 }
 
 interface Company {
@@ -117,7 +116,7 @@ export function TaskForm({ task, isOpen, onClose, onSubmit }: TaskFormProps) {
         deal_id: task.deal_id || "",
         lead_id: task.lead_id || "",
         contact_id: task.contact_id || "",
-        company_id: task.account_id || "",
+        company_id: task.company_id || "",
         assigned_to: task.assigned_to || "",
         estimated_hours: task.estimated_hours?.toString() || "",
         notes: task.notes || "",
@@ -148,7 +147,7 @@ export function TaskForm({ task, isOpen, onClose, onSubmit }: TaskFormProps) {
     try {
       const [dealsResponse, leadsResponse, contactsResponse, companiesResponse] = await Promise.all([
         supabase.from('deals').select('id, name, amount, stage, probability').limit(100),
-        supabase.from('leads').select('id, first_name, last_name, email, company').limit(100),
+        supabase.from('leads').select('id, name, email').limit(100),
         supabase.from('contacts').select('id, name, email').limit(100),
         supabase.from('companies').select('id, name, industry').limit(100),
       ])
@@ -192,9 +191,9 @@ export function TaskForm({ task, isOpen, onClose, onSubmit }: TaskFormProps) {
         due_date: formData.due_date ? format(formData.due_date, 'yyyy-MM-dd') : null,
         priority: formData.priority,
         status: formData.status,
-        deal_id: formData.deal_id ? parseInt(formData.deal_id) : null,
+        deal_id: formData.deal_id || null,
         lead_id: formData.lead_id || null,
-        contact_id: formData.contact_id ? parseInt(formData.contact_id) : null,
+        contact_id: formData.contact_id || null,
         company_id: formData.company_id || null,
         assigned_to: formData.assigned_to || null,
         estimated_hours: formData.estimated_hours ? parseFloat(formData.estimated_hours) : null,
@@ -382,7 +381,7 @@ export function TaskForm({ task, isOpen, onClose, onSubmit }: TaskFormProps) {
                         <SelectItem value="none">No lead selected</SelectItem>
                         {leads.map((lead) => (
                           <SelectItem key={lead.id} value={lead.id}>
-                            {lead.first_name} {lead.last_name} - {lead.email}
+                            {lead.name} - {lead.email}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -400,7 +399,7 @@ export function TaskForm({ task, isOpen, onClose, onSubmit }: TaskFormProps) {
                         <SelectItem value="none">No contact selected</SelectItem>
                         {contacts.map((contact) => (
                           <SelectItem key={contact.id} value={contact.id.toString()}>
-                            {contact.name} - {contact.email}
+                            {contact.name || "Unnamed Contact"} - {contact.email}
                           </SelectItem>
                         ))}
                       </SelectContent>
