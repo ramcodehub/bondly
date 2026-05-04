@@ -3,6 +3,7 @@ services:
     name: Bondly-backend
     runtime: node
     plan: free
+    rootDirectory: backend
     buildCommand: npm install
     startCommand: npm start
     envVars:
