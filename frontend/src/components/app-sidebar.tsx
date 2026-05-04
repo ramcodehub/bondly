@@ -355,7 +355,7 @@ const AppSidebar = React.memo(function AppSidebar({ className, isOpen = true, on
                         </CollapsibleTrigger>
                         {!isCollapsed && (
                           <CollapsibleContent className="space-y-1 pl-4">
-                            {item.items?.map((child) => {
+                            {(Array.isArray(item.items) ? item.items : []).map((child) => {
                               const isChildActive = pathname === child.href;
                               return (
                                 <Link
@@ -473,7 +473,7 @@ const AppSidebar = React.memo(function AppSidebar({ className, isOpen = true, on
                         </CollapsibleTrigger>
                         {!isCollapsed && (
                           <CollapsibleContent className="space-y-1 pl-4">
-                            {item.items?.map((child) => {
+                            {(Array.isArray(item.items) ? item.items : []).map((child) => {
                               const isChildActive = pathname === child.href
                               return (
                                 <Link
@@ -711,7 +711,7 @@ const MobileSidebar = React.memo(function MobileSidebar() {
                               <div />
                             </CollapsibleTrigger>
                             <CollapsibleContent className="space-y-1 pl-4">
-                              {item.items?.map((child) => {
+                              {(Array.isArray(item.items) ? item.items : []).map((child) => {
                                 const isChildActive = pathname === child.href
                                 return (
                                   <Link

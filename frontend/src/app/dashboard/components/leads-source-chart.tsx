@@ -126,7 +126,7 @@ export function LeadsSourceChart() {
                 fill="#8884d8"
                 dataKey="value"
               >
-                {data.map((entry, index) => (
+                {(Array.isArray(data) ? data : []).map((entry, index) => (
                   <Cell key={`source-cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

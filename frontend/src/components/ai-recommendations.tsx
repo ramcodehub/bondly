@@ -35,7 +35,7 @@ export class AIRecommendationEngine {
 
   private static findHighValuePatterns(leads: any[]) {
     const convertedLeads = leads.filter(lead => lead.status === 'converted')
-    const patterns = []
+    const patterns: any[] = []
 
     // Industry patterns
     const industrySuccess = this.calculateSuccessRateByAttribute(leads, 'industry')
@@ -63,7 +63,7 @@ export class AIRecommendationEngine {
   }
 
   private static findEngagementPatterns(leads: any[]) {
-    const patterns = []
+    const patterns: any[] = []
     
     // Email engagement correlation
     const highEmailEngagement = leads.filter(lead => lead.email_opens > 3)
@@ -97,7 +97,7 @@ export class AIRecommendationEngine {
   }
 
   private static findConversionPredictors(leads: any[]) {
-    const patterns = []
+    const patterns: any[] = []
     
     // Time-based patterns
     const recentLeads = leads.filter(lead => {
@@ -135,7 +135,7 @@ export class AIRecommendationEngine {
   }
 
   private static findChurnRiskFactors(leads: any[]) {
-    const patterns = []
+    const patterns: any[] = []
     
     // Inactivity patterns
     const inactiveLeads = leads.filter(lead => {
@@ -195,7 +195,7 @@ export class AIRecommendationEngine {
 
   // Generate personalized recommendations for individual leads
   static generateLeadRecommendations(lead: any, patterns: any): any[] {
-    const recommendations = []
+    const recommendations: any[] = []
 
     // Priority actions based on lead score
     const score = this.calculateLeadScore(lead)
@@ -302,7 +302,7 @@ export class AIRecommendationEngine {
 
   // Generate team recommendations
   static generateTeamRecommendations(leads: any[], patterns: any) {
-    const recommendations = []
+    const recommendations: any[] = []
 
     // Channel optimization
     if (patterns.highValueIndicators.length > 0) {
@@ -430,7 +430,7 @@ export default function AIRecommendations({ leads = [], selectedLead = null }: {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {patterns?.highValueIndicators?.map((pattern: any, index: number) => (
+          {(Array.isArray(patterns?.highValueIndicators) ? patterns.highValueIndicators : []).map((pattern: any, index: number) => (
             <Alert key={index}>
               <Lightbulb className="h-4 w-4" />
               <AlertDescription>

@@ -30,7 +30,7 @@ export function SimpleTable<T = any>({ columns, data, emptyText = "No results.",
         </thead>
         <tbody>
           {data.length ? (
-            data.map((row, ri) => (
+            (Array.isArray(data) ? data : []).map((row, ri) => (
               <tr 
                 key={ri} 
                 className={cn("border-t", onRowClick && "cursor-pointer hover:bg-muted/50")}

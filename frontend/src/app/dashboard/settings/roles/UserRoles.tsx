@@ -109,7 +109,7 @@ export function UserRoles() {
         return (
           <div className="flex flex-wrap gap-2">
             {row.roles && row.roles.length > 0 ? (
-              row.roles.map((role) => (
+              (Array.isArray(row.roles) ? row.roles : []).map((role) => (
                 <UserRoleBadge key={`${row.id}-${role.id}`} role={role.name} />
               ))
             ) : (
@@ -137,7 +137,7 @@ export function UserRoles() {
     }
   ];
 
-  const normalizedUsers = (users || []).map(item => ({
+  const normalizedUsers = (Array.isArray(users) ? users : []).map(item => ({
     ...item,
     id: typeof item.id === 'string' ? item.id : String(item.id)
   }));
@@ -212,7 +212,7 @@ export function UserRoles() {
           <div className="mt-6 p-4 border rounded-lg">
             <h3 className="text-lg font-medium mb-2">Manage Roles for {selectedUser.full_name || selectedUser.email}</h3>
             <div className="flex flex-wrap gap-2 mb-4">
-              {selectedUser.roles && selectedUser.roles.map((role) => (
+              {selectedUser.roles && (Array.isArray(selectedUser.roles) ? selectedUser.roles : []).map((role) => (
                 <div key={role.id} className="flex items-center bg-gray-100 rounded-full px-3 py-1">
                   <span className="mr-2">{role.name}</span>
                   <button 

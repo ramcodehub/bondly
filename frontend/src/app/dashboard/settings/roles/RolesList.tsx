@@ -110,7 +110,7 @@ export function RolesList() {
     }
   ];
 
-  const normalizedRoles = (roles || []).map(role => ({
+  const normalizedRoles = (Array.isArray(roles) ? roles : []).map(role => ({
     ...role,
     id: typeof role.id === 'number' ? role.id : Number(role.id)
   }));

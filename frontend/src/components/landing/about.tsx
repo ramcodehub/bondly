@@ -125,7 +125,7 @@ export default function About() {
             </div>
             
             <div className="space-y-6">
-              {content.features.map((feature, index) => {
+              {(Array.isArray(content?.features) ? content.features : []).map((feature, index) => {
                 const IconComponent = iconMap[feature.icon as keyof typeof iconMap] || Users;
                 return (
                   <div 

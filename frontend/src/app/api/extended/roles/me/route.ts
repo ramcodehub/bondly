@@ -46,7 +46,7 @@ export async function GET() {
       return NextResponse.json({ success: true, data: [] })
     }
 
-    const roles = data.map(item => item.roles);
+    const roles = (Array.isArray(data) ? data : []).map(item => item.roles);
     console.log('Successfully fetched roles:', roles.length)
 
     return NextResponse.json({ success: true, data: roles })

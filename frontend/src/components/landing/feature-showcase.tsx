@@ -152,7 +152,7 @@ export default function FeatureShowcase() {
 
         <div className="mt-12 text-center">
           <div className="inline-flex space-x-2">
-            {features.map((_, index) => (
+            {(Array.isArray(features) ? features : []).map((_, index) => (
               <div
                 key={index}
                 className={`h-2 w-2 rounded-full transition-colors ${
