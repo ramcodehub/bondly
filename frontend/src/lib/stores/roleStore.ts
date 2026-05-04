@@ -82,7 +82,7 @@ export const useRoleStore = create<RoleState>()(
         }
       } catch (error: unknown) {
         console.error('Error fetching roles:', error);
-        set({ error: (error as Error).message, loading: false });
+        set({ error: error instanceof Error ? error.message : 'Failed to fetch roles', loading: false });
       }
     },
     
@@ -101,7 +101,7 @@ export const useRoleStore = create<RoleState>()(
           throw new Error(data.message || 'Failed to create role');
         }
       } catch (error: unknown) {
-        set({ error: (error as Error).message, loading: false });
+        set({ error: error instanceof Error ? error.message : 'Something went wrong', loading: false });
       }
     },
     
@@ -123,7 +123,7 @@ export const useRoleStore = create<RoleState>()(
           throw new Error(data.message || 'Failed to update role');
         }
       } catch (error: unknown) {
-        set({ error: (error as Error).message, loading: false });
+        set({ error: error instanceof Error ? error.message : 'Something went wrong', loading: false });
       }
     },
     
@@ -141,7 +141,7 @@ export const useRoleStore = create<RoleState>()(
           throw new Error(data.message || 'Failed to delete role');
         }
       } catch (error: unknown) {
-        set({ error: (error as Error).message, loading: false });
+        set({ error: error instanceof Error ? error.message : 'Something went wrong', loading: false });
       }
     },
     
@@ -157,7 +157,7 @@ export const useRoleStore = create<RoleState>()(
           throw new Error(data.message || 'Failed to fetch user roles');
         }
       } catch (error: unknown) {
-        set({ error: (error as Error).message, loading: false });
+        set({ error: error instanceof Error ? error.message : 'Failed to fetch user roles', loading: false });
         return [];
       }
     },
@@ -174,7 +174,7 @@ export const useRoleStore = create<RoleState>()(
         if (data.success) set({ loading: false });
         else throw new Error(data.message || 'Failed to assign role');
       } catch (error: unknown) {
-        set({ error: (error as Error).message, loading: false });
+        set({ error: error instanceof Error ? error.message : 'Something went wrong', loading: false });
       }
     },
     
@@ -186,7 +186,7 @@ export const useRoleStore = create<RoleState>()(
         if (data.success) set({ loading: false });
         else throw new Error(data.message || 'Failed to remove role');
       } catch (error: unknown) {
-        set({ error: (error as Error).message, loading: false });
+        set({ error: error instanceof Error ? error.message : 'Something went wrong', loading: false });
       }
     },
     
@@ -238,7 +238,7 @@ export const useRoleStore = create<RoleState>()(
 
       } catch (error: any) {
         console.error('❌ RBAC FETCH ERROR:', error);
-        set({ error: error?.message || 'Failed to fetch roles', loading: false, myRoles: [], permissions: [] });
+        set({ error: error instanceof Error ? error.message : 'Failed to fetch roles', loading: false, myRoles: [], permissions: [] });
       }
     },
 

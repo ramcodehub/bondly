@@ -170,8 +170,8 @@ export const useUser = () => {
       }
       
       return { success: true };
-    } catch (error: any) {
-      const message = error?.message || 'Invalid email or password';
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Invalid email or password';
       toast.error(message);
       return { success: false, error: message };
     } finally {
@@ -197,8 +197,8 @@ export const useUser = () => {
 
       toast.success('Account created! Please verify your email.');
       return { success: true, user: data?.user };
-    } catch (error: any) {
-      const message = error?.message || 'Failed to create account';
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to create account';
       toast.error(message);
       return { success: false, error: message };
     } finally {
@@ -227,8 +227,8 @@ export const useUser = () => {
       
       toast.success('Role updated successfully');
       return { success: true };
-    } catch (error: any) {
-      toast.error(error?.message || 'Failed to assign role');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Failed to assign role');
       return { success: false };
     }
   };
@@ -252,8 +252,8 @@ export const useUser = () => {
       setProfile(prev => prev ? { ...prev, ...updates } : null);
       toast.success('Profile updated successfully');
       return { success: true };
-    } catch (error: any) {
-      const message = error?.message || 'Failed to update profile';
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to update profile';
       toast.error(message);
       return { success: false, error: message };
     } finally {
@@ -303,8 +303,8 @@ export const useUser = () => {
       
       toast.success('Avatar updated successfully');
       return { success: true, url: publicUrlWithTimestamp };
-    } catch (error: any) {
-      const message = error?.message || 'Failed to upload avatar';
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to upload avatar';
       toast.error(message);
       return { success: false, error: message };
     } finally {
