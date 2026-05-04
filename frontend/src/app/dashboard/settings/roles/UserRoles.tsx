@@ -59,7 +59,7 @@ export function UserRoles() {
     }
 
     try {
-      await assignRole(selectedUser.id, selectedRole);
+      await assignRole(String(selectedUser.id), String(selectedRole));
       toast.success(`Role assigned to ${selectedUser.full_name || selectedUser.email}`);
       // Refresh data
       await fetchData();
@@ -74,7 +74,7 @@ export function UserRoles() {
 
   const handleRemoveRole = async (userId: string, roleId: number) => {
     try {
-      await removeRole(userId, roleId);
+      await removeRole(String(userId), String(roleId));
       toast.success('Role removed successfully');
       // Refresh data
       await fetchData();
