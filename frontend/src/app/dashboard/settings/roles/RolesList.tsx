@@ -45,7 +45,7 @@ export function RolesList() {
     if (!editingRole) return;
     
     try {
-      await updateRole(editingRole.id, { name: editingRole.name, description: editingRole.description });
+      await updateRole(String(editingRole.id), { name: editingRole.name, description: editingRole.description });
       setIsEditDialogOpen(false);
       setEditingRole(null);
       toast.success('Role updated successfully');
@@ -57,7 +57,7 @@ export function RolesList() {
 
   const handleDeleteRole = async (roleId: number) => {
     try {
-      await deleteRole(roleId);
+      await deleteRole(String(roleId));
       toast.success('Role deleted successfully');
     } catch (error) {
       toast.error('Failed to delete role');

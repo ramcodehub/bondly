@@ -78,7 +78,7 @@
     "zustand": "4.5.1"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^5.1.0",
+    "@netlify/plugin-nextjs": "^5.15.10",
     "@testing-library/dom": "^9.3.4",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^14.1.2",

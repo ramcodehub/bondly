@@ -1,6 +1,10 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+export const config = {
+  runtime: 'nodejs',
+};
+
 export async function updateSession(request: NextRequest) {
   console.log('Middleware: updateSession called for', request.nextUrl.pathname)
   
