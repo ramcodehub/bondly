@@ -13,9 +13,10 @@ export default function TestRoleDebug() {
       const data = await response.json()
       setResults(prev => ({ ...prev, [testName]: data }))
       console.log(`${testName} result:`, data)
-    } catch (error) {
-      console.error(`Error in ${testName}:`, error)
-      setResults(prev => ({ ...prev, [testName]: { error: error.message } }))
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      console.error(`Error in ${testName}:`, err);
+      setResults(prev => ({ ...prev, [testName]: { error: errorMessage } }));
     } finally {
       setLoading(prev => ({ ...prev, [testName]: false }))
     }

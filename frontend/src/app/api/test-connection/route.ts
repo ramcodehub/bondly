@@ -42,14 +42,15 @@ export async function GET() {
       message: 'Successfully connected to Supabase',
       data: data
     })
-  } catch (error: any) {
-    console.error('Unexpected error in test connection API:', error)
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+    console.error('Unexpected error in test connection API:', err);
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || 'Unexpected error occurred' 
+        error: errorMessage 
       }, 
       { status: 500 }
-    )
+    );
   }
 }

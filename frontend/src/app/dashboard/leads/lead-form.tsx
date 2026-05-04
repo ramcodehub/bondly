@@ -108,26 +108,14 @@ export function LeadForm({ initialData, isEdit = false }: LeadFormProps) {
       } else {
         router.push('/dashboard/leads');
       }
-    } catch (error) {
-      console.error('Error saving lead:', error);
-      
-      let errorMessage = 'Failed to save lead. Please try again.';
-      let errorTitle = 'Error';
-      
-      if (error instanceof Error) {
-        if (error.message.includes('Access denied') || error.message.includes('permissions')) {
-          errorTitle = 'Access Denied';
-          errorMessage = error.message + ' This might be a database configuration issue.';
-        } else {
-          errorMessage = error.message;
-        }
-      }
-      
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
       toast({
-        title: errorTitle,
+        title: "Error",
         description: errorMessage,
-        variant: 'destructive',
+        variant: "destructive",
       });
+      console.error("Error:", err);
     }
   };
 

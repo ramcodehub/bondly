@@ -26,8 +26,9 @@ export default function TestEnvApiPage() {
         data: data
       })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred')
-      console.error('API Test Error:', err)
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      setError(errorMessage);
+      console.error("Error:", err);
     } finally {
       setLoading(false)
     }

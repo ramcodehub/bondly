@@ -96,8 +96,9 @@ export default function DebugProfilePage() {
       
       setDebugInfo(results)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred')
-      console.error('Debug Error:', err)
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      setError(errorMessage);
+      console.error("Debug Error:", err);
     } finally {
       setLoading(false)
     }
@@ -117,7 +118,9 @@ export default function DebugProfilePage() {
         hookUpdateResult: result
       }))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred')
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      setError(errorMessage);
+      console.error("Error:", err);
     } finally {
       setLoading(false)
     }

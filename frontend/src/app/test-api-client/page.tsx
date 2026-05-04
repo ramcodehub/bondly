@@ -15,8 +15,9 @@ export default function TestApiClientPage() {
         const data = await request('/dashboard/stats')
         setResult(data)
       } catch (err) {
-        setError(err.message)
-        console.error('API Error:', err)
+        const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+        setError(errorMessage);
+        console.error('API Error:', err);
       } finally {
         setLoading(false)
       }

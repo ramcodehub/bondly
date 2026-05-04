@@ -46,9 +46,10 @@ export function UserRoles() {
       } else {
         toast.error('Failed to fetch users');
       }
-    } catch (error) {
-      toast.error('Failed to fetch users');
-      console.error('Error fetching users:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      toast.error(errorMessage);
+      console.error("Error:", err);
     }
   };
 
@@ -66,9 +67,10 @@ export function UserRoles() {
       // Clear selection
       setSelectedUser(null);
       setSelectedRole(null);
-    } catch (error) {
-      toast.error('Failed to assign role');
-      console.error('Error assigning role:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      toast.error(errorMessage);
+      console.error("Error:", err);
     }
   };
 
@@ -78,9 +80,10 @@ export function UserRoles() {
       toast.success('Role removed successfully');
       // Refresh data
       await fetchData();
-    } catch (error) {
-      toast.error('Failed to remove role');
-      console.error('Error removing role:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      toast.error(errorMessage);
+      console.error("Error:", err);
     }
   };
 
@@ -133,6 +136,11 @@ export function UserRoles() {
       )
     }
   ];
+
+  const normalizedUsers = (users || []).map(item => ({
+    ...item,
+    id: typeof item.id === 'string' ? item.id : String(item.id)
+  }));
 
   return (
     <Card>
@@ -231,9 +239,9 @@ export function UserRoles() {
             Error: {error}
           </div>
         ) : (
-          <SimpleTable columns={columns} data={users} />
+          <SimpleTable columns={columns} data={normalizedUsers as any} />
         )}
       </CardContent>
     </Card>
   );
-}
+}

@@ -23,8 +23,10 @@ export default function TestSidebarPage() {
           setError(data.message);
         }
       } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Something went wrong";
         setAuthStatus('Error');
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        setError(errorMessage);
+        console.error("Error:", err);
       }
     };
 

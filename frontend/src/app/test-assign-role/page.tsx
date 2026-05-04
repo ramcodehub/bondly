@@ -19,9 +19,10 @@ export default function TestAssignRole() {
       const data = await response.json()
       setResult(data)
       console.log('Assign role result:', data)
-    } catch (error) {
-      console.error('Error assigning role:', error)
-      setResult({ error: error.message })
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      console.error('Error assigning role:', err);
+      setResult({ error: errorMessage });
     } finally {
       setLoading(false)
     }

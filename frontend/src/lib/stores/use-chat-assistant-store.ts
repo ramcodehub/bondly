@@ -83,8 +83,9 @@ export const useChatAssistantStore = create<ChatAssistantState>((set, get) => ({
         // Set empty array if API fails
         set({ conversations: [] });
       }
-    } catch (error) {
-      console.error('Error fetching conversations:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      console.error("Error:", err);
       // Set empty array if API fails
       set({ conversations: [] });
     }

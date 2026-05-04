@@ -125,9 +125,10 @@ export function QualificationForm({
 
       toast.success(isEdit ? 'Lead qualification updated successfully' : 'Lead qualification created successfully');
       onSuccess?.();
-    } catch (error) {
-      console.error('Error saving lead qualification:', error);
-      toast.error(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      toast.error(errorMessage);
+      console.error("Error:", err);
     } finally {
       setLoading(false);
     }

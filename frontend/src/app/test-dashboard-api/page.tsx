@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 export default function TestDashboardAPI() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -15,8 +15,10 @@ export default function TestDashboardAPI() {
         setData(result)
         setLoading(false)
       } catch (err) {
-        setError(err.message)
-        setLoading(false)
+        const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+        setError(errorMessage);
+        console.error("Error:", err);
+        setLoading(false);
       }
     }
 

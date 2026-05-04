@@ -24,8 +24,9 @@ export default function EditCampaignPage({ params }: { params: { id: string } })
       } else {
         console.error('Failed to fetch campaign:', data.message);
       }
-    } catch (error) {
-      console.error('Error fetching campaign:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      console.error('Error fetching campaign:', err);
     } finally {
       setLoading(false);
     }
@@ -40,9 +41,10 @@ export default function EditCampaignPage({ params }: { params: { id: string } })
       }
       
       router.push('/dashboard/campaigns');
-    } catch (error) {
-      console.error('Error updating campaign:', error);
-      throw error;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      console.error('Error updating campaign:', err);
+      throw err;
     }
   };
 

@@ -21,8 +21,9 @@ export default function TestUserRoles() {
           setError(data.message)
         }
       } catch (err) {
-        console.error('Error fetching roles:', err)
-        setError(err.message)
+        const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+        setError(errorMessage);
+        console.error("Error fetching roles:", err);
       } finally {
         setLoading(false)
       }

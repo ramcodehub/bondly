@@ -59,8 +59,9 @@ function CampaignsContent() {
     try {
       await createCampaign(campaignData)
       setShowCreateForm(false)
-    } catch (error) {
-      console.error('Error creating campaign:', error)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      console.error("Error:", err);
     }
   }
 

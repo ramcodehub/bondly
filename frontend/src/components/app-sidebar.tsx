@@ -233,7 +233,10 @@ const AppSidebar = React.memo(function AppSidebar({ className, isOpen = true, on
 
   const roles = React.useMemo(() => {
     return Array.isArray(myRoles) 
-      ? myRoles.map(r => (typeof r === 'string' ? r.toLowerCase() : r?.name?.toLowerCase() || '')) 
+      ? myRoles.map(r => {
+          const name = typeof r === 'string' ? r : (r as any)?.name;
+          return name?.toLowerCase() || '';
+        }) 
       : [];
   }, [myRoles]);
 
@@ -591,7 +594,10 @@ const MobileSidebar = React.memo(function MobileSidebar() {
   const safeRoles = myRoles || [];
   const roles = React.useMemo(() => {
     return Array.isArray(safeRoles) 
-      ? safeRoles.map(r => (typeof r === 'string' ? r.toLowerCase() : r?.name?.toLowerCase() || '')) 
+      ? safeRoles.map(r => {
+          const name = typeof r === 'string' ? r : (r as any)?.name;
+          return name?.toLowerCase() || '';
+        }) 
       : [];
   }, [safeRoles]);
 
@@ -677,6 +683,9 @@ const MobileSidebar = React.memo(function MobileSidebar() {
               <div className="flex-1 overflow-y-auto">
                 <nav className="space-y-1 p-2">
                   {filteredNavigation.map((item) => {
+                    // Skip null items
+                    if (!item) return null;
+                    
                     const Icon = item.icon ? (typeof item.icon === 'string' ? Icons[item.icon as keyof typeof Icons] : item.icon) : null;
                     const isActive = pathname === item.href
                     const hasChildren = item.items && item.items.length > 0

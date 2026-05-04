@@ -54,8 +54,9 @@ export default function TestAuthPage() {
       setMessage('Login successful!')
       setUser(data.user)
       router.push('/dashboard')
-    } catch (error: any) {
-      setMessage(`Error: ${error.message}`)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      setMessage(`Error: ${errorMessage}`);
     }
   }
 
@@ -64,8 +65,9 @@ export default function TestAuthPage() {
       await supabase.auth.signOut()
       setUser(null)
       setMessage('Logged out successfully!')
-    } catch (error: any) {
-      setMessage(`Error: ${error.message}`)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      setMessage(`Error: ${errorMessage}`);
     }
   }
 

@@ -47,9 +47,10 @@ export default function TestCRUDContactsPage() {
       await deleteList(newList.id)
       
       setTestResults(prev => ({ ...prev, lists: "✅ All CRUD operations successful" }))
-    } catch (error) {
-      console.error("Error testing contact lists CRUD:", error)
-      setTestResults(prev => ({ ...prev, lists: `❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}` }))
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      console.error("Error testing contact lists CRUD:", err);
+      setTestResults(prev => ({ ...prev, lists: `❌ Error: ${errorMessage}` }))
     }
   }
 
@@ -85,9 +86,10 @@ export default function TestCRUDContactsPage() {
       await deleteSegment(newSegment.id)
       
       setTestResults(prev => ({ ...prev, segments: "✅ All CRUD operations successful" }))
-    } catch (error) {
-      console.error("Error testing contact segments CRUD:", error)
-      setTestResults(prev => ({ ...prev, segments: `❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}` }))
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      console.error("Error testing contact segments CRUD:", err);
+      setTestResults(prev => ({ ...prev, segments: `❌ Error: ${errorMessage}` }))
     }
   }
 
@@ -124,9 +126,10 @@ export default function TestCRUDContactsPage() {
       await deleteTopic(newTopic.id)
       
       setTestResults(prev => ({ ...prev, topics: "✅ All CRUD operations successful" }))
-    } catch (error) {
-      console.error("Error testing contact topics CRUD:", error)
-      setTestResults(prev => ({ ...prev, topics: `❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}` }))
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      console.error("Error testing contact topics CRUD:", err);
+      setTestResults(prev => ({ ...prev, topics: `❌ Error: ${errorMessage}` }))
     }
   }
 
@@ -161,9 +164,10 @@ export default function TestCRUDContactsPage() {
       await deleteQualification(newQualification.id)
       
       setTestResults(prev => ({ ...prev, qualifications: "✅ All CRUD operations successful" }))
-    } catch (error) {
-      console.error("Error testing lead qualifications CRUD:", error)
-      setTestResults(prev => ({ ...prev, qualifications: `❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}` }))
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      console.error("Error testing lead qualifications CRUD:", err);
+      setTestResults(prev => ({ ...prev, qualifications: `❌ Error: ${errorMessage}` }))
     }
   }
 

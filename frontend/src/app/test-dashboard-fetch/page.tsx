@@ -6,7 +6,7 @@ import { request } from '@/services/apiService'
 export default function TestDashboardFetch() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,9 +17,10 @@ export default function TestDashboardFetch() {
         setData(result)
         setLoading(false)
       } catch (err) {
-        console.error('Error fetching dashboard stats:', err)
-        setError(err.message)
-        setLoading(false)
+        const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+        setError(errorMessage);
+        console.error("Error fetching dashboard stats:", err);
+        setLoading(false);
       }
     }
 

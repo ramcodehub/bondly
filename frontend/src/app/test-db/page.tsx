@@ -60,8 +60,9 @@ export default function TestDbPage() {
         functionExists: functions && functions.length > 0
       })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred')
-      console.error('Database Test Error:', err)
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      setError(errorMessage);
+      console.error("Error:", err);
     } finally {
       setLoading(false)
     }

@@ -35,9 +35,10 @@ export function RolesList() {
       setNewRole({ name: '', description: '' });
       setIsCreateDialogOpen(false);
       toast.success('Role created successfully');
-    } catch (error) {
-      toast.error('Failed to create role');
-      console.error('Error creating role:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      toast.error(errorMessage);
+      console.error("Error:", err);
     }
   };
 
@@ -49,9 +50,10 @@ export function RolesList() {
       setIsEditDialogOpen(false);
       setEditingRole(null);
       toast.success('Role updated successfully');
-    } catch (error) {
-      toast.error('Failed to update role');
-      console.error('Error updating role:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      toast.error(errorMessage);
+      console.error("Error:", err);
     }
   };
 
@@ -59,9 +61,10 @@ export function RolesList() {
     try {
       await deleteRole(String(roleId));
       toast.success('Role deleted successfully');
-    } catch (error) {
-      toast.error('Failed to delete role');
-      console.error('Error deleting role:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      toast.error(errorMessage);
+      console.error("Error:", err);
     }
   };
 

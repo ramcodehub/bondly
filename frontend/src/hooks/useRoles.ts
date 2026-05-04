@@ -40,8 +40,9 @@ export const useRoles = () => {
             if (result.success) {
               await fetchMyRoles();
             }
-          } catch (error) {
-            console.error('Error assigning default role:', error);
+          } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+            console.error("Error assigning default role:", err);
           }
         }
       }, 100);

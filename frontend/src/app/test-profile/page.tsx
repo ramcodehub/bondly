@@ -17,13 +17,10 @@ export default function TestProfilePage() {
         }
         const data = await response.json()
         setProfileData(data)
-      } catch (err: unknown) {
-        // Type guard to ensure err is an Error instance
-        if (err instanceof Error) {
-          setError(err.message)
-        } else {
-          setError('An unknown error occurred')
-        }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+        setError(errorMessage);
+        console.error("Error:", err);
       }
     }
 

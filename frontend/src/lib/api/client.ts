@@ -26,11 +26,12 @@ export async function apiCall(endpoint: string, options: RequestInit = {}) {
     }
 
     return await response.json();
-  } catch (error) {
+  } catch (err) {
     clearTimeout(timeoutId);
-    console.warn(`API error at ${endpoint}:`, error);
+    const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+    console.warn(`API error at ${endpoint}:`, err);
     // Return safe empty structure or handle via caller fallback
-    return { success: false, isFallback: true, data: [] };
+    return { success: false, isFallback: true, data: [], message: errorMessage };
   }
 }
 
