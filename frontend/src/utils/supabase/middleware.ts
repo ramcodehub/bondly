@@ -1,103 +1,33 @@
-import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export const config = {
-  runtime: 'nodejs',
-};
-
+/**
+ * Lightweight middleware for Edge compatibility.
+ * DOES NOT use Supabase client to avoid Node.js API dependency.
+ */
 export async function updateSession(request: NextRequest) {
-  console.log('Middleware: updateSession called for', request.nextUrl.pathname)
+  const { pathname } = request.nextUrl
   
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
+  // 1. Get the session cookie (Supabase standard name)
+  // We check for any cookie starting with 'sb-' to be safe across projects
+  const cookies = request.cookies.getAll()
+  const hasAuthCookie = cookies.some(cookie => cookie.name.startsWith('sb-') && cookie.name.endsWith('-auth-token'))
+  
+  // 2. Define protected and auth routes
+  const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup')
+  const isProtectedPage = pathname.startsWith('/dashboard') || pathname.startsWith('/settings')
 
-  // Validate environment variables
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  // If environment variables are not set, return the response without auth
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('Supabase environment variables not set. Skipping auth middleware.')
-    return response
+  // 3. Simple redirect logic
+  if (isProtectedPage && !hasAuthCookie) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
   }
 
-  console.log('Middleware: Creating Supabase client')
-  const supabase = createServerClient(
-    supabaseUrl,
-    supabaseAnonKey,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: any) {
-          try {
-            request.cookies.set({
-              name,
-              value,
-              ...options,
-            })
-            response = NextResponse.next({
-              request: {
-                headers: request.headers,
-              },
-            })
-            response.cookies.set({
-              name,
-              value,
-              ...options,
-            })
-          } catch (error) {
-            // Handle cookie setting errors gracefully
-            console.warn('Failed to set cookie in middleware:', error)
-          }
-        },
-        remove(name: string, options: any) {
-          try {
-            request.cookies.set({
-              name,
-              value: '',
-              ...options,
-            })
-            response = NextResponse.next({
-              request: {
-                headers: request.headers,
-              },
-            })
-            response.cookies.set({
-              name,
-              value: '',
-              ...options,
-            })
-          } catch (error) {
-            // Handle cookie removal errors gracefully
-            console.warn('Failed to remove cookie in middleware:', error)
-          }
-        },
-      },
-    }
-  )
-
-  // Refresh session if needed
-  console.log('Middleware: Refreshing session')
-  try {
-    const { data, error } = await supabase.auth.getUser();
-    console.log('Middleware: getUser result:', { user: !!data.user, error: !!error })
-    if (error) {
-      // This is expected when there's no active session (e.g., for unauthenticated users)
-      // It's not an error condition, just indicates no current session
-      console.log('Middleware: No active session (this is normal for unauthenticated users)')
-    } else if (data.user) {
-      console.log('Middleware: User is authenticated')
-    }
-  } catch (authError) {
-    console.error('Middleware: Unexpected authentication error:', authError)
-    // Continue with the response even if auth fails
+  if (isAuthPage && hasAuthCookie) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
   }
 
-  console.log('Middleware: Returning response')
-  return response
+  return NextResponse.next()
 }
