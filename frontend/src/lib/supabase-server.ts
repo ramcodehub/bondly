@@ -1,12 +1,25 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
+// Environment variables
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+// 🚀 Compatibility Exports: These are used by various test and experimental routes
+export const supabaseFallback = createClient(supabaseUrl, supabaseAnonKey)
+export const supabaseServer = supabaseServiceKey 
+  ? createClient(supabaseUrl, supabaseServiceKey) 
+  : null
+
+// Standard SSR client creator
 export function createSupabaseServerClient() {
   const cookieStore = cookies()
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         get: (name) => cookieStore.get(name)?.value,
