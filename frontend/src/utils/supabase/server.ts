@@ -4,8 +4,8 @@ import { cookies } from 'next/headers'
 export async function createClient() {
   const cookieStore = cookies()
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+  const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").trim().replace(/\/$/, "");
+  const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "").trim();
 
   if (!supabaseUrl || !supabaseAnonKey) {
     console.warn("Supabase environment variables are missing. This is expected during some build phases but will cause runtime errors.");
