@@ -1,7 +1,11 @@
 import { NextRequest } from 'next/server';
 
 // Get backend URL from environment variables
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL?.replace('/api', '') || 'http://localhost:5001';
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  (process.env.NODE_ENV === "development"
+    ? "http://localhost:5000"
+    : "");
 
 /**
  * Proxy a request to the backend server
@@ -52,7 +56,7 @@ export async function proxyToBackend(endpoint: string, req: NextRequest) {
     return new Response(
       JSON.stringify({
         success: true, // Mark as true to trigger frontend fallbacks
-        data: {}, 
+        data: [], 
         message: 'Using local fallback due to backend unavailability',
         isFallback: true
       }),

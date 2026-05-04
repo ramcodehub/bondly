@@ -47,7 +47,7 @@ export default function About() {
         const result = await response.json();
         
         if (result.success) {
-          setContent(result.data);
+          setContent(result?.data || { features: [], testimonials: [] });
         } else {
           throw new Error(result.message || 'Failed to fetch about content');
         }
@@ -173,7 +173,7 @@ export default function About() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-6">
-            {content.testimonials.map((testimonial, index) => (
+            {(Array.isArray(content?.testimonials) ? content.testimonials : []).map((testimonial, index) => (
               <div key={index} className="bg-muted/50 p-6 rounded-lg border transition-all duration-300 hover:shadow-md hover:border-primary/20">
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">

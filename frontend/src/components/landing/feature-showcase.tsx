@@ -51,8 +51,8 @@ export default function FeatureShowcase() {
         const result = await response.json();
         
         if (result.success) {
-          setFeatures(result.data);
-          setVisibleFeatures(result.data.slice(0, 4));
+          setFeatures(result?.data || []);
+          setVisibleFeatures((result?.data || []).slice(0, 4));
         } else {
           throw new Error(result.message || 'Failed to fetch features');
         }
@@ -129,7 +129,7 @@ export default function FeatureShowcase() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {visibleFeatures.map((feature, index) => {
+          {(Array.isArray(visibleFeatures) ? visibleFeatures : []).map((feature, index) => {
             const IconComponent = iconMap[feature.icon as keyof typeof iconMap] || BarChart3;
             return (
               <Card 

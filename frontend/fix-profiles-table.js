@@ -1,9 +1,8 @@
 const { createClient } = require('@supabase/supabase-js');
 
 // Get these from your Supabase project settings
-const supabaseUrl = 'https://dbetczosnhbfastrtxag.supabase.co';
-// You'll need to get this from your Supabase project settings
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
 if (!supabaseServiceKey) {
   console.error('SUPABASE_SERVICE_KEY environment variable is required');

@@ -43,7 +43,7 @@ export default function Services() {
         const result = await response.json();
         
         if (result.success) {
-          setServices(result.data);
+          setServices(result?.data || []);
         } else {
           throw new Error(result.message || 'Failed to fetch services');
         }
@@ -132,7 +132,7 @@ export default function Services() {
         
         {/* Enhanced services grid with carousel for mobile */}
         <div className="hidden md:grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((service, index) => {
+          {(Array.isArray(services) ? services : []).map((service, index) => {
             const IconComponent = iconMap[service.icon as keyof typeof iconMap] || Target;
             return (
               <Card 
@@ -160,7 +160,7 @@ export default function Services() {
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
-              {services.map((service, index) => {
+              {(Array.isArray(services) ? services : []).map((service, index) => {
                 const IconComponent = iconMap[service.icon as keyof typeof iconMap] || Target;
                 return (
                   <div key={index} className="w-full flex-shrink-0 px-2">
@@ -183,7 +183,7 @@ export default function Services() {
           
           {/* Carousel controls */}
           <div className="flex justify-center mt-6 space-x-2">
-            {services.map((_, index) => (
+            {(Array.isArray(services) ? services : []).map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentIndex(index)}

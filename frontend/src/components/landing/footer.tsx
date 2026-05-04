@@ -106,7 +106,7 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider">Product</h3>
             <ul className="mt-4 space-y-3">
-              {navigation?.product?.length > 0 && navigation.product.map((item) => (
+              {navigation?.product?.length > 0 && (Array.isArray(navigation.product) ? navigation.product : []).map((item) => (
                 <li key={item.name}>
                   <Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
                     {item.name}
@@ -119,7 +119,7 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider">Resources</h3>
             <ul className="mt-4 space-y-3">
-              {navigation?.resources?.length > 0 && navigation.resources.map((item) => (
+              {navigation?.resources?.length > 0 && (Array.isArray(navigation.resources) ? navigation.resources : []).map((item) => (
                 <li key={item.name}>
                   <Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
                     {item.name}
@@ -132,7 +132,7 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider">Company</h3>
             <ul className="mt-4 space-y-3">
-              {navigation?.company?.length > 0 && navigation.company.map((item) => (
+              {navigation?.company?.length > 0 && (Array.isArray(navigation.company) ? navigation.company : []).map((item) => (
                 <li key={item.name}>
                   <Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
                     {item.name}

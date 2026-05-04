@@ -1,5 +1,10 @@
 // Use Next.js env (fallback for dev)
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:5000/api';
+const API_BASE =
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  (process.env.NODE_ENV === "development"
+    ? "http://localhost:5000/api"
+    : "");
+const API_URL = API_BASE;
 
 console.log('Using API URL:', API_URL);
 

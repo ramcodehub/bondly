@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server'
 import { supabaseServer, supabaseFallback } from '@/lib/supabase-server'
 import { cookies } from 'next/headers'

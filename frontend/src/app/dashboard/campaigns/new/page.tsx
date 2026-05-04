@@ -8,7 +8,8 @@ export default function NewCampaignPage() {
 
   const handleCreateCampaign = async (data: any) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5001'}/api/extended/campaigns`, {
+      const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || (process.env.NODE_ENV === "development" ? "http://localhost:5000/api" : "");
+      const response = await fetch(`${API_BASE}/extended/campaigns`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

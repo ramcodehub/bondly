@@ -35,7 +35,7 @@ export default function Hero() {
         const result = await response.json();
 
         if (result.success) {
-          setStats(result.data);
+          setStats(result?.data || []);
         } else {
           throw new Error(result.message || 'Failed to fetch hero stats');
         }
@@ -103,7 +103,7 @@ export default function Hero() {
               </div>
             ) : (
               // Actual stats
-              stats.map((stat, index) => (
+              (Array.isArray(stats) ? stats : []).map((stat, index) => (
                 <div key={index} className="transform hover:-translate-y-2 transition-transform duration-300">
                   <div className="text-3xl font-bold">{stat.value}</div>
                   <div className="text-muted-foreground">{stat.description}</div>
@@ -126,7 +126,7 @@ export default function Hero() {
 
       {/* Subtle particle effect */}
       <div className="absolute inset-0 -z-20">
-        {particles.map((particle, i) => (
+        {(Array.isArray(particles) ? particles : []).map((particle, i) => (
           <div
             key={i}
             className="absolute rounded-full bg-primary/5"
